@@ -1,7 +1,8 @@
-package com.tvremote.app
+package com.tvremote.app.data.cast
 
 import android.content.Context
 import android.net.Uri
+import com.tvremote.app.util.NetworkUtils
 import fi.iki.elonen.NanoHTTPD
 import java.io.File
 import java.io.FileInputStream

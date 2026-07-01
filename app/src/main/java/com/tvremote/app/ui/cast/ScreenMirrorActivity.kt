@@ -1,4 +1,4 @@
-package com.tvremote.app
+package com.tvremote.app.ui.cast
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -9,16 +9,24 @@ import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.mediarouter.media.MediaControlIntent
 import androidx.mediarouter.media.MediaRouteSelector
+import com.tvremote.app.R
+import com.tvremote.app.TvRemoteApp
+import com.tvremote.app.data.cast.ScreenCastService
 import com.tvremote.app.databinding.ActivityScreenMirrorBinding
+import com.tvremote.app.ui.common.AppViewModelFactory
 
 class ScreenMirrorActivity : AppCompatActivity() {
     private lateinit var binding: ActivityScreenMirrorBinding
-    private lateinit var container: AppContainer
     private var mirroring = false
+
+    private val viewModel: CastViewModel by viewModels {
+        AppViewModelFactory((application as TvRemoteApp).container)
+    }
 
     private val projectionLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
@@ -36,11 +44,11 @@ class ScreenMirrorActivity : AppCompatActivity() {
                 ScreenCastService.ACTION_MIRROR_STARTED -> {
                     mirroring = true
                     val url = intent.getStringExtra(ScreenCastService.EXTRA_STREAM_URL).orEmpty()
-                    container.castManager.castLiveStream(url, getString(R.string.mirror_title))
+                    viewModel.castLiveStream(url, getString(R.string.mirror_title))
                     updateUi()
                     Toast.makeText(
                         this@ScreenMirrorActivity,
-                        getString(R.string.mirror_active, container.castManager.deviceName() ?: "TV"),
+                        getString(R.string.mirror_active, viewModel.deviceName() ?: "TV"),
                         Toast.LENGTH_LONG,
                     ).show()
                 }
@@ -57,22 +65,20 @@ class ScreenMirrorActivity : AppCompatActivity() {
         binding = ActivityScreenMirrorBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        container = (application as TvRemoteApp).container
-        container.castManager.initialize()
-
+        viewModel.initialize()
         binding.backButton.setOnClickListener { finish() }
         binding.mirrorRouteButton.routeSelector = MediaRouteSelector.Builder()
             .addControlCategory(MediaControlIntent.CATEGORY_LIVE_VIDEO)
             .addControlCategory(MediaControlIntent.CATEGORY_REMOTE_PLAYBACK)
             .build()
 
-        container.castManager.onSessionChanged = { session ->
+        (application as TvRemoteApp).container.castRepository.onSessionChanged = { session ->
             runOnUiThread {
                 binding.selectedDeviceLabel.text = session?.castDevice?.friendlyName
                     ?: getString(R.string.cast_select_device)
             }
         }
-        binding.selectedDeviceLabel.text = container.castManager.deviceName()
+        binding.selectedDeviceLabel.text = viewModel.deviceName()
             ?: getString(R.string.cast_select_device)
 
         binding.startMirrorButton.setOnClickListener { startMirrorFlow() }
@@ -81,12 +87,11 @@ class ScreenMirrorActivity : AppCompatActivity() {
             mirroring = false
             updateUi()
         }
-
         updateUi()
     }
 
     private fun startMirrorFlow() {
-        if (!container.castManager.isConnected()) {
+        if (!viewModel.isConnected()) {
             Toast.makeText(this, R.string.cast_select_device, Toast.LENGTH_SHORT).show()
             binding.mirrorRouteButton.performClick()
             return

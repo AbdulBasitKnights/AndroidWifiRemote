@@ -1,4 +1,4 @@
-package com.tvremote.app
+package com.tvremote.app.data.remote
 
 import android.content.Context
 import android.os.Handler
@@ -177,7 +177,6 @@ class RemoteTvManager(context: Context) {
         }
     }
 
-    /** Restart pairing only when user explicitly asks (new code on TV). */
     fun restartPairing(host: String? = null) {
         executor.execute {
             host?.trim()?.takeIf { it.isNotEmpty() }?.let { pendingHost = it }
@@ -228,8 +227,6 @@ class RemoteTvManager(context: Context) {
         }
         return true
     }
-
-    fun sendCode(code: String) = submitPairingCode(code)
 
     fun sendKey(key: Key) {
         executor.execute {

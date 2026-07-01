@@ -1,8 +1,10 @@
-package com.tvremote.app
+package com.tvremote.app.ui.settings.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.tvremote.app.R
+import com.tvremote.app.data.model.DiscoveredTv
 import com.tvremote.app.databinding.ItemDiscoveredTvBinding
 
 class DiscoveredTvAdapter(
@@ -46,11 +48,10 @@ class DiscoveredTvAdapter(
             binding.tvName.text = tv.name.ifBlank { "Android TV" }
             binding.tvHost.text = tv.host
             val isPairing = pairingHost == tv.host
-            val isSelected = selectedHost == tv.host
-            binding.pairActionLabel.text = when {
-                isPairing -> binding.root.context.getString(R.string.pairing_in_progress)
-                isSelected -> binding.root.context.getString(R.string.tap_to_pair)
-                else -> binding.root.context.getString(R.string.tap_to_pair)
+            binding.pairActionLabel.text = if (isPairing) {
+                binding.root.context.getString(R.string.pairing_in_progress)
+            } else {
+                binding.root.context.getString(R.string.tap_to_pair)
             }
             binding.root.setOnClickListener { onTvSelected(tv) }
             binding.root.alpha = if (isPairing) 0.85f else 1f

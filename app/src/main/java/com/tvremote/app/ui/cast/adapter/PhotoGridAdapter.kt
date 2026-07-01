@@ -1,4 +1,4 @@
-package com.tvremote.app
+package com.tvremote.app.ui.cast.adapter
 
 import android.net.Uri
 import android.view.LayoutInflater
@@ -33,10 +33,7 @@ class PhotoGridAdapter(
         private val binding: ItemCastPhotoBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(uri: Uri) {
-            Glide.with(binding.photoImage)
-                .load(uri)
-                .centerCrop()
-                .into(binding.photoImage)
+            Glide.with(binding.photoImage).load(uri).centerCrop().into(binding.photoImage)
             binding.root.setOnClickListener { onPhotoClick(uri) }
         }
     }

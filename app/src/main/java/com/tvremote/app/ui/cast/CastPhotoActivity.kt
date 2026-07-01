@@ -1,4 +1,4 @@
-package com.tvremote.app
+package com.tvremote.app.ui.cast
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -8,17 +8,25 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.tabs.TabLayout
+import com.tvremote.app.R
+import com.tvremote.app.TvRemoteApp
 import com.tvremote.app.databinding.ActivityCastPhotoBinding
+import com.tvremote.app.ui.cast.adapter.PhotoGridAdapter
+import com.tvremote.app.ui.common.AppViewModelFactory
 
 class CastPhotoActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCastPhotoBinding
-    private lateinit var container: AppContainer
     private var currentSource = PhotoSource.DOWNLOADS
     private val adapter = PhotoGridAdapter { uri -> castPhoto(uri) }
+
+    private val viewModel: CastViewModel by viewModels {
+        AppViewModelFactory((application as TvRemoteApp).container)
+    }
 
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),
@@ -31,9 +39,7 @@ class CastPhotoActivity : AppCompatActivity() {
         binding = ActivityCastPhotoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        container = (application as TvRemoteApp).container
-        container.castManager.initialize()
-
+        viewModel.initialize()
         binding.backButton.setOnClickListener { finish() }
         binding.photoGrid.layoutManager = GridLayoutManager(this, 3)
         binding.photoGrid.adapter = adapter
@@ -66,10 +72,6 @@ class CastPhotoActivity : AppCompatActivity() {
     }
 
     private fun loadPhotos() {
-        val bucket = when (currentSource) {
-            PhotoSource.DOWNLOADS -> MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-            PhotoSource.GALLERY -> MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        }
         val selection = if (currentSource == PhotoSource.DOWNLOADS) {
             "${MediaStore.Images.Media.DATA} LIKE ?"
         } else {
@@ -82,7 +84,7 @@ class CastPhotoActivity : AppCompatActivity() {
         }
         val photos = mutableListOf<Uri>()
         contentResolver.query(
-            bucket,
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
             arrayOf(MediaStore.Images.Media._ID),
             selection,
             selectionArgs,
@@ -92,10 +94,7 @@ class CastPhotoActivity : AppCompatActivity() {
             while (cursor.moveToNext() && photos.size < 120) {
                 val id = cursor.getLong(idCol)
                 photos.add(
-                    Uri.withAppendedPath(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                        id.toString(),
-                    ),
+                    Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id.toString()),
                 )
             }
         }
@@ -103,13 +102,12 @@ class CastPhotoActivity : AppCompatActivity() {
     }
 
     private fun castPhoto(uri: Uri) {
-        if (!container.castManager.isConnected()) {
+        if (!viewModel.isConnected()) {
             Toast.makeText(this, R.string.cast_select_device, Toast.LENGTH_SHORT).show()
             return
         }
         try {
-            val url = LocalMediaServer.serve(this, uri, "cast_photo.jpg")
-            container.castManager.castImage(Uri.parse(url), getString(R.string.cast_photos_title))
+            viewModel.castPhoto(uri, getString(R.string.cast_photos_title))
             Toast.makeText(this, R.string.cast_photo_sent, Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             Toast.makeText(this, getString(R.string.cast_failed, e.message ?: "error"), Toast.LENGTH_SHORT).show()
@@ -117,7 +115,7 @@ class CastPhotoActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        LocalMediaServer.stop()
+        viewModel.stopLocalServer()
         super.onDestroy()
     }
 

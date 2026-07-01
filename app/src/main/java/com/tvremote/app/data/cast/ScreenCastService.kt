@@ -1,4 +1,4 @@
-package com.tvremote.app
+package com.tvremote.app.data.cast
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -19,6 +19,9 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import androidx.core.app.NotificationCompat
+import com.tvremote.app.R
+import com.tvremote.app.ui.main.MainActivity
+import com.tvremote.app.util.NetworkUtils
 import fi.iki.elonen.NanoHTTPD
 import java.io.ByteArrayOutputStream
 import java.io.PipedInputStream
@@ -45,7 +48,7 @@ class ScreenCastService : Service() {
             }
             ACTION_START -> {
                 val resultCode = intent.getIntExtra(EXTRA_RESULT_CODE, 0)
-                val data = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                val data = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     intent.getParcelableExtra(EXTRA_RESULT_DATA, Intent::class.java)
                 } else {
                     @Suppress("DEPRECATION")

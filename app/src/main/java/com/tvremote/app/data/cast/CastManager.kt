@@ -1,7 +1,6 @@
-package com.tvremote.app
+package com.tvremote.app.data.cast
 
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import com.google.android.gms.cast.CastMediaControlIntent
 import com.google.android.gms.cast.MediaInfo

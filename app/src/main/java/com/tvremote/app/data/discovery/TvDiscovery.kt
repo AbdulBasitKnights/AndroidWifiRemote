@@ -1,18 +1,11 @@
-package com.tvremote.app
+package com.tvremote.app.data.discovery
 
 import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import androidx.annotation.RequiresExtension
-
-data class DiscoveredTv(
-    val name: String,
-    val host: String,
-    val port: Int,
-)
+import com.tvremote.app.data.model.DiscoveredTv
 
 class TvDiscovery(context: Context) {
     private val nsdManager = context.getSystemService(NsdManager::class.java)
@@ -71,7 +64,6 @@ class TvDiscovery(context: Context) {
                         resolving.remove(key)
                     }
 
-                    @RequiresExtension(extension = Build.VERSION_CODES.TIRAMISU, version = 17)
                     override fun onServiceResolved(resolved: NsdServiceInfo) {
                         resolving.remove(key)
                         val host = resolved.host?.hostAddress
@@ -89,7 +81,6 @@ class TvDiscovery(context: Context) {
             }
 
             override fun onServiceLost(serviceInfo: NsdServiceInfo) = Unit
-
             override fun onDiscoveryStopped(serviceType: String) = Unit
 
             override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {

@@ -1,0 +1,9 @@
+﻿# Gradle / Android build artifacts
+.gradle/
+**/build/
+**/.transforms/
+**/intermediates/
+**/outputs/
+.cxx/
+.externalNativeBuild/
+.idea/

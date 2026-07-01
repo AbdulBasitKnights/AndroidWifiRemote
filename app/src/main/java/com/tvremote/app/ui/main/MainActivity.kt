@@ -1,10 +1,16 @@
-package com.tvremote.app
+package com.tvremote.app.ui.main
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.tvremote.app.R
+import com.tvremote.app.TvRemoteApp
 import com.tvremote.app.databinding.ActivityMainBinding
+import com.tvremote.app.di.AppContainer
+import com.tvremote.app.ui.cast.CastFragment
+import com.tvremote.app.ui.common.AppViewModelFactory
+import com.tvremote.app.ui.remote.RemoteFragment
+import com.tvremote.app.ui.settings.SettingsFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -16,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         container = (application as TvRemoteApp).container
-        container.castManager.initialize()
+        container.castRepository.initialize()
 
         if (savedInstanceState == null) {
             showFragment(RemoteFragment(), TAG_REMOTE)
@@ -50,6 +56,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun appContainer(): AppContainer = container
+
+    fun viewModelFactory(): AppViewModelFactory = AppViewModelFactory(container)
 
     fun navigateToCast() {
         binding.bottomNav.selectedItemId = R.id.nav_cast

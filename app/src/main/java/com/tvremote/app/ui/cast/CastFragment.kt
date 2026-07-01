@@ -1,4 +1,4 @@
-package com.tvremote.app
+package com.tvremote.app.ui.cast
 
 import android.content.Intent
 import android.net.Uri
@@ -7,13 +7,19 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import com.tvremote.app.R
+import com.tvremote.app.databinding.FragmentCastBinding
+import com.tvremote.app.ui.main.MainActivity
 import androidx.mediarouter.media.MediaControlIntent
 import androidx.mediarouter.media.MediaRouteSelector
-import com.tvremote.app.databinding.FragmentCastBinding
 
 class CastFragment : Fragment(R.layout.fragment_cast) {
     private var _binding: FragmentCastBinding? = null
-    private val binding get() = _binding!!
+
+    private val viewModel: CastViewModel by viewModels {
+        (requireActivity() as MainActivity).viewModelFactory()
+    }
 
     private val videoPicker = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         uri ?: return@registerForActivityResult
@@ -28,9 +34,9 @@ class CastFragment : Fragment(R.layout.fragment_cast) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentCastBinding.bind(view)
-        val container = (requireActivity() as MainActivity).appContainer()
-        container.castManager.initialize()
+        viewModel.initialize()
 
+        val binding = _binding ?: return
         binding.castRouteButton.visibility = View.VISIBLE
         binding.castRouteButton.routeSelector = MediaRouteSelector.Builder()
             .addControlCategory(MediaControlIntent.CATEGORY_LIVE_VIDEO)
@@ -38,24 +44,17 @@ class CastFragment : Fragment(R.layout.fragment_cast) {
             .build()
 
         binding.screenMirrorCard.setOnClickListener {
-            if (!container.castManager.isConnected()) {
-                Toast.makeText(requireContext(), R.string.cast_select_device, Toast.LENGTH_SHORT).show()
-                binding.castRouteButton.performClick()
-                return@setOnClickListener
-            }
+            if (!ensureCastDevice()) return@setOnClickListener
             startActivity(Intent(requireContext(), ScreenMirrorActivity::class.java))
         }
-
         binding.photosCard.setOnClickListener {
             if (!ensureCastDevice()) return@setOnClickListener
             startActivity(Intent(requireContext(), CastPhotoActivity::class.java))
         }
-
         binding.videosCard.setOnClickListener {
             if (!ensureCastDevice()) return@setOnClickListener
             videoPicker.launch(arrayOf("video/*"))
         }
-
         binding.audioCard.setOnClickListener {
             if (!ensureCastDevice()) return@setOnClickListener
             audioPicker.launch(arrayOf("audio/*"))
@@ -63,8 +62,8 @@ class CastFragment : Fragment(R.layout.fragment_cast) {
     }
 
     private fun ensureCastDevice(): Boolean {
-        val container = (requireActivity() as MainActivity).appContainer()
-        if (!container.castManager.isConnected()) {
+        val binding = _binding ?: return false
+        if (!viewModel.isConnected()) {
             Toast.makeText(requireContext(), R.string.cast_select_device, Toast.LENGTH_SHORT).show()
             binding.castRouteButton.performClick()
             return false
@@ -73,7 +72,6 @@ class CastFragment : Fragment(R.layout.fragment_cast) {
     }
 
     private fun castUri(uri: Uri, isVideo: Boolean, isAudio: Boolean = false) {
-        val container = (requireActivity() as MainActivity).appContainer()
         try {
             requireContext().contentResolver.takePersistableUriPermission(
                 uri,
@@ -82,20 +80,10 @@ class CastFragment : Fragment(R.layout.fragment_cast) {
         } catch (_: SecurityException) {
         }
         try {
-            val ext = when {
-                isAudio -> "mp3"
-                isVideo -> "mp4"
-                else -> "jpg"
-            }
-            val url = LocalMediaServer.serve(requireContext(), uri, "cast_media.$ext")
-            when {
-                isAudio -> container.castManager.castAudio(Uri.parse(url))
-                isVideo -> container.castManager.castVideo(Uri.parse(url))
-                else -> container.castManager.castImage(Uri.parse(url))
-            }
+            viewModel.castMedia(uri, isVideo, isAudio)
             Toast.makeText(
                 requireContext(),
-                getString(R.string.cast_started, container.castManager.deviceName() ?: "TV"),
+                getString(R.string.cast_started, viewModel.deviceName() ?: "TV"),
                 Toast.LENGTH_SHORT,
             ).show()
         } catch (e: Exception) {
