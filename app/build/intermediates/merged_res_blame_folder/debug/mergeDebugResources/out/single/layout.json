@@ -1,0 +1,34 @@
+[
+    {
+        "merged": "com.tvremote.app-mergeDebugResources-3:/layout/item_discovered_tv.xml",
+        "source": "com.tvremote.app-main-6:/layout/item_discovered_tv.xml"
+    },
+    {
+        "merged": "com.tvremote.app-mergeDebugResources-3:/layout/activity_cast_photo.xml",
+        "source": "com.tvremote.app-main-6:/layout/activity_cast_photo.xml"
+    },
+    {
+        "merged": "com.tvremote.app-mergeDebugResources-3:/layout/activity_screen_mirror.xml",
+        "source": "com.tvremote.app-main-6:/layout/activity_screen_mirror.xml"
+    },
+    {
+        "merged": "com.tvremote.app-mergeDebugResources-3:/layout/item_cast_photo.xml",
+        "source": "com.tvremote.app-main-6:/layout/item_cast_photo.xml"
+    },
+    {
+        "merged": "com.tvremote.app-mergeDebugResources-3:/layout/fragment_settings.xml",
+        "source": "com.tvremote.app-main-6:/layout/fragment_settings.xml"
+    },
+    {
+        "merged": "com.tvremote.app-mergeDebugResources-3:/layout/fragment_cast.xml",
+        "source": "com.tvremote.app-main-6:/layout/fragment_cast.xml"
+    },
+    {
+        "merged": "com.tvremote.app-mergeDebugResources-3:/layout/activity_main.xml",
+        "source": "com.tvremote.app-main-6:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.tvremote.app-mergeDebugResources-3:/layout/fragment_remote.xml",
+        "source": "com.tvremote.app-main-6:/layout/fragment_remote.xml"
+    }
+]

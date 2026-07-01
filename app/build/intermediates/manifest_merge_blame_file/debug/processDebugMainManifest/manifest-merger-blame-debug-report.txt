@@ -1,0 +1,285 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.tvremote.app"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+9        android:targetSdkVersion="35" />
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:4:5-67
+11-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:4:22-64
+12    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+12-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:5:5-79
+12-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:5:22-76
+13    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+13-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:6:5-76
+13-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:6:22-73
+14    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+14-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:7:5-86
+14-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:7:22-83
+15    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+15-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:8:5-76
+15-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:8:22-73
+16    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+16-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:9:5-75
+16-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:9:22-72
+17    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+17-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:10:5-75
+17-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:10:22-72
+18    <uses-permission
+18-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:11:5-107
+19        android:name="android.permission.READ_EXTERNAL_STORAGE"
+19-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:11:22-77
+20        android:maxSdkVersion="32" />
+20-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:11:78-104
+21    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+21-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:12:5-77
+21-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:12:22-74
+22    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+22-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:13:5-94
+22-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:13:22-91
+23    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+23-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:14:5-77
+23-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:14:22-74
+24
+25    <queries>
+25-->[com.google.android.gms:play-services-cast-framework:22.2.0] C:\Users\Terafort\caches\8.13\transforms\04c59a789abada78ee725b54a910bcb5\transformed\jetified-play-services-cast-framework-22.2.0\AndroidManifest.xml:14:5-16:15
+26        <package android:name="com.google.android.gms.policy_cast_dynamite" />
+26-->[com.google.android.gms:play-services-cast-framework:22.2.0] C:\Users\Terafort\caches\8.13\transforms\04c59a789abada78ee725b54a910bcb5\transformed\jetified-play-services-cast-framework-22.2.0\AndroidManifest.xml:15:9-79
+26-->[com.google.android.gms:play-services-cast-framework:22.2.0] C:\Users\Terafort\caches\8.13\transforms\04c59a789abada78ee725b54a910bcb5\transformed\jetified-play-services-cast-framework-22.2.0\AndroidManifest.xml:15:18-76
+27    </queries>
+28
+29    <permission
+29-->[androidx.core:core:1.17.0] C:\Users\Terafort\caches\8.13\transforms\8696b7dcd808f3963280dcb20729ba65\transformed\core-1.17.0\AndroidManifest.xml:22:5-24:47
+30        android:name="com.tvremote.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+30-->[androidx.core:core:1.17.0] C:\Users\Terafort\caches\8.13\transforms\8696b7dcd808f3963280dcb20729ba65\transformed\core-1.17.0\AndroidManifest.xml:23:9-81
+31        android:protectionLevel="signature" />
+31-->[androidx.core:core:1.17.0] C:\Users\Terafort\caches\8.13\transforms\8696b7dcd808f3963280dcb20729ba65\transformed\core-1.17.0\AndroidManifest.xml:24:9-44
+32
+33    <uses-permission android:name="com.tvremote.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+33-->[androidx.core:core:1.17.0] C:\Users\Terafort\caches\8.13\transforms\8696b7dcd808f3963280dcb20729ba65\transformed\core-1.17.0\AndroidManifest.xml:26:5-97
+33-->[androidx.core:core:1.17.0] C:\Users\Terafort\caches\8.13\transforms\8696b7dcd808f3963280dcb20729ba65\transformed\core-1.17.0\AndroidManifest.xml:26:22-94
+34
+35    <application
+35-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:16:5-64:19
+36        android:name="com.tvremote.app.TvRemoteApp"
+36-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:17:9-36
+37        android:allowBackup="true"
+37-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:18:9-35
+38        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+38-->[androidx.core:core:1.17.0] C:\Users\Terafort\caches\8.13\transforms\8696b7dcd808f3963280dcb20729ba65\transformed\core-1.17.0\AndroidManifest.xml:28:18-86
+39        android:debuggable="true"
+40        android:extractNativeLibs="false"
+41        android:icon="@mipmap/ic_launcher"
+41-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:19:9-43
+42        android:label="@string/app_name"
+42-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:20:9-41
+43        android:networkSecurityConfig="@xml/network_security_config"
+43-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:21:9-69
+44        android:supportsRtl="true"
+44-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:22:9-35
+45        android:testOnly="true"
+46        android:theme="@style/Theme.AndroidTVRemote"
+46-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:23:9-53
+47        android:usesCleartextTraffic="true" >
+47-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:24:9-44
+48        <meta-data
+48-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:26:9-28:68
+49            android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
+49-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:27:13-93
+50            android:value="com.tvremote.app.CastOptionsProvider" />
+50-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:28:13-65
+51
+52        <activity
+52-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:30:9-38:20
+53            android:name="com.tvremote.app.MainActivity"
+53-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:31:13-41
+54            android:exported="true"
+54-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:32:13-36
+55            android:windowSoftInputMode="adjustResize" >
+55-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:33:13-55
+56            <intent-filter>
+56-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:34:13-37:29
+57                <action android:name="android.intent.action.MAIN" />
+57-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:35:17-69
+57-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:35:25-66
+58
+59                <category android:name="android.intent.category.LAUNCHER" />
+59-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:36:17-77
+59-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:36:27-74
+60            </intent-filter>
+61        </activity>
+62        <activity
+62-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:40:9-43:60
+63            android:name="com.tvremote.app.CastPhotoActivity"
+63-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:41:13-46
+64            android:exported="false"
+64-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:42:13-37
+65            android:theme="@style/Theme.AndroidTVRemote" />
+65-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:43:13-57
+66        <activity
+66-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:45:9-48:60
+67            android:name="com.tvremote.app.ScreenMirrorActivity"
+67-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:46:13-49
+68            android:exported="false"
+68-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:47:13-37
+69            android:theme="@style/Theme.AndroidTVRemote" />
+69-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:48:13-57
+70
+71        <service
+71-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:50:9-53:63
+72            android:name="com.tvremote.app.ScreenCastService"
+72-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:51:13-46
+73            android:exported="false"
+73-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:52:13-37
+74            android:foregroundServiceType="mediaProjection" />
+74-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:53:13-60
+75
+76        <provider
+77            android:name="androidx.core.content.FileProvider"
+77-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:56:13-62
+78            android:authorities="com.tvremote.app.fileprovider"
+78-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:57:13-64
+79            android:exported="false"
+79-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:58:13-37
+80            android:grantUriPermissions="true" >
+80-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:59:13-47
+81            <meta-data
+81-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:60:13-62:54
+82                android:name="android.support.FILE_PROVIDER_PATHS"
+82-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:61:17-67
+83                android:resource="@xml/file_paths" />
+83-->C:\Users\Terafort\StudioProjects\AndroidTVRemote\app\src\main\AndroidManifest.xml:62:17-51
+84        </provider>
+85
+86        <receiver
+86-->[com.google.android.gms:play-services-cast-framework:22.2.0] C:\Users\Terafort\caches\8.13\transforms\04c59a789abada78ee725b54a910bcb5\transformed\jetified-play-services-cast-framework-22.2.0\AndroidManifest.xml:19:9-21:40
+87            android:name="com.google.android.gms.cast.framework.media.MediaIntentReceiver"
+87-->[com.google.android.gms:play-services-cast-framework:22.2.0] C:\Users\Terafort\caches\8.13\transforms\04c59a789abada78ee725b54a910bcb5\transformed\jetified-play-services-cast-framework-22.2.0\AndroidManifest.xml:20:13-91
+88            android:exported="false" />
+88-->[com.google.android.gms:play-services-cast-framework:22.2.0] C:\Users\Terafort\caches\8.13\transforms\04c59a789abada78ee725b54a910bcb5\transformed\jetified-play-services-cast-framework-22.2.0\AndroidManifest.xml:21:13-37
+89
+90        <service
+90-->[com.google.android.gms:play-services-cast-framework:22.2.0] C:\Users\Terafort\caches\8.13\transforms\04c59a789abada78ee725b54a910bcb5\transformed\jetified-play-services-cast-framework-22.2.0\AndroidManifest.xml:23:9-25:40
+91            android:name="com.google.android.gms.cast.framework.ReconnectionService"
+91-->[com.google.android.gms:play-services-cast-framework:22.2.0] C:\Users\Terafort\caches\8.13\transforms\04c59a789abada78ee725b54a910bcb5\transformed\jetified-play-services-cast-framework-22.2.0\AndroidManifest.xml:24:13-85
+92            android:exported="false" />
+92-->[com.google.android.gms:play-services-cast-framework:22.2.0] C:\Users\Terafort\caches\8.13\transforms\04c59a789abada78ee725b54a910bcb5\transformed\jetified-play-services-cast-framework-22.2.0\AndroidManifest.xml:25:13-37
+93
+94        <activity
+94-->[com.google.android.gms:play-services-base:18.7.2] C:\Users\Terafort\caches\8.13\transforms\f38c7516a532976e0a6198b06aac41cf\transformed\jetified-play-services-base-18.7.2\AndroidManifest.xml:20:9-22:45
+95            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+95-->[com.google.android.gms:play-services-base:18.7.2] C:\Users\Terafort\caches\8.13\transforms\f38c7516a532976e0a6198b06aac41cf\transformed\jetified-play-services-base-18.7.2\AndroidManifest.xml:20:19-85
+96            android:exported="false"
+96-->[com.google.android.gms:play-services-base:18.7.2] C:\Users\Terafort\caches\8.13\transforms\f38c7516a532976e0a6198b06aac41cf\transformed\jetified-play-services-base-18.7.2\AndroidManifest.xml:22:19-43
+97            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+97-->[com.google.android.gms:play-services-base:18.7.2] C:\Users\Terafort\caches\8.13\transforms\f38c7516a532976e0a6198b06aac41cf\transformed\jetified-play-services-base-18.7.2\AndroidManifest.xml:21:19-78
+98
+99        <meta-data
+99-->[com.google.android.gms:play-services-basement:18.9.0] C:\Users\Terafort\caches\8.13\transforms\84e7b5e89d95a57239a9e62d9a6ff1a7\transformed\jetified-play-services-basement-18.9.0\AndroidManifest.xml:21:9-23:69
+100            android:name="com.google.android.gms.version"
+100-->[com.google.android.gms:play-services-basement:18.9.0] C:\Users\Terafort\caches\8.13\transforms\84e7b5e89d95a57239a9e62d9a6ff1a7\transformed\jetified-play-services-basement-18.9.0\AndroidManifest.xml:22:13-58
+101            android:value="@integer/google_play_services_version" />
+101-->[com.google.android.gms:play-services-basement:18.9.0] C:\Users\Terafort\caches\8.13\transforms\84e7b5e89d95a57239a9e62d9a6ff1a7\transformed\jetified-play-services-basement-18.9.0\AndroidManifest.xml:23:13-66
+102
+103        <provider
+103-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Terafort\caches\8.13\transforms\7ffbf0e6bcc50cafc352abd76a2fae97\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+104            android:name="androidx.startup.InitializationProvider"
+104-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Terafort\caches\8.13\transforms\7ffbf0e6bcc50cafc352abd76a2fae97\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:25:13-67
+105            android:authorities="com.tvremote.app.androidx-startup"
+105-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Terafort\caches\8.13\transforms\7ffbf0e6bcc50cafc352abd76a2fae97\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:26:13-68
+106            android:exported="false" >
+106-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Terafort\caches\8.13\transforms\7ffbf0e6bcc50cafc352abd76a2fae97\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:27:13-37
+107            <meta-data
+107-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Terafort\caches\8.13\transforms\7ffbf0e6bcc50cafc352abd76a2fae97\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+108                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+108-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Terafort\caches\8.13\transforms\7ffbf0e6bcc50cafc352abd76a2fae97\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:30:17-75
+109                android:value="androidx.startup" />
+109-->[androidx.emoji2:emoji2:1.3.0] C:\Users\Terafort\caches\8.13\transforms\7ffbf0e6bcc50cafc352abd76a2fae97\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:31:17-49
+110            <meta-data
+110-->[androidx.lifecycle:lifecycle-process:2.9.4] C:\Users\Terafort\caches\8.13\transforms\e6ad86c7e53a1e4d6a1c16d20c65d04d\transformed\jetified-lifecycle-process-2.9.4\AndroidManifest.xml:29:13-31:52
+111                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+111-->[androidx.lifecycle:lifecycle-process:2.9.4] C:\Users\Terafort\caches\8.13\transforms\e6ad86c7e53a1e4d6a1c16d20c65d04d\transformed\jetified-lifecycle-process-2.9.4\AndroidManifest.xml:30:17-78
+112                android:value="androidx.startup" />
+112-->[androidx.lifecycle:lifecycle-process:2.9.4] C:\Users\Terafort\caches\8.13\transforms\e6ad86c7e53a1e4d6a1c16d20c65d04d\transformed\jetified-lifecycle-process-2.9.4\AndroidManifest.xml:31:17-49
+113            <meta-data
+113-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Terafort\caches\8.13\transforms\f77f953fc5fb0c11a7a46e531aa83450\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:29:13-31:52
+114                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+114-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Terafort\caches\8.13\transforms\f77f953fc5fb0c11a7a46e531aa83450\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:30:17-85
+115                android:value="androidx.startup" />
+115-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Terafort\caches\8.13\transforms\f77f953fc5fb0c11a7a46e531aa83450\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:31:17-49
+116        </provider>
+117
+118        <receiver
+118-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Terafort\caches\8.13\transforms\f77f953fc5fb0c11a7a46e531aa83450\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:34:9-52:20
+119            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+119-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Terafort\caches\8.13\transforms\f77f953fc5fb0c11a7a46e531aa83450\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:35:13-76
+120            android:directBootAware="false"
+120-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Terafort\caches\8.13\transforms\f77f953fc5fb0c11a7a46e531aa83450\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:36:13-44
+121            android:enabled="true"
+121-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Terafort\caches\8.13\transforms\f77f953fc5fb0c11a7a46e531aa83450\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:37:13-35
+122            android:exported="true"
+122-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Terafort\caches\8.13\transforms\f77f953fc5fb0c11a7a46e531aa83450\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:38:13-36
+123            android:permission="android.permission.DUMP" >
+123-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Terafort\caches\8.13\transforms\f77f953fc5fb0c11a7a46e531aa83450\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:39:13-57
+124            <intent-filter>
+124-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Terafort\caches\8.13\transforms\f77f953fc5fb0c11a7a46e531aa83450\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:40:13-42:29
+125                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+125-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Terafort\caches\8.13\transforms\f77f953fc5fb0c11a7a46e531aa83450\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:41:17-91
+125-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Terafort\caches\8.13\transforms\f77f953fc5fb0c11a7a46e531aa83450\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:41:25-88
+126            </intent-filter>
+127            <intent-filter>
+127-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Terafort\caches\8.13\transforms\f77f953fc5fb0c11a7a46e531aa83450\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:43:13-45:29
+128                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+128-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Terafort\caches\8.13\transforms\f77f953fc5fb0c11a7a46e531aa83450\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:44:17-85
+128-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Terafort\caches\8.13\transforms\f77f953fc5fb0c11a7a46e531aa83450\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:44:25-82
+129            </intent-filter>
+130            <intent-filter>
+130-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Terafort\caches\8.13\transforms\f77f953fc5fb0c11a7a46e531aa83450\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:46:13-48:29
+131                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+131-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Terafort\caches\8.13\transforms\f77f953fc5fb0c11a7a46e531aa83450\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:47:17-88
+131-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Terafort\caches\8.13\transforms\f77f953fc5fb0c11a7a46e531aa83450\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:47:25-85
+132            </intent-filter>
+133            <intent-filter>
+133-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Terafort\caches\8.13\transforms\f77f953fc5fb0c11a7a46e531aa83450\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:49:13-51:29
+134                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+134-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Terafort\caches\8.13\transforms\f77f953fc5fb0c11a7a46e531aa83450\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:50:17-95
+134-->[androidx.profileinstaller:profileinstaller:1.4.0] C:\Users\Terafort\caches\8.13\transforms\f77f953fc5fb0c11a7a46e531aa83450\transformed\jetified-profileinstaller-1.4.0\AndroidManifest.xml:50:25-92
+135            </intent-filter>
+136        </receiver>
+137
+138        <service
+138-->[com.google.android.datatransport:transport-backend-cct:3.1.3] C:\Users\Terafort\caches\8.13\transforms\c5b3b4c07d8b4f7d1e7b0b6653f898cc\transformed\jetified-transport-backend-cct-3.1.3\AndroidManifest.xml:29:9-35:19
+139            android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
+139-->[com.google.android.datatransport:transport-backend-cct:3.1.3] C:\Users\Terafort\caches\8.13\transforms\c5b3b4c07d8b4f7d1e7b0b6653f898cc\transformed\jetified-transport-backend-cct-3.1.3\AndroidManifest.xml:30:13-103
+140            android:exported="false" >
+140-->[com.google.android.datatransport:transport-backend-cct:3.1.3] C:\Users\Terafort\caches\8.13\transforms\c5b3b4c07d8b4f7d1e7b0b6653f898cc\transformed\jetified-transport-backend-cct-3.1.3\AndroidManifest.xml:31:13-37
+141            <meta-data
+141-->[com.google.android.datatransport:transport-backend-cct:3.1.3] C:\Users\Terafort\caches\8.13\transforms\c5b3b4c07d8b4f7d1e7b0b6653f898cc\transformed\jetified-transport-backend-cct-3.1.3\AndroidManifest.xml:32:13-34:39
+142                android:name="backend:com.google.android.datatransport.cct.CctBackendFactory"
+142-->[com.google.android.datatransport:transport-backend-cct:3.1.3] C:\Users\Terafort\caches\8.13\transforms\c5b3b4c07d8b4f7d1e7b0b6653f898cc\transformed\jetified-transport-backend-cct-3.1.3\AndroidManifest.xml:33:17-94
+143                android:value="cct" />
+143-->[com.google.android.datatransport:transport-backend-cct:3.1.3] C:\Users\Terafort\caches\8.13\transforms\c5b3b4c07d8b4f7d1e7b0b6653f898cc\transformed\jetified-transport-backend-cct-3.1.3\AndroidManifest.xml:34:17-36
+144        </service>
+145        <service
+145-->[com.google.android.datatransport:transport-runtime:3.1.3] C:\Users\Terafort\caches\8.13\transforms\faaa76df7b2a053153ed643de2d160db\transformed\jetified-transport-runtime-3.1.3\AndroidManifest.xml:26:9-30:19
+146            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService"
+146-->[com.google.android.datatransport:transport-runtime:3.1.3] C:\Users\Terafort\caches\8.13\transforms\faaa76df7b2a053153ed643de2d160db\transformed\jetified-transport-runtime-3.1.3\AndroidManifest.xml:27:13-117
+147            android:exported="false"
+147-->[com.google.android.datatransport:transport-runtime:3.1.3] C:\Users\Terafort\caches\8.13\transforms\faaa76df7b2a053153ed643de2d160db\transformed\jetified-transport-runtime-3.1.3\AndroidManifest.xml:28:13-37
+148            android:permission="android.permission.BIND_JOB_SERVICE" >
+148-->[com.google.android.datatransport:transport-runtime:3.1.3] C:\Users\Terafort\caches\8.13\transforms\faaa76df7b2a053153ed643de2d160db\transformed\jetified-transport-runtime-3.1.3\AndroidManifest.xml:29:13-69
+149        </service>
+150
+151        <receiver
+151-->[com.google.android.datatransport:transport-runtime:3.1.3] C:\Users\Terafort\caches\8.13\transforms\faaa76df7b2a053153ed643de2d160db\transformed\jetified-transport-runtime-3.1.3\AndroidManifest.xml:32:9-34:40
+152            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"
+152-->[com.google.android.datatransport:transport-runtime:3.1.3] C:\Users\Terafort\caches\8.13\transforms\faaa76df7b2a053153ed643de2d160db\transformed\jetified-transport-runtime-3.1.3\AndroidManifest.xml:33:13-132
+153            android:exported="false" />
+153-->[com.google.android.datatransport:transport-runtime:3.1.3] C:\Users\Terafort\caches\8.13\transforms\faaa76df7b2a053153ed643de2d160db\transformed\jetified-transport-runtime-3.1.3\AndroidManifest.xml:34:13-37
+154    </application>
+155
+156</manifest>

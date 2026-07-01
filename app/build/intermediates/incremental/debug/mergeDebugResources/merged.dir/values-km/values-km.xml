@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2" xmlns:ns2="http://schemas.android.com/tools">
+    <plurals name="mtrl_badge_content_description">
+    <item quantity="one">ការជូនដំណឹងថ្មី %d</item>
+    <item quantity="other">ការជូនដំណឹងថ្មី %d</item>
+  </plurals>
+    <string msgid="5976598919945601918" name="abc_action_bar_home_description">"​ទៅទំព័រដើម"</string>
+    <string msgid="8388173803310557296" name="abc_action_bar_up_description">"រំកិលឡើងលើ"</string>
+    <string msgid="3937310113216875497" name="abc_action_menu_overflow_description">"ជម្រើសច្រើនទៀត"</string>
+    <string msgid="4692188335987374352" name="abc_action_mode_done">"រួចរាល់"</string>
+    <string msgid="1189761859438369441" name="abc_activity_chooser_view_see_all">"មើលទាំងអស់"</string>
+    <string msgid="2165779757652331008" name="abc_activitychooserview_choose_application">"ជ្រើសរើស​កម្មវិធី​​"</string>
+    <string msgid="4215997306490295099" name="abc_capital_off">"បិទ"</string>
+    <string msgid="884982626291842264" name="abc_capital_on">"បើក"</string>
+    <string msgid="8833365367933412986" name="abc_menu_alt_shortcut_label">"Alt+"</string>
+    <string msgid="2223301931652355242" name="abc_menu_ctrl_shortcut_label">"Ctrl+"</string>
+    <string msgid="838001238306846836" name="abc_menu_delete_shortcut_label">"លុប"</string>
+    <string msgid="7986526966204849475" name="abc_menu_enter_shortcut_label">"enter"</string>
+    <string msgid="375214403600139847" name="abc_menu_function_shortcut_label">"Function+"</string>
+    <string msgid="4192209724446364286" name="abc_menu_meta_shortcut_label">"Meta+"</string>
+    <string msgid="4741552369836443843" name="abc_menu_shift_shortcut_label">"Shift+"</string>
+    <string msgid="5473865519181928982" name="abc_menu_space_shortcut_label">"space"</string>
+    <string msgid="6180552449598693998" name="abc_menu_sym_shortcut_label">"Sym+"</string>
+    <string msgid="5520303668377388990" name="abc_prepend_shortcut_label">"Menu+"</string>
+    <string msgid="7208076849092622260" name="abc_search_hint">"ស្វែងរក…"</string>
+    <string msgid="3741173234950517107" name="abc_searchview_description_clear">"សម្អាត​សំណួរ"</string>
+    <string msgid="693312494995508443" name="abc_searchview_description_query">"ស្វែងរកសំណួរ​"</string>
+    <string msgid="3417662926640357176" name="abc_searchview_description_search">"ស្វែងរក"</string>
+    <string msgid="1486535517437947103" name="abc_searchview_description_submit">"ដាក់បញ្ជូន​សំណួរ"</string>
+    <string msgid="2293578557972875415" name="abc_searchview_description_voice">"ស្វែងរក​តាម​សំឡេង"</string>
+    <string msgid="8875138169939072951" name="abc_shareactionprovider_share_with">"ចែករំលែក​ជា​មួយ"</string>
+    <string msgid="9055268688411532828" name="abc_shareactionprovider_share_with_application">"ចែក​រំលែក​ជា​មួយ <ns1:g id="APPLICATION_NAME">%s</ns1:g>"</string>
+    <string msgid="1656852541809559762" name="abc_toolbar_collapse_description">"បង្រួម"</string>
+    <string name="bottomsheet_action_collapse">បង្រួមសន្លឹក​ខាងក្រោម</string>
+    <string name="bottomsheet_action_expand">ពង្រីកសន្លឹក​ខាងក្រោម</string>
+    <string name="bottomsheet_action_expand_halfway">ពង្រីក​ពាក់កណ្ដាល</string>
+    <string name="bottomsheet_drag_handle_content_description">ដង​អូស</string>
+    <string msgid="881409763997275156" name="call_notification_answer_action">"ឆ្លើយ"</string>
+    <string msgid="8793775615905189152" name="call_notification_answer_video_action">"វីដេអូ"</string>
+    <string msgid="3229508546291798546" name="call_notification_decline_action">"បដិសេធ"</string>
+    <string msgid="2659457946726154263" name="call_notification_hang_up_action">"ដាក់​ចុះ"</string>
+    <string msgid="6107532579223922871" name="call_notification_incoming_text">"ការ​ហៅ​ចូល"</string>
+    <string msgid="8623827134497363134" name="call_notification_ongoing_text">"ការ​ហៅដែលកំពុងដំណើរការ"</string>
+    <string msgid="59049573811482460" name="call_notification_screening_text">"កំពុងពិនិត្យការ​ហៅ​ចូល"</string>
+    <string name="cast_ad_label">ពាណិជ្ជកម្ម</string>
+    <string name="cast_casting_to_device">កំពុងខាសទៅ %1$s</string>
+    <string name="cast_closed_captions">បាន​បិទ​ចំណងជើង</string>
+    <string name="cast_closed_captions_unavailable">មិនមានចំណងជើងភា្ជប់ទេ</string>
+    <string name="cast_connecting_to_device">កំពុងភ្ជាប់ជាមួយ %1$s</string>
+    <string name="cast_disconnect">ផ្ដាច់</string>
+    <string name="cast_dynamic_group_name_format">%1$s + %2$d</string>
+    <string name="cast_expanded_controller_ad_image_description">រូបភាពបង្ហាញខណៈពេលកម្មវិធីទទួលការខាសនេះចាក់ការផ្សាយពាណិជ្ជកម្ម</string>
+    <string name="cast_expanded_controller_ad_in_progress">ពាណិជ្ជកម្មស្ថិតក្នុងដំណើរការ…</string>
+    <string name="cast_expanded_controller_background_image">ស្នាដៃសិល្បៈអាល់ប៊ុម</string>
+    <string name="cast_expanded_controller_live_head_description">ទីតាំងបច្ចុប្បន្ន​គឺ​ស្ថិត​នៅ​ផ្នែកក្បាលនៃ​ការផ្សាយបន្តផ្ទាល់</string>
+    <string name="cast_expanded_controller_live_stream_indicator">ស្ទ្រីមបន្តផ្ទាល់</string>
+    <string name="cast_expanded_controller_loading">កំពុងដំណើរការ...</string>
+    <string name="cast_expanded_controller_skip_ad_label">រំលង​​ពាណិជ្ជកម្ម</string>
+    <string name="cast_expanded_controller_skip_ad_text">អ្នក​អាច​រំលង​​ពាណិជ្ជកម្ម​ក្នុង​រយៈពេល %1$d…</string>
+    <string name="cast_forward">ខាទៅមុខ</string>
+    <string name="cast_forward_10">ខាទៅមុខដប់វិនាទី</string>
+    <string name="cast_forward_30">ខាទៅមុខសាមសិបវិនាទី</string>
+    <string name="cast_intro_overlay_button_text">@android:string/ok</string>
+    <string name="cast_live_label">ផ្សាយ​​ផ្ទាល់</string>
+    <string name="cast_mute">បិទសំឡេង</string>
+    <string name="cast_notification_connected_message">ភ្ជាប់​ទៅ​​ %1$s</string>
+    <string name="cast_notification_connecting_message">កំពុងភ្ជាប់ទៅ %1$s</string>
+    <string name="cast_notification_default_channel_name">ភ្ជាប់</string>
+    <string name="cast_notification_disconnect">ផ្ដាច់</string>
+    <string name="cast_pause">ផ្អាក</string>
+    <string name="cast_play">ចាក់</string>
+    <string name="cast_rewind">ខាថយក្រោយ</string>
+    <string name="cast_rewind_10">ខាថយក្រោយដប់វិនាទី</string>
+    <string name="cast_rewind_30">ខាថយក្រោយសាមសិបវិនាទី</string>
+    <string name="cast_seek_bar">អង្គគ្រប់គ្រងការរកមើលការចាក់</string>
+    <string name="cast_skip_next">រំលងទៅធាតុបន្ទាប់</string>
+    <string name="cast_skip_prev">រំលងទៅធាតុពីមុន</string>
+    <string name="cast_stop">បញ្ឈប់</string>
+    <string name="cast_stop_live_stream">បញ្ឈប់ការស្ទ្រីមបន្តផ្ទាល់</string>
+    <string name="cast_tracks_chooser_dialog_audio">សំឡេង</string>
+    <string name="cast_tracks_chooser_dialog_cancel">បោះបង់</string>
+    <string name="cast_tracks_chooser_dialog_closed_captions">ចំណងជើងពិពណ៌នាបិទ</string>
+    <string name="cast_tracks_chooser_dialog_default_track_name">បទទី %1$d</string>
+    <string name="cast_tracks_chooser_dialog_none">គ្មាន</string>
+    <string name="cast_tracks_chooser_dialog_ok">យល់ព្រម</string>
+    <string name="cast_tracks_chooser_dialog_subtitles">ចំណងជើងរង</string>
+    <string name="cast_unmute">បើកសំឡេង</string>
+    <string name="character_counter_content_description">តួ​អក្សរ​បាន​បញ្ចូល​ %1$d នៃ %2$d</string>
+    <string name="character_counter_overflowed_content_description">ដែនកំណត់តួអក្សរបានលើស %1$d នៃ %2$d</string>
+    <string name="clear_text_end_icon_content_description">សម្អាតអក្សរ</string>
+    <string msgid="2523291102206661146" name="common_google_play_services_enable_button">បើក</string>
+    <string msgid="227660514972886228" name="common_google_play_services_enable_text">%1$s នឹងមិនដំណើរការទេ លុះត្រាតែអ្នកបើកសេវាកម្ម Google Play។</string>
+    <string msgid="5122002158466380389" name="common_google_play_services_enable_title">បើកសេវាកម្ម Google Play</string>
+    <string msgid="7153882981874058840" name="common_google_play_services_install_button">ដំឡើង</string>
+    <string name="common_google_play_services_install_text">%1$s នឹងមិនដំណើរការទេ ប្រសិនបើមិនមានសេវាកម្មនានារបស់ Google Play ដែលបានបាត់ពីឧបករណ៍របស់អ្នក។</string>
+    <string msgid="7215213145546190223" name="common_google_play_services_install_title">ទាញយកសេវាកម្ម Google Play</string>
+    <string name="common_google_play_services_notification_channel_name">លទ្ធភាព​ប្រើប្រាស់សេវាកម្ម Google Play</string>
+    <string name="common_google_play_services_notification_ticker">កំហុស​​សេវាកម្ម​ Google កម្សាន្ត</string>
+    <string name="common_google_play_services_unknown_issue">%1$s កំពុងមានបញ្ហាជាមួយសេវាកម្មរបស់ Google Play ។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។</string>
+    <string name="common_google_play_services_unsupported_text">%1$s នឹងមិនដំណើរការដោយគ្មានសេវាកម្មរបស់ Google Play ដែលឧបករណ៍របស់អ្នកមិនគាំទ្រនោះទេ។</string>
+    <string msgid="6556509956452265614" name="common_google_play_services_update_button">ធ្វើបច្ចុប្បន្នភាព</string>
+    <string msgid="9053896323427875356" name="common_google_play_services_update_text">%1$s នឹងមិនដំណើរការទេ លុះត្រាតែអ្នកធ្វើបច្ចុប្បន្នភាពសេវាកម្ម Google Play។</string>
+    <string msgid="6006316683626838685" name="common_google_play_services_update_title">អាប់ដេតសេវាកម្ម Google Play</string>
+    <string name="common_google_play_services_updating_text">%1$s នឹងមិនដំណើរការទេ បើមិនមានសេវាកម្ម Google Play ដោយសារតែវាកំពុងអាប់ដេត។</string>
+    <string name="common_google_play_services_wear_update_text">តម្រូវឲ្យមានកំណែថ្មីនៃសេវាកម្ម Google Play។ វានឹងអាប់ដេតដោយខ្លួនវានៅពេលបន្តិចទៀតនេះ។</string>
+    <string name="common_open_on_phone">បើកតាមទូរស័ព្ទ</string>
+    <string name="common_signin_button_text">ចូល</string>
+    <string name="common_signin_button_text_long">ចូលដោយប្រើ Google</string>
+    <string name="error_a11y_label">បញ្ហា៖ មិនត្រឹមត្រូវ</string>
+    <string name="error_icon_content_description">បញ្ហា</string>
+    <string name="exposed_dropdown_menu_content_description">បង្ហាញ​ម៉ឺនុយ​ធ្លាក់ចុះ</string>
+    <string msgid="9119039724000326934" name="ic_media_route_learn_more_accessibility">"ស្វែងយល់ពីរបៀបខាស"</string>
+    <string name="icon_content_description">រូប​ប្រអប់បញ្ចូល</string>
+    <string name="item_view_role_description">ផ្ទាំង</string>
+    <string name="m3_loading_indicator_content_description">កំពុងផ្ទុក</string>
+    <string name="material_clock_toggle_content_description">ជ្រើសរើស AM ឬ PM</string>
+    <string name="material_hour_24h_suffix">%1$s ម៉ោង</string>
+    <string name="material_hour_selection">ជ្រើសរើសម៉ោង</string>
+    <string name="material_hour_suffix">ម៉ោង %1$s</string>
+    <string name="material_minute_selection">ជ្រើស​នាទី</string>
+    <string name="material_minute_suffix">%1$s នាទី</string>
+    <string name="material_slider_range_end">ចំណុចបញ្ចប់</string>
+    <string name="material_slider_range_start">ចំណុចចាប់ផ្ដើម</string>
+    <string name="material_slider_value">តម្លៃ</string>
+    <string name="material_timepicker_am">ព្រឹក</string>
+    <string name="material_timepicker_clock_mode_description">ប្តូរ​ទៅ​មុខងារ​នាឡិកា​សម្រាប់​ការ​បញ្ចូល​ម៉ោង។</string>
+    <string name="material_timepicker_hour">ម៉ោង</string>
+    <string name="material_timepicker_minute">នាទី​</string>
+    <string name="material_timepicker_pm">ល្ងាច</string>
+    <string name="material_timepicker_select_time">ជ្រើស​ម៉ោង</string>
+    <string name="material_timepicker_text_input_mode_description">ប្តូរ​ទៅ​មុខងារ​បញ្ចូល​អក្សរ​សម្រាប់​ការ​បញ្ចូល​ម៉ោង។</string>
+    <string name="media_notification_channel_name">បញ្ជូន</string>
+    <string msgid="2939063992730535343" name="mr_button_content_description">"បញ្ជូន"</string>
+    <string msgid="6073720094880410356" name="mr_cast_button_connected">"បញ្ជូន។ បានភ្ជាប់"</string>
+    <string msgid="6629927151350192407" name="mr_cast_button_connecting">"បញ្ជូន។ កំពុងភ្ជាប់"</string>
+    <string msgid="8071109333469380363" name="mr_cast_button_disconnected">"បញ្ជូន។ បាន​ផ្ដាច់"</string>
+    <string msgid="2175930138959078155" name="mr_cast_dialog_title_view_placeholder">"មិនមានព័ត៌មានទេ"</string>
+    <string msgid="4257319068277776035" name="mr_chooser_looking_for_devices">"កំពុង​ស្វែងរក​ឧបករណ៍..."</string>
+    <string msgid="6114250663023140921" name="mr_chooser_searching">"កំពុង​ស្វែងរក​ឧបករណ៍"</string>
+    <string msgid="1419936397646839840" name="mr_chooser_title">"បញ្ជូន​ទៅ"</string>
+    <string msgid="3799500840179081429" name="mr_chooser_wifi_learn_more"><a href="https://support.google.com/chromecast/?p=trouble-finding-devices">"ស្វែងយល់បន្ថែម"</a></string>
+    <string msgid="2998902945608081567" name="mr_chooser_wifi_warning_description_car">"សូមប្រាកដថា ឧបករណ៍ផ្សេងទៀតស្ថិតនៅលើបណ្ដាញ Wi-Fi តែមួយជាមួយនឹងរថយន្តនេះ"</string>
+    <string msgid="2555886884770958244" name="mr_chooser_wifi_warning_description_phone">"សូមប្រាកដថា ឧបករណ៍ផ្សេងទៀតស្ថិតនៅលើបណ្ដាញ Wi-Fi តែមួយជាមួយនឹងទូរសព្ទនេះ"</string>
+    <string msgid="6038748488793588164" name="mr_chooser_wifi_warning_description_tablet">"សូមប្រាកដថា ឧបករណ៍ផ្សេងទៀតស្ថិតនៅលើបណ្ដាញ Wi-Fi តែមួយជាមួយនឹងថេប្លេតនេះ"</string>
+    <string msgid="5845921667085074878" name="mr_chooser_wifi_warning_description_tv">"សូមប្រាកដថា ឧបករណ៍ផ្សេងទៀតស្ថិតនៅលើបណ្ដាញ Wi-Fi តែមួយជាមួយនឹងទូរទស្សន៍នេះ"</string>
+    <string msgid="3459891599800041449" name="mr_chooser_wifi_warning_description_unknown">"សូមប្រាកដថា ឧបករណ៍ផ្សេងទៀតស្ថិតនៅលើបណ្ដាញ Wi-Fi តែមួយជាមួយនឹងឧបករណ៍នេះ"</string>
+    <string msgid="5255021372884233706" name="mr_chooser_wifi_warning_description_watch">"សូមប្រាកដថា ឧបករណ៍ផ្សេងទៀតស្ថិតនៅលើបណ្ដាញ Wi-Fi តែមួយជាមួយនឹងនាឡិកានេះ"</string>
+    <string msgid="5213435473397442608" name="mr_chooser_zero_routes_found_title">"មិន​មាន​ឧបករណ៍​ទេ"</string>
+    <string msgid="3330502667672708728" name="mr_controller_album_art">"រូបភាព​សិល្បៈ​ក្រប​អាល់ប៊ុម"</string>
+    <string msgid="9171231064758955152" name="mr_controller_casting_screen">"កំពុង​បញ្ជូន​អេក្រង់"</string>
+    <string msgid="5684434439232634509" name="mr_controller_close_description">"បិទ"</string>
+    <string msgid="2585048604188129749" name="mr_controller_collapse_group">"បង្រួម"</string>
+    <string msgid="7812275474138309497" name="mr_controller_disconnect">"ផ្ដាច់"</string>
+    <string msgid="4521419834052044261" name="mr_controller_expand_group">"ពង្រីក"</string>
+    <string msgid="855271725131981086" name="mr_controller_no_info_available">"មិនមានព័ត៌មានទេ"</string>
+    <string msgid="5495452265246139458" name="mr_controller_no_media_selected">"មិនបាន​ជ្រើសរើស​មេឌៀ​ទេ"</string>
+    <string msgid="747801650871398383" name="mr_controller_pause">"ផ្អាក"</string>
+    <string msgid="1253345086594430054" name="mr_controller_play">"លេង"</string>
+    <string msgid="5497722768305745508" name="mr_controller_stop">"ឈប់"</string>
+    <string msgid="804210341192624074" name="mr_controller_stop_casting">"ឈប់ភ្ជាប់"</string>
+    <string msgid="2955862765169128170" name="mr_controller_volume_slider">"របារកម្រិតសំឡេង"</string>
+    <string msgid="4115858704575247342" name="mr_dialog_default_group_name">"ក្រុម"</string>
+    <string msgid="4307018456678388936" name="mr_dialog_groupable_header">"បញ្ចូលឧបករណ៍"</string>
+    <string msgid="6068257520605505468" name="mr_dialog_transferable_header">"លេងនៅ​លើក្រុម"</string>
+    <string msgid="5056346328175584455" name="mr_route_name_bluetooth">"ប៊្លូធូស"</string>
+    <string msgid="708574147123374685" name="mr_route_name_speaker">"ឧបករណ៍​បំពង​សំឡេង"</string>
+    <string msgid="8041420425123528188" name="mr_route_name_tv">"ទូរទស្សន៍"</string>
+    <string msgid="5538521943939635302" name="mr_route_name_unknown">"មិនស្គាល់"</string>
+    <string msgid="7449553026175453403" name="mr_system_route_name">"ប្រព័ន្ធ"</string>
+    <string msgid="4088331695424166162" name="mr_user_route_category_name">"ឧបករណ៍"</string>
+    <string name="mtrl_badge_numberless_content_description">ការជូនដំណឹងថ្មី</string>
+    <string name="mtrl_checkbox_state_description_checked">បាន​ធីក</string>
+    <string name="mtrl_checkbox_state_description_indeterminate">បានធីកខ្លះ</string>
+    <string name="mtrl_checkbox_state_description_unchecked">មិន​បាន​ធីក</string>
+    <string name="mtrl_chip_close_icon_content_description">លុប %1$s</string>
+    <string name="mtrl_exceed_max_badge_number_content_description" ns2:ignore="PluralsCandidate">ការជូនដំណឹង​ថ្មីៗ​លើស %1$d ហើយ</string>
+    <string name="mtrl_picker_a11y_next_month">ប្ដូរ​ទៅ​ខែបន្ទាប់</string>
+    <string name="mtrl_picker_a11y_prev_month">ប្ដូរ​ទៅ​ខែមុន</string>
+    <string name="mtrl_picker_announce_current_range_selection">ការជ្រើសរើស​កាលបរិច្ឆេទចាប់ផ្ដើម៖ %1$s – ការជ្រើសរើស​កាលបរិច្ឆេទបញ្ចប់៖ %2$s</string>
+    <string name="mtrl_picker_announce_current_selection">ការជ្រើសរើស​បច្ចុប្បន្ន៖ %1$s</string>
+    <string name="mtrl_picker_announce_current_selection_none">គ្មាន</string>
+    <string name="mtrl_picker_cancel">បោះ​បង់</string>
+    <string name="mtrl_picker_confirm">យល់ព្រម</string>
+    <string name="mtrl_picker_date_header_selected">%1$s</string>
+    <string name="mtrl_picker_date_header_title">ជ្រើសរើស​កាល​បរិច្ឆេទ</string>
+    <string name="mtrl_picker_date_header_unselected">កាលបរិច្ឆេទដែលបាន​ជ្រើសរើស</string>
+    <string name="mtrl_picker_day_of_week_column_header">%1$s</string>
+    <string name="mtrl_picker_end_date_description">កាលបរិច្ឆេទ​បញ្ចប់ %1$s</string>
+    <string name="mtrl_picker_invalid_format">ទម្រង់មិន​ត្រឹមត្រូវទេ។</string>
+    <string name="mtrl_picker_invalid_format_example">ឧទាហរណ៍៖ %1$s</string>
+    <string name="mtrl_picker_invalid_format_use">ប្រើ៖ %1$s</string>
+    <string name="mtrl_picker_invalid_range">ជួរ​មិនត្រឹមត្រូវទេ។</string>
+    <string name="mtrl_picker_navigate_to_current_year_description">រុករក​ទៅកាន់​ឆ្នាំបច្ចុប្បន្ន %1$d</string>
+    <string name="mtrl_picker_navigate_to_year_description">ប្ដូរទៅ​ឆ្នាំ %1$d</string>
+    <string name="mtrl_picker_out_of_range">នៅក្រៅ​ចន្លោះ៖ %1$s</string>
+    <string name="mtrl_picker_range_header_only_end_selected">កាលបរិច្ឆេទ​ចាប់ផ្ដើម – %1$s</string>
+    <string name="mtrl_picker_range_header_only_start_selected">%1$s – កាលបរិច្ឆេទ​បញ្ចប់</string>
+    <string name="mtrl_picker_range_header_selected">%1$s – %2$s</string>
+    <string name="mtrl_picker_range_header_title">ជ្រើស​រើស​ចន្លោះ</string>
+    <string name="mtrl_picker_range_header_unselected">កាលបរិច្ឆេទ​ចាប់ផ្ដើម – កាលបរិច្ឆេទ​បញ្ចប់</string>
+    <string name="mtrl_picker_save">រក្សាទុក</string>
+    <string name="mtrl_picker_start_date_description">កាលបរិច្ឆេទ​ចាប់ផ្ដើម %1$s</string>
+    <string name="mtrl_picker_text_input_date_hint">កាលបរិច្ឆេទ</string>
+    <string name="mtrl_picker_text_input_date_range_end_hint">កាល​បរិច្ឆេទ​បញ្ចប់</string>
+    <string name="mtrl_picker_text_input_date_range_start_hint">កាល​បរិច្ឆេទ​ចាប់ផ្ដើម</string>
+    <string name="mtrl_picker_text_input_day_abbr">ថ</string>
+    <string name="mtrl_picker_text_input_month_abbr">ខ</string>
+    <string name="mtrl_picker_text_input_year_abbr">ឆ</string>
+    <string name="mtrl_picker_today_description">ថ្ងៃនេះ %1$s</string>
+    <string name="mtrl_picker_toggle_to_calendar_input_mode">ប្ដូរទៅ​របៀប​បញ្ចូល​ប្រតិទិន</string>
+    <string name="mtrl_picker_toggle_to_day_selection">ប្ដូរទៅទិដ្ឋភាពប្រតិទិន</string>
+    <string name="mtrl_picker_toggle_to_text_input_mode">ប្ដូរទៅ​របៀប​បញ្ចូល​អក្សរ</string>
+    <string name="mtrl_picker_toggle_to_year_selection">ប្ដូរទៅទិដ្ឋភាពឆ្នាំ</string>
+    <string name="mtrl_picker_toggled_to_day_selection">បានប្ដូរទៅទិដ្ឋភាពប្រតិទិន</string>
+    <string name="mtrl_picker_toggled_to_year_selection">បានប្ដូរទៅទិដ្ឋភាពឆ្នាំ</string>
+    <string name="mtrl_timepicker_cancel">បោះបង់</string>
+    <string name="mtrl_timepicker_confirm">យល់ព្រម</string>
+    <string name="password_toggle_content_description">បង្ហាញពាក្យសម្ងាត់</string>
+    <string msgid="6264217191555673260" name="search_menu_title">"ស្វែងរក"</string>
+    <string name="searchview_clear_text_content_description">សម្អាតអក្សរ</string>
+    <string name="searchview_navigation_content_description">ថយក្រោយ</string>
+    <string name="side_sheet_accessibility_pane_title">សន្លឹកចំហៀង</string>
+    <string msgid="6277540029070332960" name="status_bar_notification_info_overflow">"999+"</string>
+</resources>

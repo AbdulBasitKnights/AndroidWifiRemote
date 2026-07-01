@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#FFE8ECF4</color>
+    <color name="background_dark">#FF1A1A2E</color>
+    <color name="glass_white">#CCFFFFFF</color>
+    <color name="glass_white_solid">#F5FFFFFF</color>
+    <color name="glass_border">#55FFFFFF</color>
+    <color name="glass_blue">#D6E8FF</color>
+    <color name="glass_blue_dark">#FF4A90E2</color>
+    <color name="glass_pink">#FFFFE8ED</color>
+    <color name="glass_lavender">#FFEDE8FF</color>
+    <color name="glass_gray">#E6FFFFFF</color>
+    <color name="primary">#FF4A90E2</color>
+    <color name="primary_dark">#FF1565C0</color>
+    <color name="accent_red">#FFE53935</color>
+    <color name="volume_fill">#FF6EC6FF</color>
+    <color name="text_primary">#FF1A1A2E</color>
+    <color name="text_secondary">#FF7A7A9A</color>
+    <color name="text_on_glass">#FF2D2D44</color>
+    <color name="nav_active">#FF4A90E2</color>
+    <color name="nav_inactive">#FF9AA0B4</color>
+    <color name="chip_bg">#E8FFFFFF</color>
+    <color name="shadow">#22000000</color>
+</resources>

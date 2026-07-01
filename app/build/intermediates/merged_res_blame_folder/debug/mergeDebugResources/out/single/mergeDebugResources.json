@@ -1,0 +1,270 @@
+[
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_ic_arrow_up.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/ic_arrow_up.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_ic_settings.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/ic_settings.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_ic_arrow_right.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/ic_arrow_right.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_ic_remote.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/ic_remote.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/layout_item_cast_photo.xml.flat",
+        "source": "com.tvremote.app-main-6:/layout/item_cast_photo.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_bg_dpad_ring.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/bg_dpad_ring.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_ic_arrow_down.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/ic_arrow_down.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_bg_nav_item_active.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/bg_nav_item_active.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_bg_glass_circle_btn.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/bg_glass_circle_btn.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_ic_cast.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/ic_cast.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_bg_app_gradient.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/bg_app_gradient.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_bg_glass_card_lavender.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/bg_glass_card_lavender.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/layout_fragment_cast.xml.flat",
+        "source": "com.tvremote.app-main-6:/layout/fragment_cast.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_ic_apps.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/ic_apps.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_bg_volume_slider.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/bg_volume_slider.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.tvremote.app-main-6:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.tvremote.app-main-6:/mipmap-xxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_bg_dpad_ok.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/bg_dpad_ok.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_ic_forward.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/ic_forward.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "com.tvremote.app-main-6:/mipmap-xxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "com.tvremote.app-main-6:/mipmap-mdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_ic_back_arrow.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/ic_back_arrow.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_bg_mic_glow.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/bg_mic_glow.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.tvremote.app-main-6:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/mipmap-xhdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.tvremote.app-main-6:/mipmap-xhdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_ic_mic.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/ic_mic.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/mipmap-mdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.tvremote.app-main-6:/mipmap-mdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "com.tvremote.app-main-6:/mipmap-mdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/layout_activity_main.xml.flat",
+        "source": "com.tvremote.app-main-6:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/layout_fragment_remote.xml.flat",
+        "source": "com.tvremote.app-main-6:/layout/fragment_remote.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/xml_file_paths.xml.flat",
+        "source": "com.tvremote.app-main-6:/xml/file_paths.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "com.tvremote.app-main-6:/mipmap-xhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_bg_glass_card_pink.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/bg_glass_card_pink.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_bg_glass_chip.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/bg_glass_chip.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_ic_photos.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/ic_photos.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_bg_glass_panel.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/bg_glass_panel.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_ic_screen_mirror.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/ic_screen_mirror.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_ic_arrow_left.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/ic_arrow_left.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_bg_glass_card_blue.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/bg_glass_card_blue.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_ic_rewind.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/ic_rewind.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/layout_activity_screen_mirror.xml.flat",
+        "source": "com.tvremote.app-main-6:/layout/activity_screen_mirror.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_ic_audio.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/ic_audio.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/mipmap-xxxhdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.tvremote.app-main-6:/mipmap-xxxhdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_bg_nav_glass.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/bg_nav_glass.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "com.tvremote.app-main-6:/mipmap-xxxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/color_bottom_nav_color.xml.flat",
+        "source": "com.tvremote.app-main-6:/color/bottom_nav_color.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_bg_volume_fill.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/bg_volume_fill.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_ic_video.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/ic_video.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_ic_power.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/ic_power.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/mipmap-xxhdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.tvremote.app-main-6:/mipmap-xxhdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_ic_back.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/ic_back.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/layout_activity_cast_photo.xml.flat",
+        "source": "com.tvremote.app-main-6:/layout/activity_cast_photo.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "com.tvremote.app-main-6:/mipmap-hdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/layout_fragment_settings.xml.flat",
+        "source": "com.tvremote.app-main-6:/layout/fragment_settings.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/mipmap-hdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.tvremote.app-main-6:/mipmap-hdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/layout_item_discovered_tv.xml.flat",
+        "source": "com.tvremote.app-main-6:/layout/item_discovered_tv.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/menu_bottom_nav_menu.xml.flat",
+        "source": "com.tvremote.app-main-6:/menu/bottom_nav_menu.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "com.tvremote.app-main-6:/mipmap-xhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/xml_network_security_config.xml.flat",
+        "source": "com.tvremote.app-main-6:/xml/network_security_config.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_ic_pause.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/ic_pause.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_ic_play.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/ic_play.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_ic_mute.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/ic_mute.xml"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "com.tvremote.app-main-6:/mipmap-hdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.tvremote.app-main-6:/mipmap-xxxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.tvremote.app-debug-4:/drawable_ic_home.xml.flat",
+        "source": "com.tvremote.app-main-6:/drawable/ic_home.xml"
+    }
+]
