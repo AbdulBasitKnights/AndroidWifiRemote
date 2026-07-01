@@ -1,12 +1,24 @@
 *.iml
-.gradle
-/local.properties
-/.idea
+.gradle/
+local.properties
+.idea/
 .DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+
+# Build outputs (module + root)
+build/
+**/build/
+**/.transforms/
+**/intermediates/
+**/outputs/
+captures/
+.externalNativeBuild/
+.cxx/
+
 *.apk
 *.ap_
 *.aab
+
+# Logs / crash dumps
+*.log
+hs_err_pid*.log
+replay_pid*.log
