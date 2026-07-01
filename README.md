@@ -1,4 +1,4 @@
-# Android TV Remote - Kotlin
+# Android TV Remote - Kotlin (Vibe Coded)
 
 Smart WiFi remote for Android TV / Google TV using protocol v2.
 
@@ -26,7 +26,3 @@ Smart WiFi remote for Android TV / Google TV using protocol v2.
 - Pairing: TLS port **6467**
 - Commands: TLS port **6466**
 - Self-signed client cert generated on first launch
-
-## Reference
-
-Based on [AndroidTVRemoteControl](https://github.com/odyshewroman/AndroidTVRemoteControl) by Roman Odyshew.
