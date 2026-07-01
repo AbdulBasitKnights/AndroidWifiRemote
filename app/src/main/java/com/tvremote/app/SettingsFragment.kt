@@ -84,19 +84,21 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
         tvDiscovery.onDeviceFound = { tv ->
             discoveredTvs[tv.host] = tv
-            ifBinding { refreshDeviceList() }
+            view?.post { ifBinding { refreshDeviceList() } }
         }
 
         tvDiscovery.onScanFinished = { devices ->
             devices.forEach { discoveredTvs[it.host] = it }
-            ifBinding {
-                scanButton.isEnabled = true
-                scanButton.text = getString(R.string.scan_tvs)
-                refreshDeviceList()
-                scanStatusLabel.text = if (devices.isEmpty()) {
-                    getString(R.string.discovered_tvs_none)
-                } else {
-                    getString(R.string.discovered_tvs_count, devices.size)
+            view?.post {
+                ifBinding {
+                    scanButton.isEnabled = true
+                    scanButton.text = getString(R.string.scan_tvs)
+                    refreshDeviceList()
+                    scanStatusLabel.text = if (devices.isEmpty()) {
+                        getString(R.string.discovered_tvs_none)
+                    } else {
+                        getString(R.string.discovered_tvs_count, devices.size)
+                    }
                 }
             }
         }

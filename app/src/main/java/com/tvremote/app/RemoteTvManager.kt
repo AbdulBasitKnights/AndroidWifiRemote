@@ -1,6 +1,8 @@
 package com.tvremote.app
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import com.tvremote.control.CertManager
 import com.tvremote.control.CryptoManager
 import com.tvremote.control.PairingManager
@@ -17,6 +19,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 
 class RemoteTvManager(context: Context) {
+    private val mainHandler = Handler(Looper.getMainLooper())
     private val executor: ExecutorService = Executors.newSingleThreadExecutor()
     private val certManager = CertManager(context)
     private val cryptoManager = CryptoManager()
@@ -35,6 +38,18 @@ class RemoteTvManager(context: Context) {
     private val serviceName = "atvremote"
 
     fun isWaitingForPairingCode(): Boolean = waitingForCode.get()
+
+    private fun notifyPairingState(message: String) {
+        mainHandler.post { pairingStateChanged?.invoke(message) }
+    }
+
+    private fun notifyRemoteState(message: String) {
+        mainHandler.post { remoteStateChanged?.invoke(message) }
+    }
+
+    private fun notifyWaitingForCode(waiting: Boolean) {
+        mainHandler.post { onWaitingForCodeChanged?.invoke(waiting) }
+    }
 
     init {
         certManager.ensureCertificates(clientName)
@@ -62,23 +77,23 @@ class RemoteTvManager(context: Context) {
 
         pairingManager.stateChanged = { state ->
             waitingForCode.set(state is PairingManager.PairingState.WaitingCode)
-            onWaitingForCodeChanged?.invoke(waitingForCode.get())
-            pairingStateChanged?.invoke(state.toDisplayString())
+            notifyWaitingForCode(waitingForCode.get())
+            notifyPairingState(state.toDisplayString())
 
             when (state) {
                 is PairingManager.PairingState.SuccessPaired -> {
                     pairingStarted.set(false)
                     waitingForCode.set(false)
-                    onWaitingForCodeChanged?.invoke(false)
+                    notifyWaitingForCode(false)
                     remoteManager.disconnect()
                     remoteManager.connect(pendingHost)
                 }
                 is PairingManager.PairingState.SecretSent -> {
-                    pairingStateChanged?.invoke("Submitting pairing code…")
+                    notifyPairingState("Submitting pairing code…")
                 }
                 is PairingManager.PairingState.Error -> {
                     waitingForCode.set(false)
-                    onWaitingForCodeChanged?.invoke(false)
+                    notifyWaitingForCode(false)
                     pairingStarted.set(false)
                 }
                 else -> Unit
@@ -86,7 +101,7 @@ class RemoteTvManager(context: Context) {
         }
 
         remoteManager.stateChanged = { state ->
-            remoteStateChanged?.invoke(state.toDisplayString())
+            notifyRemoteState(state.toDisplayString())
             when (state) {
                 is RemoteManager.RemoteState.Connected -> {
                     if (!waitingForCode.get()) {
@@ -96,7 +111,7 @@ class RemoteTvManager(context: Context) {
                 is RemoteManager.RemoteState.Paired -> {
                     pairingStarted.set(false)
                     waitingForCode.set(false)
-                    onWaitingForCodeChanged?.invoke(false)
+                    notifyWaitingForCode(false)
                     cancelPairingFallback()
                 }
                 is RemoteManager.RemoteState.Error -> {
@@ -117,7 +132,7 @@ class RemoteTvManager(context: Context) {
         cancelPairingFallback()
         pairingFallback = scheduler.schedule({
             if (!pairingStarted.get() && !waitingForCode.get()) {
-                pairingStateChanged?.invoke("Remote connected but not paired — starting pairing…")
+                notifyPairingState("Remote connected but not paired — starting pairing…")
                 startPairing(force = true)
             }
         }, 8, java.util.concurrent.TimeUnit.SECONDS)
@@ -134,7 +149,7 @@ class RemoteTvManager(context: Context) {
 
         executor.execute {
             if (waitingForCode.get()) {
-                pairingStateChanged?.invoke(
+                notifyPairingState(
                     "Code already on TV — enter it below and tap Complete Pairing (do not tap Pair again)",
                 )
                 return@execute
@@ -153,7 +168,7 @@ class RemoteTvManager(context: Context) {
             if (pendingHost.isEmpty()) return@execute
 
             if (waitingForCode.get()) {
-                pairingStateChanged?.invoke(
+                notifyPairingState(
                     "Already waiting for code — enter it and tap Complete Pairing",
                 )
                 return@execute
@@ -168,7 +183,7 @@ class RemoteTvManager(context: Context) {
             host?.trim()?.takeIf { it.isNotEmpty() }?.let { pendingHost = it }
             if (pendingHost.isEmpty()) return@execute
             waitingForCode.set(false)
-            onWaitingForCodeChanged?.invoke(false)
+            notifyWaitingForCode(false)
             startPairing(force = true)
         }
     }
@@ -194,18 +209,18 @@ class RemoteTvManager(context: Context) {
         cancelPairingFallback()
         remoteManager.disconnect()
         pairingManager.disconnect()
-        pairingStateChanged?.invoke("Starting pairing on port ${PairingManager.PAIRING_PORT}…")
+        notifyPairingState("Starting pairing on port ${PairingManager.PAIRING_PORT}…")
         pairingManager.connect(pendingHost, clientName, serviceName)
     }
 
     fun submitPairingCode(code: String): Boolean {
         val normalized = code.trim().uppercase()
         if (normalized.length != 6) {
-            pairingStateChanged?.invoke("Enter the full 6-character code from your TV")
+            notifyPairingState("Enter the full 6-character code from your TV")
             return false
         }
         if (!waitingForCode.get()) {
-            pairingStateChanged?.invoke("Select your TV and wait for the code on screen")
+            notifyPairingState("Select your TV and wait for the code on screen")
             return false
         }
         executor.execute {
@@ -250,7 +265,7 @@ class RemoteTvManager(context: Context) {
         executor.execute {
             pairingStarted.set(false)
             waitingForCode.set(false)
-            onWaitingForCodeChanged?.invoke(false)
+            notifyWaitingForCode(false)
             cancelPairingFallback()
             remoteManager.disconnect()
             pairingManager.disconnect()
