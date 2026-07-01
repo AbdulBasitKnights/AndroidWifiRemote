@@ -1,4 +1,4 @@
-# Android TV Remote - Kotlin port of https://github.com/odyshewroman/AndroidTVRemoteControl
+# Android TV Remote - Kotlin
 
 Smart WiFi remote for Android TV / Google TV using protocol v2.
 
