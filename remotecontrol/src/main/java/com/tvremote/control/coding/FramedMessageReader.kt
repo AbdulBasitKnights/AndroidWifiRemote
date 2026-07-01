@@ -1,7 +1,7 @@
 package com.tvremote.control.coding
 
 /**
- * Reads length-prefixed messages: [varint length][payload...]
+ * Reads length-prefixed messages: [varint length]
  */
 class FramedMessageReader {
     private val buffer = ArrayList<Byte>(512)
