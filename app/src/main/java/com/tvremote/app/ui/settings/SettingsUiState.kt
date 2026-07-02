@@ -13,6 +13,6 @@ data class SettingsUiState(
     val pairingHost: String? = null,
     val savedTvHost: String = "",
     val isPaired: Boolean = false,
-    val remotePaused: Boolean = false,
     val sessionMode: AppSessionMode = AppSessionMode.REMOTE,
+    val isSessionReady: Boolean = false,
 )

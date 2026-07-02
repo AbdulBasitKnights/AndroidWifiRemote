@@ -49,7 +49,6 @@ class TvRemoteRepository(
     val isPaired: StateFlow<Boolean> = _isPaired.asStateFlow()
 
     val sessionMode: StateFlow<AppSessionMode> = coordinator.sessionMode
-    val remotePaused: StateFlow<Boolean> = coordinator.remotePaused
 
     private val _events = MutableSharedFlow<RepositoryEvent>()
     val events: SharedFlow<RepositoryEvent> = _events.asSharedFlow()
@@ -59,6 +58,7 @@ class TvRemoteRepository(
 
     init {
         coordinator.loadSavedSession()
+        ensureConnected()
 
         remoteManager.onPaired = { host ->
             SafeRun.run("TvRemoteRepository") {
@@ -105,6 +105,22 @@ class TvRemoteRepository(
         }
     }
 
+    fun ensureConnected() {
+        if (coordinator.isPaired()) {
+            remoteManager.ensureConnected()
+        }
+    }
+
+    fun disconnectUser() {
+        remoteManager.disconnectUser()
+        _isPaired.value = coordinator.isPaired()
+        scope.launch { _events.emit(RepositoryEvent.Disconnected) }
+    }
+
+    fun disconnectForAppClose() = remoteManager.disconnectForAppClose()
+
+    fun isSessionReady(): Boolean = remoteManager.isSessionReady()
+
     fun getPhoneIp(): String? = NetworkUtils.getWifiIpv4Address()
 
     fun isWaitingForPairingCode(): Boolean = remoteManager.isWaitingForPairingCode()
@@ -128,17 +144,15 @@ class TvRemoteRepository(
         if (!validateHost(host)) return
 
         if (coordinator.isPairedWith(host)) {
-            reconnect(host)
+            if (!remoteManager.isSessionReady()) {
+                reconnect(host)
+            }
         } else {
             pairWithTv(host)
         }
     }
 
     fun pairWithTv(host: String) {
-        if (coordinator.isCastingActive()) {
-            scope.launch { _events.emit(RepositoryEvent.CastingActive) }
-            return
-        }
         if (remoteManager.isWaitingForPairingCode()) {
             scope.launch { _events.emit(RepositoryEvent.UseCompletePairing) }
             return
@@ -155,10 +169,6 @@ class TvRemoteRepository(
             scope.launch { _events.emit(RepositoryEvent.SelectTvFirst) }
             return
         }
-        if (coordinator.isCastingActive()) {
-            scope.launch { _events.emit(RepositoryEvent.CastingActive) }
-            return
-        }
         if (!validateHost(target)) return
         _pairingHost.value = null
         remoteManager.connect(target)
@@ -166,10 +176,6 @@ class TvRemoteRepository(
     }
 
     fun restartPairing(host: String) {
-        if (coordinator.isCastingActive()) {
-            scope.launch { _events.emit(RepositoryEvent.CastingActive) }
-            return
-        }
         if (host.isBlank()) {
             scope.launch { _events.emit(RepositoryEvent.SelectTvFirst) }
             return
@@ -194,38 +200,24 @@ class TvRemoteRepository(
         return true
     }
 
-    fun sendKey(key: Key) {
-        if (coordinator.remotePaused.value) {
-            scope.launch { _events.emit(RepositoryEvent.RemotePaused) }
-            return
-        }
-        remoteManager.sendKey(key)
-    }
+    fun sendKey(key: Key) = remoteManager.sendKey(key)
 
-    fun power() = guardedRemote { remoteManager.power() }
-    fun volUp() = guardedRemote { remoteManager.volUp() }
-    fun volDown() = guardedRemote { remoteManager.volDown() }
-    fun channelUp() = guardedRemote { remoteManager.channelUp() }
-    fun channelDown() = guardedRemote { remoteManager.channelDown() }
-    fun mute() = guardedRemote { remoteManager.mute() }
-    fun playPause() = guardedRemote { remoteManager.playPause() }
-    fun rewind() = guardedRemote { remoteManager.rewind() }
-    fun forward() = guardedRemote { remoteManager.forward() }
-    fun voiceSearch() = guardedRemote { remoteManager.voiceSearch() }
-    fun tvInput() = guardedRemote { remoteManager.tvInput() }
-    fun apps() = guardedRemote { remoteManager.apps() }
-    fun runNetflix() = guardedRemote { remoteManager.runNetflix() }
-    fun runYouTube() = guardedRemote { remoteManager.runYouTube() }
-    fun runPrime() = guardedRemote { remoteManager.runPrime() }
-    fun runHotstar() = guardedRemote { remoteManager.runHotstar() }
-
-    private inline fun guardedRemote(action: () -> Unit) {
-        if (coordinator.remotePaused.value) {
-            scope.launch { _events.emit(RepositoryEvent.RemotePaused) }
-            return
-        }
-        action()
-    }
+    fun power() = remoteManager.power()
+    fun volUp() = remoteManager.volUp()
+    fun volDown() = remoteManager.volDown()
+    fun channelUp() = remoteManager.channelUp()
+    fun channelDown() = remoteManager.channelDown()
+    fun mute() = remoteManager.mute()
+    fun playPause() = remoteManager.playPause()
+    fun rewind() = remoteManager.rewind()
+    fun forward() = remoteManager.forward()
+    fun voiceSearch() = remoteManager.voiceSearch()
+    fun tvInput() = remoteManager.tvInput()
+    fun apps() = remoteManager.apps()
+    fun runNetflix() = remoteManager.runNetflix()
+    fun runYouTube() = remoteManager.runYouTube()
+    fun runPrime() = remoteManager.runPrime()
+    fun runHotstar() = remoteManager.runHotstar()
 
     sealed interface RepositoryEvent {
         data object PairingStarted : RepositoryEvent
@@ -233,8 +225,7 @@ class TvRemoteRepository(
         data object SelectTvFirst : RepositoryEvent
         data object InvalidIp : RepositoryEvent
         data object Reconnecting : RepositoryEvent
-        data object CastingActive : RepositoryEvent
-        data object RemotePaused : RepositoryEvent
+        data object Disconnected : RepositoryEvent
         data class Error(val message: String) : RepositoryEvent
     }
 }

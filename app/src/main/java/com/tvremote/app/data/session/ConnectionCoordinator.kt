@@ -12,6 +12,9 @@ enum class AppSessionMode {
     SCREEN_MIRROR,
 }
 
+/**
+ * Tracks cast/mirror UI mode only. Remote socket stays connected — no pause/disconnect on cast.
+ */
 class ConnectionCoordinator(
     private val remoteManager: RemoteTvManager,
     private val pairingStore: PairingStore,
@@ -22,45 +25,33 @@ class ConnectionCoordinator(
     private val _sessionMode = MutableStateFlow(AppSessionMode.REMOTE)
     val sessionMode: StateFlow<AppSessionMode> = _sessionMode.asStateFlow()
 
-    private val _remotePaused = MutableStateFlow(false)
-    val remotePaused: StateFlow<Boolean> = _remotePaused.asStateFlow()
-
     fun onCastSessionStarted() = SafeRun.run(TAG) {
         castActive = true
-        applyPauseState()
+        updateSessionMode()
     }
 
     fun onCastSessionEnded() = SafeRun.run(TAG) {
         castActive = false
-        applyPauseState()
+        updateSessionMode()
     }
 
     fun onScreenMirrorStarted() = SafeRun.run(TAG) {
         mirrorActive = true
-        applyPauseState()
+        updateSessionMode()
     }
 
     fun onScreenMirrorStopped() = SafeRun.run(TAG) {
         mirrorActive = false
-        applyPauseState()
+        updateSessionMode()
     }
 
     fun isCastingActive(): Boolean = castActive || mirrorActive
 
-    private fun applyPauseState() {
-        SafeRun.run(TAG) {
-            val shouldPause = castActive || mirrorActive
-            _remotePaused.value = shouldPause
-            _sessionMode.value = when {
-                mirrorActive -> AppSessionMode.SCREEN_MIRROR
-                castActive -> AppSessionMode.CAST
-                else -> AppSessionMode.REMOTE
-            }
-            if (shouldPause) {
-                remoteManager.pauseForCast()
-            } else {
-                remoteManager.resumeAfterCast()
-            }
+    private fun updateSessionMode() {
+        _sessionMode.value = when {
+            mirrorActive -> AppSessionMode.SCREEN_MIRROR
+            castActive -> AppSessionMode.CAST
+            else -> AppSessionMode.REMOTE
         }
     }
 

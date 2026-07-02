@@ -75,7 +75,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        container?.tvRemoteRepository?.ensureConnected()
+    }
+
     override fun onDestroy() {
+        if (isFinishing) {
+            container?.tvRemoteRepository?.disconnectForAppClose()
+        }
         binding = null
         super.onDestroy()
     }

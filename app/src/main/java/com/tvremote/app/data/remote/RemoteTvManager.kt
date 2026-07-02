@@ -42,34 +42,47 @@ class RemoteTvManager(context: Context) {
 
     private var pendingHost: String = ""
     private var isPairedDevice = false
-    private var pausedForCast = false
+    /** User wants connection held until explicit disconnect or app close. */
+    private var connectionHeld = false
+    private var userDisconnectRequested = false
+    /** Only true after loadSavedSession — one cold-start connect, no retry loops. */
+    private var autoConnectAllowed = false
     private val clientName = "Android TV Remote"
     private val serviceName = "atvremote"
 
     private var pairingFallback: ScheduledFuture<*>? = null
-    private var reconnectTask: ScheduledFuture<*>? = null
 
     fun isWaitingForPairingCode(): Boolean = waitingForCode.get()
 
     fun isPaired(): Boolean = isPairedDevice
 
-    fun isPausedForCast(): Boolean = pausedForCast
+    fun isConnectionHeld(): Boolean = connectionHeld
+
+    fun isSessionReady(): Boolean = remoteManager.isSessionReady()
 
     fun currentHost(): String = pendingHost
 
     fun loadSavedSession(host: String, paired: Boolean) {
         pendingHost = host.trim()
         isPairedDevice = paired
+        if (paired) {
+            connectionHeld = true
+            userDisconnectRequested = false
+            autoConnectAllowed = true
+        }
     }
 
     fun markPaired(host: String) {
         pendingHost = host.trim()
         isPairedDevice = true
+        connectionHeld = true
+        userDisconnectRequested = false
         explicitPairingRequested.set(false)
     }
 
     fun resetPairingState() {
         isPairedDevice = false
+        connectionHeld = false
     }
 
     private fun notifyPairingState(message: String) {
@@ -86,6 +99,8 @@ class RemoteTvManager(context: Context) {
 
     private fun notifyPaired(host: String) {
         isPairedDevice = true
+        connectionHeld = true
+        userDisconnectRequested = false
         explicitPairingRequested.set(false)
         mainHandler.post { SafeRun.invoke(TAG) { onPaired?.invoke(host) } }
     }
@@ -129,87 +144,78 @@ class RemoteTvManager(context: Context) {
 
         pairingManager.stateChanged = { state ->
             SafeRun.run(TAG) {
-                if (!pausedForCast) {
-                    waitingForCode.set(state is PairingManager.PairingState.WaitingCode)
-                    notifyWaitingForCode(waitingForCode.get())
-                    notifyPairingState(state.toDisplayString())
+                waitingForCode.set(state is PairingManager.PairingState.WaitingCode)
+                notifyWaitingForCode(waitingForCode.get())
+                notifyPairingState(state.toDisplayString())
 
-                    when (state) {
-                        is PairingManager.PairingState.SuccessPaired -> {
-                            pairingStarted.set(false)
-                            waitingForCode.set(false)
-                            notifyWaitingForCode(false)
-                            notifyPaired(pendingHost)
-                            remoteManager.disconnect()
-                            connectRemoteOnlyInternal()
-                        }
-                        is PairingManager.PairingState.SecretSent -> {
-                            notifyPairingState("Submitting pairing code…")
-                        }
-                        is PairingManager.PairingState.Error -> {
-                            waitingForCode.set(false)
-                            notifyWaitingForCode(false)
-                            pairingStarted.set(false)
-                            explicitPairingRequested.set(false)
-                        }
-                        else -> Unit
+                when (state) {
+                    is PairingManager.PairingState.SuccessPaired -> {
+                        pairingStarted.set(false)
+                        waitingForCode.set(false)
+                        notifyWaitingForCode(false)
+                        notifyPaired(pendingHost)
+                        pairingManager.disconnect()
+                        connectRemoteOnlyInternal(force = true)
                     }
+                    is PairingManager.PairingState.SecretSent -> {
+                        notifyPairingState("Submitting pairing code…")
+                    }
+                    is PairingManager.PairingState.Error -> {
+                        waitingForCode.set(false)
+                        notifyWaitingForCode(false)
+                        pairingStarted.set(false)
+                        explicitPairingRequested.set(false)
+                    }
+                    else -> Unit
                 }
             }
         }
 
         remoteManager.stateChanged = { state ->
             SafeRun.run(TAG) {
-                if (!pausedForCast || state is RemoteManager.RemoteState.Paired) {
-                    notifyRemoteState(state.toDisplayString())
-                    when (state) {
-                        is RemoteManager.RemoteState.Connected -> {
-                            if (!waitingForCode.get() && !isPairedDevice && explicitPairingRequested.get()) {
-                                schedulePairingFallback()
-                            }
+                notifyRemoteState(state.toDisplayString())
+                when (state) {
+                    is RemoteManager.RemoteState.Connected -> {
+                        if (!waitingForCode.get() && !isPairedDevice && explicitPairingRequested.get()) {
+                            schedulePairingFallback()
                         }
-                        is RemoteManager.RemoteState.Paired -> {
-                            pairingStarted.set(false)
-                            waitingForCode.set(false)
-                            explicitPairingRequested.set(false)
-                            notifyWaitingForCode(false)
-                            cancelPairingFallback()
-                            cancelReconnect()
-                            notifyPaired(pendingHost)
-                        }
-                        is RemoteManager.RemoteState.Error -> {
-                            cancelPairingFallback()
-                            handleRemoteError(state.error)
-                        }
-                        else -> Unit
                     }
+                    is RemoteManager.RemoteState.Paired -> {
+                        autoConnectAllowed = false
+                        pairingStarted.set(false)
+                        waitingForCode.set(false)
+                        explicitPairingRequested.set(false)
+                        notifyWaitingForCode(false)
+                        cancelPairingFallback()
+                        notifyPaired(pendingHost)
+                    }
+                    is RemoteManager.RemoteState.Error -> {
+                        cancelPairingFallback()
+                        handleRemoteError(state.error)
+                    }
+                    else -> Unit
                 }
             }
         }
     }
 
     private fun handleRemoteError(error: TvRemoteError) {
-        if (pausedForCast) return
-
-        if (isPairedDevice) {
-            notifyRemoteState("Connection lost — reconnecting…")
-            scheduleReconnect()
+        autoConnectAllowed = false
+        if (userDisconnectRequested) return
+        if (!connectionHeld) {
+            notifyRemoteState("Not connected — pair your TV in Settings")
             return
         }
-
-        if (explicitPairingRequested.get()) {
-            startPairingIfNeeded(error)
-        } else {
-            notifyRemoteState("Not connected — tap TV in Settings to pair or reconnect")
-        }
+        AppLogger.w(TAG, "Remote error (no auto-reconnect): ${error.toDisplayString()}")
+        notifyRemoteState("Connection interrupted — tap Reconnect Remote in Settings")
     }
 
     private fun schedulePairingFallback() {
-        if (pausedForCast || isPairedDevice || !explicitPairingRequested.get()) return
+        if (isPairedDevice || !explicitPairingRequested.get()) return
         cancelPairingFallback()
         pairingFallback = scheduler.schedule({
             SafeRun.run(TAG) {
-                if (!pausedForCast && !isPairedDevice && explicitPairingRequested.get() && !waitingForCode.get()) {
+                if (!isPairedDevice && explicitPairingRequested.get() && !waitingForCode.get()) {
                     notifyPairingState("Remote connected but not paired — starting pairing…")
                     startPairing(force = true)
                 }
@@ -222,69 +228,73 @@ class RemoteTvManager(context: Context) {
         pairingFallback = null
     }
 
-    private fun scheduleReconnect() {
-        if (pausedForCast || pendingHost.isEmpty() || !isPairedDevice) return
-        cancelReconnect()
-        reconnectTask = scheduler.schedule({
-            SafeRun.run(TAG) {
-                if (!pausedForCast && isPairedDevice && pendingHost.isNotEmpty()) {
-                    connectRemoteOnlyInternal()
-                }
+    /** Open connection once after app launch with saved session. Never auto-retry after errors. */
+    fun ensureConnected() {
+        if (!autoConnectAllowed || userDisconnectRequested || pendingHost.isEmpty() || !connectionHeld) return
+        executeSafe {
+            if (remoteManager.isSessionReady()) {
+                autoConnectAllowed = false
+                notifyRemoteState(remoteManager.currentRemoteState().toDisplayString())
+            } else if (!remoteManager.isConnecting() && !remoteManager.isHandshakeInProgress()) {
+                connectRemoteOnlyInternal(force = false)
             }
-        }, 3, TimeUnit.SECONDS)
-    }
-
-    private fun cancelReconnect() {
-        reconnectTask?.cancel(false)
-        reconnectTask = null
+        }
     }
 
     fun connect(host: String) {
         pendingHost = host.trim()
         if (pendingHost.isEmpty()) return
+        userDisconnectRequested = false
+        connectionHeld = true
         executeSafe {
             when {
-                pausedForCast -> notifyRemoteState("Remote paused while casting")
                 waitingForCode.get() -> notifyPairingState(
                     "Code already on TV — enter it below and tap Complete Pairing",
                 )
-                else -> connectRemoteOnlyInternal()
+                remoteManager.isSessionReady() -> notifyRemoteState(
+                    remoteManager.currentRemoteState().toDisplayString(),
+                )
+                else -> connectRemoteOnlyInternal(force = false)
             }
         }
     }
 
-    private fun connectRemoteOnlyInternal() {
-        if (pausedForCast) return
+    private fun connectRemoteOnlyInternal(force: Boolean) {
+        if (userDisconnectRequested) return
+        if (!force && remoteManager.isSessionReady()) {
+            notifyRemoteState(remoteManager.currentRemoteState().toDisplayString())
+            return
+        }
+        if (remoteManager.isConnecting() || (!force && remoteManager.isHandshakeInProgress())) return
+
         pairingStarted.set(false)
         explicitPairingRequested.set(false)
         cancelPairingFallback()
-        cancelReconnect()
         pairingManager.disconnect()
-        remoteManager.disconnect()
+        if (force || !remoteManager.isSessionReady()) {
+            remoteManager.disconnect()
+        }
         notifyRemoteState("Connecting to $pendingHost…")
         remoteManager.connect(pendingHost)
     }
 
     fun pairOnly(host: String? = null) {
         executeSafe {
+            host?.trim()?.takeIf { it.isNotEmpty() }?.let { pendingHost = it }
             when {
-                pausedForCast -> notifyPairingState("Finish or stop casting before pairing")
+                pendingHost.isEmpty() -> Unit
+                waitingForCode.get() -> notifyPairingState(
+                    "Already waiting for code — enter it and tap Complete Pairing",
+                )
+                isPairedDevice && remoteManager.isSessionReady() -> notifyRemoteState(
+                    remoteManager.currentRemoteState().toDisplayString(),
+                )
+                isPairedDevice -> connectRemoteOnlyInternal(force = false)
                 else -> {
-                    host?.trim()?.takeIf { it.isNotEmpty() }?.let { pendingHost = it }
-                    when {
-                        pendingHost.isEmpty() -> Unit
-                        waitingForCode.get() -> notifyPairingState(
-                            "Already waiting for code — enter it and tap Complete Pairing",
-                        )
-                        isPairedDevice -> {
-                            notifyPairingState("Already paired — reconnecting remote instead")
-                            connectRemoteOnlyInternal()
-                        }
-                        else -> {
-                            explicitPairingRequested.set(true)
-                            startPairing(force = true)
-                        }
-                    }
+                    userDisconnectRequested = false
+                    connectionHeld = true
+                    explicitPairingRequested.set(true)
+                    startPairing(force = true)
                 }
             }
         }
@@ -292,18 +302,15 @@ class RemoteTvManager(context: Context) {
 
     fun restartPairing(host: String? = null) {
         executeSafe {
-            when {
-                pausedForCast -> notifyPairingState("Stop casting before pairing again")
-                else -> {
-                    host?.trim()?.takeIf { it.isNotEmpty() }?.let { pendingHost = it }
-                    if (pendingHost.isNotEmpty()) {
-                        waitingForCode.set(false)
-                        notifyWaitingForCode(false)
-                        explicitPairingRequested.set(true)
-                        isPairedDevice = false
-                        startPairing(force = true)
-                    }
-                }
+            host?.trim()?.takeIf { it.isNotEmpty() }?.let { pendingHost = it }
+            if (pendingHost.isNotEmpty()) {
+                waitingForCode.set(false)
+                notifyWaitingForCode(false)
+                explicitPairingRequested.set(true)
+                isPairedDevice = false
+                connectionHeld = true
+                userDisconnectRequested = false
+                startPairing(force = true)
             }
         }
     }
@@ -323,13 +330,11 @@ class RemoteTvManager(context: Context) {
     }
 
     private fun startPairing(force: Boolean) {
-        if (pausedForCast) return
         if (!force && !explicitPairingRequested.get()) return
         if (!force && !pairingStarted.compareAndSet(false, true)) return
         if (force) pairingStarted.set(true)
 
         cancelPairingFallback()
-        cancelReconnect()
         remoteManager.disconnect()
         pairingManager.disconnect()
         notifyPairingState("Starting pairing on port ${PairingManager.PAIRING_PORT}…")
@@ -352,40 +357,10 @@ class RemoteTvManager(context: Context) {
         return true
     }
 
-    fun pauseForCast() {
-        pausedForCast = true
-        executeSafe {
-            pairingStarted.set(false)
-            explicitPairingRequested.set(false)
-            waitingForCode.set(false)
-            notifyWaitingForCode(false)
-            cancelPairingFallback()
-            cancelReconnect()
-            remoteManager.disconnect()
-            pairingManager.disconnect()
-            notifyRemoteState("Paused while casting")
-            notifyPairingState("idle")
-        }
-    }
-
-    fun resumeAfterCast() {
-        pausedForCast = false
-        executeSafe {
-            if (pendingHost.isNotEmpty()) {
-                if (isPairedDevice) {
-                    notifyRemoteState("Resuming remote after cast…")
-                    connectRemoteOnlyInternal()
-                } else {
-                    notifyRemoteState("idle")
-                }
-            }
-        }
-    }
-
     fun sendKey(key: Key) {
         executeSafe {
-            if (pausedForCast) {
-                notifyRemoteState("Remote paused while casting")
+            if (!remoteManager.isSessionReady()) {
+                notifyRemoteState("Not connected — tap Reconnect Remote in Settings")
             } else {
                 remoteManager.send(KeyPress(key))
             }
@@ -412,25 +387,41 @@ class RemoteTvManager(context: Context) {
 
     private fun runDeepLink(url: String) {
         executeSafe {
-            if (pausedForCast) {
-                notifyRemoteState("Remote paused while casting")
+            if (!remoteManager.isSessionReady()) {
+                notifyRemoteState("Not connected — tap Reconnect Remote in Settings")
             } else {
                 remoteManager.send(DeepLink(url))
             }
         }
     }
 
-    fun disconnect() {
+    /** User explicitly disconnects — only path to drop connection besides app close. */
+    fun disconnectUser() {
+        userDisconnectRequested = true
+        connectionHeld = false
+        autoConnectAllowed = false
         executeSafe {
-            pairingStarted.set(false)
-            explicitPairingRequested.set(false)
-            waitingForCode.set(false)
-            notifyWaitingForCode(false)
-            cancelPairingFallback()
-            cancelReconnect()
-            remoteManager.disconnect()
-            pairingManager.disconnect()
+            performDisconnect()
+            notifyRemoteState("Disconnected")
+            notifyPairingState("idle")
         }
+    }
+
+    fun disconnectForAppClose() {
+        userDisconnectRequested = true
+        connectionHeld = false
+        autoConnectAllowed = false
+        executeSafe { performDisconnect() }
+    }
+
+    private fun performDisconnect() {
+        pairingStarted.set(false)
+        explicitPairingRequested.set(false)
+        waitingForCode.set(false)
+        notifyWaitingForCode(false)
+        cancelPairingFallback()
+        remoteManager.disconnect()
+        pairingManager.disconnect()
     }
 
     companion object {

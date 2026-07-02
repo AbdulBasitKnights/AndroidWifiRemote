@@ -32,6 +32,7 @@ class RemoteManager(
     private var socket: SSLSocket? = null
     private val buffer = mutableListOf<Byte>()
     private var secondConfigurationResponse = SecondConfigurationResponse()
+    private val connecting = AtomicBoolean(false)
 
     var stateChanged: ((RemoteState) -> Unit)? = null
     var receiveData: ((ByteArray?, Throwable?) -> Unit)? = null
@@ -48,9 +49,38 @@ class RemoteManager(
             }
         }
 
+    fun isSessionReady(): Boolean {
+        val activeSocket = socket ?: return false
+        return activeSocket.isConnected &&
+            !activeSocket.isClosed &&
+            remoteState is RemoteState.Paired
+    }
+
+    fun isConnecting(): Boolean = connecting.get()
+
+    fun isHandshakeInProgress(): Boolean = when (remoteState) {
+        RemoteState.Connected,
+        RemoteState.FirstConfigSent,
+        RemoteState.SecondConfigSent,
+        is RemoteState.FirstConfigMessageReceived,
+        -> true
+        else -> false
+    }
+
+    fun currentRemoteState(): RemoteState = remoteState
+
     fun connect(host: String, timeoutMs: Int = 60_000) {
         if (host.isBlank()) {
             logger.errorLog("$LOG_PREFIX host shouldn't be empty!")
+            return
+        }
+        if (isSessionReady()) {
+            logger.infoLog("$LOG_PREFIX already paired on open socket — skip reconnect")
+            return
+        }
+        if (!connecting.compareAndSet(false, true)) {
+            logger.infoLog("$LOG_PREFIX connect already in progress")
+            return
         }
 
         executor.execute {
@@ -70,17 +100,22 @@ class RemoteManager(
                     }
                 }
             }
+            connecting.set(false)
         }
     }
 
     fun disconnect() {
         logger.infoLog("$LOG_PREFIX disconnect")
+        connecting.set(false)
         receiving.set(false)
         try {
             socket?.close()
         } catch (_: IOException) {
         }
         socket = null
+        if (remoteState !is RemoteState.Idle) {
+            remoteState = RemoteState.Idle
+        }
     }
 
     fun send(request: RequestData) {
@@ -102,7 +137,6 @@ class RemoteManager(
             nextData?.let { sendRaw(it) }
         } catch (e: Exception) {
             remoteState = RemoteState.Error(TvRemoteError.SendDataError(e))
-            disconnect()
         }
     }
 
@@ -112,9 +146,15 @@ class RemoteManager(
             try {
                 while (receiving.get()) {
                     val chunk = readChunk()
+                    if (chunk == null) {
+                        if (receiving.get()) {
+                            remoteState = RemoteState.Error(TvRemoteError.ReceiveDataError(IOException("Socket closed")))
+                            receiving.set(false)
+                        }
+                        break
+                    }
                     receiveData?.invoke(chunk, null)
-                    if (chunk == null || chunk.isEmpty()) {
-                        logger.infoLog("$LOG_PREFIX Empty or completion data received")
+                    if (chunk.isEmpty()) {
                         continue
                     }
                     buffer.addAll(chunk.toList())
@@ -223,9 +263,11 @@ class RemoteManager(
             val input = socket?.inputStream ?: return null
             val buffer = ByteArray(512)
             val read = input.read(buffer)
-            if (read < 0) return byteArrayOf()
-            if (read == 0) return byteArrayOf()
-            buffer.copyOf(read)
+            when {
+                read < 0 -> return null
+                read == 0 -> return byteArrayOf()
+                else -> return buffer.copyOf(read)
+            }
         } catch (e: Exception) {
             null
         }

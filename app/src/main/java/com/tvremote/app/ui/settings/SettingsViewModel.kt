@@ -36,12 +36,10 @@ class SettingsViewModel(
         ) { pairing, remote, waiting, tvs, scanning ->
             CoreFlows(pairing, remote, waiting, tvs, scanning)
         },
-        combine(repository.isPaired, repository.remotePaused) { paired, paused ->
-            paired to paused
+        combine(repository.isPaired, repository.pairingHost, repository.sessionMode) { paired, host, mode ->
+            Triple(paired, host, mode)
         },
-        repository.pairingHost,
-        repository.sessionMode,
-    ) { core, session, host, mode ->
+    ) { core, session ->
         SettingsUiState(
             phoneIp = repository.getPhoneIp(),
             pairingState = core.pairingState,
@@ -49,11 +47,11 @@ class SettingsViewModel(
             waitingForCode = core.waitingForCode,
             discoveredTvs = core.discoveredTvs,
             isScanning = core.isScanning,
-            pairingHost = host,
+            pairingHost = session.second,
             savedTvHost = repository.savedTvHost,
             isPaired = session.first,
-            remotePaused = session.second,
-            sessionMode = mode,
+            sessionMode = session.third,
+            isSessionReady = repository.isSessionReady(),
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SettingsUiState())
 
@@ -71,10 +69,8 @@ class SettingsViewModel(
                         _events.emit(SettingsEvent.InvalidIp)
                     TvRemoteRepository.RepositoryEvent.Reconnecting ->
                         _events.emit(SettingsEvent.Reconnecting)
-                    TvRemoteRepository.RepositoryEvent.CastingActive ->
-                        _events.emit(SettingsEvent.CastingActive)
-                    TvRemoteRepository.RepositoryEvent.RemotePaused ->
-                        _events.emit(SettingsEvent.RemotePaused)
+                    TvRemoteRepository.RepositoryEvent.Disconnected ->
+                        _events.emit(SettingsEvent.Disconnected)
                     is TvRemoteRepository.RepositoryEvent.Error ->
                         _events.emit(SettingsEvent.Error(event.message))
                 }
@@ -90,6 +86,8 @@ class SettingsViewModel(
 
     fun reconnect() = repository.reconnect()
 
+    fun disconnect() = repository.disconnectUser()
+
     fun restartPairing(host: String) = repository.restartPairing(host)
 
     fun submitPairingCode(code: String): Boolean = repository.submitPairingCode(code)
@@ -104,8 +102,7 @@ class SettingsViewModel(
         data object SelectTvFirst : SettingsEvent
         data object InvalidIp : SettingsEvent
         data object Reconnecting : SettingsEvent
-        data object CastingActive : SettingsEvent
-        data object RemotePaused : SettingsEvent
+        data object Disconnected : SettingsEvent
         data class Error(val message: String) : SettingsEvent
     }
 }

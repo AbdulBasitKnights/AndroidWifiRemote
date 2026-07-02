@@ -67,6 +67,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             }
         }
         binding.reconnectButton.setOnClickListener { viewModel.reconnect() }
+        binding.disconnectButton.setOnClickListener { viewModel.disconnect() }
         binding.pairManualButton.setOnClickListener {
             val host = binding.hostInput.text?.toString().orEmpty().trim()
             viewModel.pairManual(host)
@@ -123,10 +124,8 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                                 Toast.makeText(requireContext(), R.string.invalid_ip, Toast.LENGTH_LONG).show()
                             SettingsViewModel.SettingsEvent.Reconnecting ->
                                 Toast.makeText(requireContext(), R.string.reconnecting_remote, Toast.LENGTH_SHORT).show()
-                            SettingsViewModel.SettingsEvent.CastingActive ->
-                                Toast.makeText(requireContext(), R.string.stop_cast_before_remote, Toast.LENGTH_LONG).show()
-                            SettingsViewModel.SettingsEvent.RemotePaused ->
-                                Toast.makeText(requireContext(), R.string.remote_paused_casting, Toast.LENGTH_SHORT).show()
+                            SettingsViewModel.SettingsEvent.Disconnected ->
+                                Toast.makeText(requireContext(), R.string.disconnected_from_tv, Toast.LENGTH_SHORT).show()
                             is SettingsViewModel.SettingsEvent.Error ->
                                 Toast.makeText(requireContext(), event.message, Toast.LENGTH_SHORT).show()
                         }
@@ -165,15 +164,9 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         adapter.setPairingHost(state.pairingHost)
         adapter.setPairedHost(if (state.isPaired) state.savedTvHost else null)
 
-        binding.reconnectButton.isVisible = state.isPaired && !state.waitingForCode
-        binding.sessionStatusLabel.isVisible = state.remotePaused
-        binding.sessionStatusLabel.text = when (state.sessionMode) {
-            com.tvremote.app.data.session.AppSessionMode.SCREEN_MIRROR ->
-                getString(R.string.remote_paused_screen_mirror)
-            com.tvremote.app.data.session.AppSessionMode.CAST ->
-                getString(R.string.remote_paused_casting)
-            else -> ""
-        }
+        binding.reconnectButton.isVisible = state.isPaired && !state.waitingForCode && !state.isSessionReady
+        binding.disconnectButton.isVisible = state.isPaired && !state.waitingForCode
+        binding.sessionStatusLabel.isVisible = false
 
         binding.discoveredTvsList.isVisible = state.discoveredTvs.isNotEmpty()
         binding.noTvsLabel.isVisible = state.discoveredTvs.isEmpty() && !state.isScanning

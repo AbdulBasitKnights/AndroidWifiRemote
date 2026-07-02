@@ -3,17 +3,12 @@ package com.tvremote.app.ui.remote
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tvremote.app.data.repository.TvRemoteRepository
-import com.tvremote.app.data.session.AppSessionMode
 import com.tvremote.control.commands.Key
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 
 class RemoteViewModel(
     private val repository: TvRemoteRepository,
@@ -22,35 +17,8 @@ class RemoteViewModel(
     private val _volumeLevel = MutableStateFlow(7)
     val volumeLevel: StateFlow<Int> = _volumeLevel.asStateFlow()
 
-    private val _events = MutableSharedFlow<RemoteEvent>()
-    val events = _events.asSharedFlow()
-
-    val connectionStatus: StateFlow<String> = combine(
-        repository.remoteState,
-        repository.remotePaused,
-        repository.sessionMode,
-    ) { remote, paused, mode ->
-        when {
-            paused && mode == AppSessionMode.SCREEN_MIRROR ->
-                "Remote paused — screen mirroring active"
-            paused && mode == AppSessionMode.CAST ->
-                "Remote paused — casting active"
-            paused -> "Remote paused while casting"
-            else -> remote
-        }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), "idle")
-
-    val remotePaused: StateFlow<Boolean> = repository.remotePaused
-
-    init {
-        viewModelScope.launch {
-            repository.events.collect { event ->
-                if (event == TvRemoteRepository.RepositoryEvent.RemotePaused) {
-                    _events.emit(RemoteEvent.PausedWhileCasting)
-                }
-            }
-        }
-    }
+    val connectionStatus: StateFlow<String> = repository.remoteState
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), "idle")
 
     fun power() = repository.power()
     fun sendKey(key: Key) = repository.sendKey(key)
@@ -75,8 +43,4 @@ class RemoteViewModel(
     fun runYouTube() = repository.runYouTube()
     fun runPrime() = repository.runPrime()
     fun runHotstar() = repository.runHotstar()
-
-    sealed interface RemoteEvent {
-        data object PausedWhileCasting : RemoteEvent
-    }
 }
