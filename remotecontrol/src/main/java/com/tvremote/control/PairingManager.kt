@@ -40,7 +40,11 @@ class PairingManager(
         set(value) {
             field = value
             logState(value)
-            stateChanged?.invoke(value)
+            try {
+                stateChanged?.invoke(value)
+            } catch (e: Exception) {
+                logger.errorLog("$LOG_PREFIX state callback error: ${e.message}")
+            }
         }
 
     fun connect(host: String, clientName: String, serviceName: String, timeoutMs: Int = 60_000) {
@@ -117,7 +121,8 @@ class PairingManager(
     }
 
     private fun handleMessage(message: ByteArray) {
-        when (pairingState) {
+        try {
+            when (pairingState) {
             PairingState.PairingRequestSent -> {
                 val response = PairingResponse(message)
                 if (!response.isSuccess) {
@@ -178,6 +183,9 @@ class PairingManager(
             }
 
             else -> Unit
+            }
+        } catch (e: Exception) {
+            pairingState = PairingState.Error(TvRemoteError.ReceiveDataError(e))
         }
     }
 
@@ -202,11 +210,15 @@ class PairingManager(
     }
 
     private fun readChunk(): ByteArray? {
-        val input = socket?.inputStream ?: return null
-        val buffer = ByteArray(1024)
-        val read = input.read(buffer)
-        if (read <= 0) return byteArrayOf()
-        return buffer.copyOf(read)
+        return try {
+            val input = socket?.inputStream ?: return null
+            val buffer = ByteArray(1024)
+            val read = input.read(buffer)
+            if (read <= 0) return byteArrayOf()
+            buffer.copyOf(read)
+        } catch (e: Exception) {
+            byteArrayOf()
+        }
     }
 
     private fun bytesToHex(bytes: ByteArray): String =

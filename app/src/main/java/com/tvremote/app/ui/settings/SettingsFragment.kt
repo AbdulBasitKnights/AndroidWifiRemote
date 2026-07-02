@@ -15,6 +15,7 @@ import com.tvremote.app.R
 import com.tvremote.app.databinding.FragmentSettingsBinding
 import com.tvremote.app.ui.main.MainActivity
 import com.tvremote.app.ui.settings.adapter.DiscoveredTvAdapter
+import com.tvremote.app.util.SafeRun
 import kotlinx.coroutines.launch
 
 class SettingsFragment : Fragment(R.layout.fragment_settings) {
@@ -65,6 +66,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 getString(R.string.enter_ip_manually)
             }
         }
+        binding.reconnectButton.setOnClickListener { viewModel.reconnect() }
         binding.pairManualButton.setOnClickListener {
             val host = binding.hostInput.text?.toString().orEmpty().trim()
             viewModel.pairManual(host)
@@ -119,6 +121,12 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                                 Toast.makeText(requireContext(), R.string.select_tv_first, Toast.LENGTH_SHORT).show()
                             SettingsViewModel.SettingsEvent.InvalidIp ->
                                 Toast.makeText(requireContext(), R.string.invalid_ip, Toast.LENGTH_LONG).show()
+                            SettingsViewModel.SettingsEvent.Reconnecting ->
+                                Toast.makeText(requireContext(), R.string.reconnecting_remote, Toast.LENGTH_SHORT).show()
+                            SettingsViewModel.SettingsEvent.CastingActive ->
+                                Toast.makeText(requireContext(), R.string.stop_cast_before_remote, Toast.LENGTH_LONG).show()
+                            SettingsViewModel.SettingsEvent.RemotePaused ->
+                                Toast.makeText(requireContext(), R.string.remote_paused_casting, Toast.LENGTH_SHORT).show()
                             is SettingsViewModel.SettingsEvent.Error ->
                                 Toast.makeText(requireContext(), event.message, Toast.LENGTH_SHORT).show()
                         }
@@ -129,8 +137,9 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     }
 
     private fun render(state: SettingsUiState) {
-        val binding = _binding ?: return
-        val adapter = tvAdapter ?: return
+        SafeRun.run(TAG) {
+            val binding = _binding ?: return@run
+            val adapter = tvAdapter ?: return@run
 
         binding.phoneIpLabel.text = state.phoneIp?.let {
             getString(R.string.phone_ip_label, it)
@@ -154,6 +163,17 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         adapter.submit(state.discoveredTvs)
         adapter.setSelectedHost(state.pairingHost ?: state.savedTvHost)
         adapter.setPairingHost(state.pairingHost)
+        adapter.setPairedHost(if (state.isPaired) state.savedTvHost else null)
+
+        binding.reconnectButton.isVisible = state.isPaired && !state.waitingForCode
+        binding.sessionStatusLabel.isVisible = state.remotePaused
+        binding.sessionStatusLabel.text = when (state.sessionMode) {
+            com.tvremote.app.data.session.AppSessionMode.SCREEN_MIRROR ->
+                getString(R.string.remote_paused_screen_mirror)
+            com.tvremote.app.data.session.AppSessionMode.CAST ->
+                getString(R.string.remote_paused_casting)
+            else -> ""
+        }
 
         binding.discoveredTvsList.isVisible = state.discoveredTvs.isNotEmpty()
         binding.noTvsLabel.isVisible = state.discoveredTvs.isEmpty() && !state.isScanning
@@ -163,11 +183,16 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             state.discoveredTvs.isEmpty() -> getString(R.string.discovered_tvs_none)
             else -> getString(R.string.discovered_tvs_count, state.discoveredTvs.size)
         }
+        }
     }
 
     override fun onDestroyView() {
         tvAdapter = null
         _binding = null
         super.onDestroyView()
+    }
+
+    companion object {
+        private const val TAG = "SettingsFragment"
     }
 }

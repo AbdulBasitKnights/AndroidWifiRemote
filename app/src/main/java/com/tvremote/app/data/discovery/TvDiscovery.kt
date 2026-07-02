@@ -6,9 +6,11 @@ import android.net.nsd.NsdServiceInfo
 import android.os.Handler
 import android.os.Looper
 import com.tvremote.app.data.model.DiscoveredTv
+import com.tvremote.app.util.AppLogger
+import com.tvremote.app.util.SafeRun
 
 class TvDiscovery(context: Context) {
-    private val nsdManager = context.getSystemService(NsdManager::class.java)
+    private val nsdManager: NsdManager? = context.getSystemService(NsdManager::class.java)
     private val mainHandler = Handler(Looper.getMainLooper())
     private var discoveryListener: NsdManager.DiscoveryListener? = null
     private val resolving = mutableSetOf<String>()
@@ -24,27 +26,42 @@ class TvDiscovery(context: Context) {
     )
 
     fun startScan(durationMs: Long = 12_000) {
-        stopScan()
-        found.clear()
-        resolving.clear()
-        discoverNext(0, durationMs)
+        SafeRun.run(TAG) {
+            if (nsdManager == null) {
+                notifyError("Network discovery unavailable on this device")
+                return@run
+            }
+            stopScan()
+            found.clear()
+            resolving.clear()
+            discoverNext(0, durationMs)
+        }
     }
 
     fun stopScan() {
-        discoveryListener?.let { listener ->
-            try {
-                nsdManager?.stopServiceDiscovery(listener)
-            } catch (_: Exception) {
+        SafeRun.run(TAG) {
+            discoveryListener?.let { listener ->
+                try {
+                    nsdManager?.stopServiceDiscovery(listener)
+                } catch (e: Exception) {
+                    AppLogger.w(TAG, "stopServiceDiscovery failed", e)
+                }
             }
+            discoveryListener = null
         }
-        discoveryListener = null
     }
 
     private fun discoverNext(index: Int, durationMs: Long) {
+        if (nsdManager == null) {
+            notifyError("Network discovery unavailable")
+            return
+        }
         if (index >= serviceTypes.size) {
             mainHandler.postDelayed({
-                stopScan()
-                onScanFinished?.invoke(found.values.toList())
+                SafeRun.run(TAG) {
+                    stopScan()
+                    notifyScanFinished()
+                }
             }, durationMs)
             return
         }
@@ -54,30 +71,41 @@ class TvDiscovery(context: Context) {
             override fun onDiscoveryStarted(serviceType: String) = Unit
 
             override fun onServiceFound(serviceInfo: NsdServiceInfo) {
-                if (serviceInfo.serviceName.contains("NsdChat")) return
-                val key = "${serviceInfo.serviceName}:${serviceInfo.serviceType}"
-                if (key in resolving) return
-                resolving.add(key)
+                SafeRun.run(TAG) {
+                    if (serviceInfo.serviceName.contains("NsdChat")) return@run
+                    val key = "${serviceInfo.serviceName}:${serviceInfo.serviceType}"
+                    if (key in resolving) return@run
+                    resolving.add(key)
 
-                nsdManager?.resolveService(serviceInfo, object : NsdManager.ResolveListener {
-                    override fun onResolveFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {
-                        resolving.remove(key)
-                    }
+                    try {
+                        nsdManager?.resolveService(serviceInfo, object : NsdManager.ResolveListener {
+                            override fun onResolveFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {
+                                resolving.remove(key)
+                            }
 
-                    override fun onServiceResolved(resolved: NsdServiceInfo) {
+                            override fun onServiceResolved(resolved: NsdServiceInfo) {
+                                SafeRun.run(TAG) {
+                                    resolving.remove(key)
+                                    val host = resolved.host?.hostAddress
+                                        ?: resolved.hostname
+                                        ?: return@run
+                                    val tv = DiscoveredTv(
+                                        name = cleanServiceName(resolved.serviceName),
+                                        host = host,
+                                        port = resolved.port,
+                                    )
+                                    found[host] = tv
+                                    mainHandler.post {
+                                        SafeRun.invoke(TAG, onDeviceFound, tv)
+                                    }
+                                }
+                            }
+                        })
+                    } catch (e: Exception) {
                         resolving.remove(key)
-                        val host = resolved.host?.hostAddress
-                            ?: resolved.hostname
-                            ?: return
-                        val tv = DiscoveredTv(
-                            name = cleanServiceName(resolved.serviceName),
-                            host = host,
-                            port = resolved.port,
-                        )
-                        found[host] = tv
-                        mainHandler.post { onDeviceFound?.invoke(tv) }
+                        AppLogger.w(TAG, "resolveService failed", e)
                     }
-                })
+                }
             }
 
             override fun onServiceLost(serviceInfo: NsdServiceInfo) = Unit
@@ -91,28 +119,48 @@ class TvDiscovery(context: Context) {
         }
 
         try {
-            nsdManager?.discoverServices(serviceType, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
+            nsdManager.discoverServices(serviceType, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
             mainHandler.postDelayed({
-                stopScan()
-                if (found.isEmpty() && index + 1 < serviceTypes.size) {
-                    discoverNext(index + 1, durationMs)
-                } else {
-                    onScanFinished?.invoke(found.values.toList())
+                SafeRun.run(TAG) {
+                    stopScan()
+                    if (found.isEmpty() && index + 1 < serviceTypes.size) {
+                        discoverNext(index + 1, durationMs)
+                    } else {
+                        notifyScanFinished()
+                    }
                 }
             }, durationMs)
         } catch (e: Exception) {
-            onError?.invoke(e.message ?: "Scan failed")
+            notifyError(e.message ?: "Scan failed")
             discoverNext(index + 1, durationMs)
         }
     }
 
+    private fun notifyScanFinished() {
+        mainHandler.post {
+            SafeRun.invoke(TAG, onScanFinished, found.values.toList())
+        }
+    }
+
+    private fun notifyError(message: String) {
+        mainHandler.post {
+            SafeRun.invoke(TAG, onError, message)
+        }
+    }
+
     private fun cleanServiceName(serviceName: String): String {
-        return serviceName
-            .substringBefore("._androidtvremote2.")
-            .substringBefore("._androidtvremote.")
-            .replace('-', ' ')
-            .replace('_', ' ')
-            .trim()
-            .ifBlank { "Android TV" }
+        return SafeRun.runCatching(TAG, "Android TV") {
+            serviceName
+                .substringBefore("._androidtvremote2.")
+                .substringBefore("._androidtvremote.")
+                .replace('-', ' ')
+                .replace('_', ' ')
+                .trim()
+                .ifBlank { "Android TV" }
+        }
+    }
+
+    companion object {
+        private const val TAG = "TvDiscovery"
     }
 }

@@ -17,6 +17,8 @@ import androidx.mediarouter.media.MediaRouteSelector
 import com.tvremote.app.R
 import com.tvremote.app.TvRemoteApp
 import com.tvremote.app.data.cast.ScreenCastService
+import com.tvremote.app.util.OperationResult
+import com.tvremote.app.util.SafeRun
 import com.tvremote.app.databinding.ActivityScreenMirrorBinding
 import com.tvremote.app.ui.common.AppViewModelFactory
 
@@ -44,13 +46,26 @@ class ScreenMirrorActivity : AppCompatActivity() {
                 ScreenCastService.ACTION_MIRROR_STARTED -> {
                     mirroring = true
                     val url = intent.getStringExtra(ScreenCastService.EXTRA_STREAM_URL).orEmpty()
-                    viewModel.castLiveStream(url, getString(R.string.mirror_title))
-                    updateUi()
-                    Toast.makeText(
-                        this@ScreenMirrorActivity,
-                        getString(R.string.mirror_active, viewModel.deviceName() ?: "TV"),
-                        Toast.LENGTH_LONG,
-                    ).show()
+                    when (val result = viewModel.castLiveStream(url, getString(R.string.mirror_title))) {
+                        is com.tvremote.app.util.OperationResult.Success -> {
+                            updateUi()
+                            Toast.makeText(
+                                this@ScreenMirrorActivity,
+                                getString(R.string.mirror_active, viewModel.deviceName() ?: "TV"),
+                                Toast.LENGTH_LONG,
+                            ).show()
+                        }
+                        is com.tvremote.app.util.OperationResult.Failure -> {
+                            mirroring = false
+                            ScreenCastService.stop(this@ScreenMirrorActivity)
+                            updateUi()
+                            Toast.makeText(
+                                this@ScreenMirrorActivity,
+                                getString(R.string.cast_failed, result.message),
+                                Toast.LENGTH_LONG,
+                            ).show()
+                        }
+                    }
                 }
                 ScreenCastService.ACTION_MIRROR_STOPPED -> {
                     mirroring = false
@@ -71,13 +86,6 @@ class ScreenMirrorActivity : AppCompatActivity() {
             .addControlCategory(MediaControlIntent.CATEGORY_LIVE_VIDEO)
             .addControlCategory(MediaControlIntent.CATEGORY_REMOTE_PLAYBACK)
             .build()
-
-        (application as TvRemoteApp).container.castRepository.onSessionChanged = { session ->
-            runOnUiThread {
-                binding.selectedDeviceLabel.text = session?.castDevice?.friendlyName
-                    ?: getString(R.string.cast_select_device)
-            }
-        }
         binding.selectedDeviceLabel.text = viewModel.deviceName()
             ?: getString(R.string.cast_select_device)
 
@@ -105,6 +113,12 @@ class ScreenMirrorActivity : AppCompatActivity() {
         binding.stopMirrorButton.isVisible = mirroring
     }
 
+    override fun onResume() {
+        super.onResume()
+        binding.selectedDeviceLabel.text = viewModel.deviceName()
+            ?: getString(R.string.cast_select_device)
+    }
+
     override fun onStart() {
         super.onStart()
         val filter = IntentFilter().apply {
@@ -119,7 +133,16 @@ class ScreenMirrorActivity : AppCompatActivity() {
     }
 
     override fun onStop() {
-        unregisterReceiver(mirrorReceiver)
+        SafeRun.run(TAG) {
+            try {
+                unregisterReceiver(mirrorReceiver)
+            } catch (_: IllegalArgumentException) {
+            }
+        }
         super.onStop()
+    }
+
+    companion object {
+        private const val TAG = "ScreenMirrorActivity"
     }
 }

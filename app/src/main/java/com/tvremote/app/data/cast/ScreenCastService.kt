@@ -21,7 +21,9 @@ import android.os.Looper
 import androidx.core.app.NotificationCompat
 import com.tvremote.app.R
 import com.tvremote.app.ui.main.MainActivity
+import com.tvremote.app.util.AppLogger
 import com.tvremote.app.util.NetworkUtils
+import com.tvremote.app.util.SafeRun
 import fi.iki.elonen.NanoHTTPD
 import java.io.ByteArrayOutputStream
 import java.io.PipedInputStream
@@ -41,25 +43,34 @@ class ScreenCastService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        when (intent?.action) {
-            ACTION_STOP -> {
-                stopMirror()
-                stopSelf()
-            }
-            ACTION_START -> {
-                val resultCode = intent.getIntExtra(EXTRA_RESULT_CODE, 0)
-                val data = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    intent.getParcelableExtra(EXTRA_RESULT_DATA, Intent::class.java)
-                } else {
-                    @Suppress("DEPRECATION")
-                    intent.getParcelableExtra(EXTRA_RESULT_DATA)
-                }
-                if (data == null) {
+        SafeRun.run(TAG) {
+            when (intent?.action) {
+                ACTION_STOP -> {
+                    stopMirror()
                     stopSelf()
-                    return START_NOT_STICKY
                 }
-                startForeground(NOTIFICATION_ID, buildNotification(getString(R.string.mirror_notification_title)))
-                startMirror(resultCode, data)
+                ACTION_START -> {
+                    val resultCode = intent.getIntExtra(EXTRA_RESULT_CODE, 0)
+                    val data = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        intent.getParcelableExtra(EXTRA_RESULT_DATA, Intent::class.java)
+                    } else {
+                        @Suppress("DEPRECATION")
+                        intent.getParcelableExtra(EXTRA_RESULT_DATA)
+                    }
+                    if (data == null) {
+                        stopSelf()
+                        return@run
+                    }
+                    try {
+                        startForeground(NOTIFICATION_ID, buildNotification(getString(R.string.mirror_notification_title)))
+                        startMirror(resultCode, data)
+                    } catch (e: Exception) {
+                        AppLogger.e(TAG, "Failed to start mirror", e)
+                        stopMirror()
+                        sendStoppedBroadcast()
+                        stopSelf()
+                    }
+                }
             }
         }
         return START_STICKY
@@ -70,12 +81,15 @@ class ScreenCastService : Service() {
         running.set(true)
 
         val metrics = resources.displayMetrics
-        val width = metrics.widthPixels
-        val height = metrics.heightPixels
-        val density = metrics.densityDpi
+        val width = metrics.widthPixels.coerceAtLeast(1)
+        val height = metrics.heightPixels.coerceAtLeast(1)
+        val density = metrics.densityDpi.coerceAtLeast(1)
 
         val projectionManager = getSystemService(MediaProjectionManager::class.java)
+            ?: throw IllegalStateException("MediaProjection unavailable")
         projection = projectionManager.getMediaProjection(resultCode, data)
+            ?: throw IllegalStateException("MediaProjection permission invalid")
+
         imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2)
         virtualDisplay = projection?.createVirtualDisplay(
             "ScreenCast",
@@ -89,45 +103,61 @@ class ScreenCastService : Service() {
         )
 
         imageReader?.setOnImageAvailableListener({ reader ->
-            val image = reader.acquireLatestImage() ?: return@setOnImageAvailableListener
-            try {
-                val plane = image.planes[0]
-                val buffer = plane.buffer
-                val pixelStride = plane.pixelStride
-                val rowStride = plane.rowStride
-                val rowPadding = rowStride - pixelStride * width
-                val bitmap = Bitmap.createBitmap(
-                    width + rowPadding / pixelStride,
-                    height,
-                    Bitmap.Config.ARGB_8888,
-                )
-                bitmap.copyPixelsFromBuffer(buffer)
-                val cropped = Bitmap.createBitmap(bitmap, 0, 0, width, height)
-                bitmap.recycle()
-                val stream = ByteArrayOutputStream()
-                cropped.compress(Bitmap.CompressFormat.JPEG, 60, stream)
-                cropped.recycle()
-                latestFrame.set(stream.toByteArray())
-            } finally {
-                image.close()
+            SafeRun.run(TAG) {
+                val image = reader.acquireLatestImage() ?: return@run
+                try {
+                    val plane = image.planes.getOrNull(0) ?: return@run
+                    val buffer = plane.buffer
+                    val pixelStride = plane.pixelStride
+                    val rowStride = plane.rowStride
+                    val rowPadding = rowStride - pixelStride * width
+                    val bitmap = Bitmap.createBitmap(
+                        width + rowPadding / pixelStride,
+                        height,
+                        Bitmap.Config.ARGB_8888,
+                    )
+                    bitmap.copyPixelsFromBuffer(buffer)
+                    val cropped = Bitmap.createBitmap(bitmap, 0, 0, width, height)
+                    bitmap.recycle()
+                    val stream = ByteArrayOutputStream()
+                    cropped.compress(Bitmap.CompressFormat.JPEG, 60, stream)
+                    cropped.recycle()
+                    latestFrame.set(stream.toByteArray())
+                } finally {
+                    image.close()
+                }
             }
         }, handler)
 
-        httpServer = MjpegServer(PORT, latestFrame).also { it.start() }
+        httpServer = MjpegServer(PORT, latestFrame).also {
+            try {
+                it.start()
+            } catch (e: Exception) {
+                AppLogger.e(TAG, "HTTP server start failed", e)
+                throw e
+            }
+        }
         sendBroadcast(Intent(ACTION_MIRROR_STARTED).putExtra(EXTRA_STREAM_URL, streamUrl()))
     }
 
     private fun stopMirror() {
         running.set(false)
-        httpServer?.stop()
-        httpServer = null
-        virtualDisplay?.release()
-        virtualDisplay = null
-        imageReader?.close()
-        imageReader = null
-        projection?.stop()
-        projection = null
-        sendBroadcast(Intent(ACTION_MIRROR_STOPPED))
+        SafeRun.run(TAG) {
+            httpServer?.stop()
+            httpServer = null
+            virtualDisplay?.release()
+            virtualDisplay = null
+            imageReader?.close()
+            imageReader = null
+            projection?.stop()
+            projection = null
+        }
+    }
+
+    private fun sendStoppedBroadcast() {
+        SafeRun.run(TAG) {
+            sendBroadcast(Intent(ACTION_MIRROR_STOPPED))
+        }
     }
 
     private fun buildNotification(title: String): Notification {
@@ -154,12 +184,13 @@ class ScreenCastService : Service() {
                 getString(R.string.mirror_title),
                 NotificationManager.IMPORTANCE_LOW,
             )
-            getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
+            getSystemService(NotificationManager::class.java)?.createNotificationChannel(channel)
         }
     }
 
     override fun onDestroy() {
         stopMirror()
+        sendStoppedBroadcast()
         super.onDestroy()
     }
 
@@ -168,43 +199,52 @@ class ScreenCastService : Service() {
         private val frameRef: AtomicReference<ByteArray?>,
     ) : NanoHTTPD(port) {
         override fun serve(session: IHTTPSession): Response {
-            if (session.uri == "/stream.mjpg") {
-                val output = PipedOutputStream()
-                val input = PipedInputStream(output, 256 * 1024)
-                Thread {
-                    try {
-                        while (!Thread.interrupted()) {
-                            val frame = frameRef.get() ?: continue
-                            val header = (
-                                "--BoundaryString\r\n" +
-                                    "Content-Type: image/jpeg\r\n" +
-                                    "Content-Length: ${frame.size}\r\n\r\n"
-                                ).toByteArray()
-                            output.write(header)
-                            output.write(frame)
-                            output.write("\r\n".toByteArray())
-                            output.flush()
-                            Thread.sleep(100)
+            return SafeRun.runCatching(TAG, errorResponse()) {
+                if (session.uri == "/stream.mjpg") {
+                    val output = PipedOutputStream()
+                    val input = PipedInputStream(output, 256 * 1024)
+                    Thread {
+                        SafeRun.run(TAG) {
+                            try {
+                                while (!Thread.interrupted()) {
+                                    val frame = frameRef.get() ?: continue
+                                    val header = (
+                                        "--BoundaryString\r\n" +
+                                            "Content-Type: image/jpeg\r\n" +
+                                            "Content-Length: ${frame.size}\r\n\r\n"
+                                        ).toByteArray()
+                                    output.write(header)
+                                    output.write(frame)
+                                    output.write("\r\n".toByteArray())
+                                    output.flush()
+                                    Thread.sleep(100)
+                                }
+                            } catch (_: Exception) {
+                            } finally {
+                                try {
+                                    output.close()
+                                } catch (_: Exception) {
+                                }
+                            }
                         }
-                    } catch (_: Exception) {
-                    } finally {
-                        try {
-                            output.close()
-                        } catch (_: Exception) {
-                        }
-                    }
-                }.start()
-                return newChunkedResponse(
-                    Response.Status.OK,
-                    "multipart/x-mixed-replace; boundary=--BoundaryString",
-                    input,
-                )
+                    }.start()
+                    newChunkedResponse(
+                        Response.Status.OK,
+                        "multipart/x-mixed-replace; boundary=--BoundaryString",
+                        input,
+                    )
+                } else {
+                    newFixedLengthResponse(Response.Status.OK, "text/plain", "ScreenCast active")
+                }
             }
-            return newFixedLengthResponse(Response.Status.OK, "text/plain", "ScreenCast active")
         }
+
+        private fun errorResponse(): Response =
+            newFixedLengthResponse(Response.Status.INTERNAL_ERROR, "text/plain", "Mirror error")
     }
 
     companion object {
+        private const val TAG = "ScreenCastService"
         const val ACTION_START = "com.tvremote.app.action.START_MIRROR"
         const val ACTION_STOP = "com.tvremote.app.action.STOP_MIRROR"
         const val ACTION_MIRROR_STARTED = "com.tvremote.app.action.MIRROR_STARTED"
@@ -219,18 +259,22 @@ class ScreenCastService : Service() {
         fun streamUrl(): String = "http://${NetworkUtils.getWifiIpv4Address() ?: "127.0.0.1"}:$PORT/stream.mjpg"
 
         fun start(context: Context, resultCode: Int, data: Intent) {
-            val intent = Intent(context, ScreenCastService::class.java).apply {
-                action = ACTION_START
-                putExtra(EXTRA_RESULT_CODE, resultCode)
-                putExtra(EXTRA_RESULT_DATA, data)
+            SafeRun.run(TAG) {
+                val intent = Intent(context, ScreenCastService::class.java).apply {
+                    action = ACTION_START
+                    putExtra(EXTRA_RESULT_CODE, resultCode)
+                    putExtra(EXTRA_RESULT_DATA, data)
+                }
+                context.startForegroundService(intent)
             }
-            context.startForegroundService(intent)
         }
 
         fun stop(context: Context) {
-            context.startService(
-                Intent(context, ScreenCastService::class.java).apply { action = ACTION_STOP },
-            )
+            SafeRun.run(TAG) {
+                context.startService(
+                    Intent(context, ScreenCastService::class.java).apply { action = ACTION_STOP },
+                )
+            }
         }
     }
 }

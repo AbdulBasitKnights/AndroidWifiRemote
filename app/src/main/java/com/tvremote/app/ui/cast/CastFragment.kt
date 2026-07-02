@@ -11,6 +11,8 @@ import androidx.fragment.app.viewModels
 import com.tvremote.app.R
 import com.tvremote.app.databinding.FragmentCastBinding
 import com.tvremote.app.ui.main.MainActivity
+import com.tvremote.app.util.OperationResult
+import com.tvremote.app.util.SafeRun
 import androidx.mediarouter.media.MediaControlIntent
 import androidx.mediarouter.media.MediaRouteSelector
 
@@ -33,31 +35,41 @@ class CastFragment : Fragment(R.layout.fragment_cast) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentCastBinding.bind(view)
-        viewModel.initialize()
+        SafeRun.run(TAG) {
+            _binding = FragmentCastBinding.bind(view)
+            viewModel.initialize()
 
-        val binding = _binding ?: return
-        binding.castRouteButton.visibility = View.VISIBLE
-        binding.castRouteButton.routeSelector = MediaRouteSelector.Builder()
-            .addControlCategory(MediaControlIntent.CATEGORY_LIVE_VIDEO)
-            .addControlCategory(MediaControlIntent.CATEGORY_REMOTE_PLAYBACK)
-            .build()
+            val binding = _binding ?: return@run
+            binding.castRouteButton.visibility = View.VISIBLE
+            binding.castRouteButton.routeSelector = MediaRouteSelector.Builder()
+                .addControlCategory(MediaControlIntent.CATEGORY_LIVE_VIDEO)
+                .addControlCategory(MediaControlIntent.CATEGORY_REMOTE_PLAYBACK)
+                .build()
 
-        binding.screenMirrorCard.setOnClickListener {
-            if (!ensureCastDevice()) return@setOnClickListener
-            startActivity(Intent(requireContext(), ScreenMirrorActivity::class.java))
-        }
-        binding.photosCard.setOnClickListener {
-            if (!ensureCastDevice()) return@setOnClickListener
-            startActivity(Intent(requireContext(), CastPhotoActivity::class.java))
-        }
-        binding.videosCard.setOnClickListener {
-            if (!ensureCastDevice()) return@setOnClickListener
-            videoPicker.launch(arrayOf("video/*"))
-        }
-        binding.audioCard.setOnClickListener {
-            if (!ensureCastDevice()) return@setOnClickListener
-            audioPicker.launch(arrayOf("audio/*"))
+            binding.screenMirrorCard.setOnClickListener {
+                SafeRun.run(TAG) {
+                    if (!ensureCastDevice()) return@run
+                    startActivity(Intent(requireContext(), ScreenMirrorActivity::class.java))
+                }
+            }
+            binding.photosCard.setOnClickListener {
+                SafeRun.run(TAG) {
+                    if (!ensureCastDevice()) return@run
+                    startActivity(Intent(requireContext(), CastPhotoActivity::class.java))
+                }
+            }
+            binding.videosCard.setOnClickListener {
+                SafeRun.run(TAG) {
+                    if (!ensureCastDevice()) return@run
+                    videoPicker.launch(arrayOf("video/*"))
+                }
+            }
+            binding.audioCard.setOnClickListener {
+                SafeRun.run(TAG) {
+                    if (!ensureCastDevice()) return@run
+                    audioPicker.launch(arrayOf("audio/*"))
+                }
+            }
         }
     }
 
@@ -72,31 +84,36 @@ class CastFragment : Fragment(R.layout.fragment_cast) {
     }
 
     private fun castUri(uri: Uri, isVideo: Boolean, isAudio: Boolean = false) {
-        try {
-            requireContext().contentResolver.takePersistableUriPermission(
-                uri,
-                Intent.FLAG_GRANT_READ_URI_PERMISSION,
-            )
-        } catch (_: SecurityException) {
-        }
-        try {
-            viewModel.castMedia(uri, isVideo, isAudio)
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.cast_started, viewModel.deviceName() ?: "TV"),
-                Toast.LENGTH_SHORT,
-            ).show()
-        } catch (e: Exception) {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.cast_failed, e.message ?: "error"),
-                Toast.LENGTH_SHORT,
-            ).show()
+        SafeRun.run(TAG) {
+            try {
+                requireContext().contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION,
+                )
+            } catch (_: SecurityException) {
+            } catch (_: Exception) {
+            }
+            when (val result = viewModel.castMedia(uri, isVideo, isAudio)) {
+                is OperationResult.Success -> Toast.makeText(
+                    requireContext(),
+                    getString(R.string.cast_started, viewModel.deviceName() ?: "TV"),
+                    Toast.LENGTH_SHORT,
+                ).show()
+                is OperationResult.Failure -> Toast.makeText(
+                    requireContext(),
+                    getString(R.string.cast_failed, result.message),
+                    Toast.LENGTH_SHORT,
+                ).show()
+            }
         }
     }
 
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
+    }
+
+    companion object {
+        private const val TAG = "CastFragment"
     }
 }

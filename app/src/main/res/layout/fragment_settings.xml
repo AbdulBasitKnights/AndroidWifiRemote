@@ -185,6 +185,29 @@
         </com.google.android.material.card.MaterialCardView>
 
         <TextView
+            android:id="@+id/sessionStatusLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_glass_panel"
+            android:padding="12dp"
+            android:text="@string/remote_paused_casting"
+            android:textColor="@color/primary"
+            android:textSize="13sp"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/reconnectButton"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/reconnect_remote"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <TextView
             android:id="@+id/pairingStateLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

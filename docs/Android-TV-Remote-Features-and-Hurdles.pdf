@@ -1,0 +1,182 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+2 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+3 0 obj
+<< /Length 3 >>
+stream
+
+ET
+endstream
+endobj
+4 0 obj
+<< /Length 2906 >>
+stream
+BT /F2 22 Tf 0.1 0.14 0.49 rg
+1 0 0 1 50 780 Tm (Android TV Remote) Tj
+/F1 13 Tf 0.33 0.33 0.33 rg
+1 0 0 1 50 755 Tm (Features and Development Hurdles) Tj
+/F1 9 Tf
+1 0 0 1 50 735 Tm (Project: AndroidTVRemote  |  Date: June 30, 2026) Tj
+0 0 0 rg /F1 10 Tf
+1 0 0 1 50 686 Tm (1. App Overview) Tj
+1 0 0 1 50 665 Tm (WiFi smart remote and casting app for Android TV / Google TV using protocol v2 \(TLS ports) Tj
+1 0 0 1 50 652 Tm (6466/6467\) plus Google Cast. Built in Kotlin with MVVM: remotecontrol library module + app) Tj
+1 0 0 1 50 639 Tm (UI module.) Tj
+1 0 0 1 50 611 Tm (2. Features) Tj
+/F2 12 Tf 0.1 0.14 0.49 rg 1 0 0 1 50 585 Tm (2.1 Settings - TV Connection) Tj
+0 0 0 rg /F1 10 Tf
+1 0 0 1 58 566 Tm (- mDNS scan for Android TVs on WiFi) Tj
+1 0 0 1 58 553 Tm (- Tap TV to pair; 6-char code entry; Complete Pairing button) Tj
+1 0 0 1 58 540 Tm (- Manual IP fallback; Get new code; Reconnect without re-pairing) Tj
+1 0 0 1 58 527 Tm (- Saved pairing state; phone IP display; live status labels) Tj
+/F2 12 Tf 0.1 0.14 0.49 rg 1 0 0 1 50 509 Tm (2.2 Remote Tab) Tj
+0 0 0 rg /F1 10 Tf
+1 0 0 1 58 490 Tm (- D-pad, Home, Back, Power, Apps, TV Input, Voice Search) Tj
+1 0 0 1 58 477 Tm (- Volume, Channel, Mute, Play/Pause, Rewind, Forward) Tj
+1 0 0 1 58 464 Tm (- Shortcuts: Netflix, YouTube, Prime Video, Hotstar) Tj
+1 0 0 1 58 451 Tm (- Connection status; jump to Cast tab) Tj
+/F2 12 Tf 0.1 0.14 0.49 rg 1 0 0 1 50 433 Tm (2.3 Cast Tab) Tj
+0 0 0 rg /F1 10 Tf
+1 0 0 1 58 414 Tm (- Google Cast device picker \(MediaRouter\)) Tj
+1 0 0 1 58 401 Tm (- Cast photos \(Downloads/Gallery\), videos, audio) Tj
+1 0 0 1 58 388 Tm (- Screen mirror via MediaProjection + MJPEG HTTP stream) Tj
+1 0 0 1 58 375 Tm (- Foreground service + notification while mirroring) Tj
+/F2 12 Tf 0.1 0.14 0.49 rg 1 0 0 1 50 357 Tm (2.4 Session & Architecture) Tj
+0 0 0 rg /F1 10 Tf
+1 0 0 1 58 338 Tm (- Remote pauses during cast/mirror; auto-resumes after) Tj
+1 0 0 1 58 325 Tm (- MVVM: ViewModels, Repositories, AppContainer DI) Tj
+1 0 0 1 58 312 Tm (- StateFlow UI; ViewBinding; glass-style bottom nav UI) Tj
+/F2 12 Tf 0.1 0.14 0.49 rg 1 0 0 1 50 294 Tm (2.5 Reliability) Tj
+0 0 0 rg /F1 10 Tf
+1 0 0 1 58 275 Tm (- SafeRun error wrapping; OperationResult for cast) Tj
+1 0 0 1 58 262 Tm (- CrashGuard logging; safe fragments and NSD/Cast handling) Tj
+1 0 0 1 50 238 Tm (3. Modules) Tj
+1 0 0 1 58 217 Tm (- app: ui/, data/, di/, util/) Tj
+1 0 0 1 58 204 Tm (- remotecontrol: PairingManager, RemoteManager, TLS, certs) Tj
+1 0 0 1 50 180 Tm (4. Development Hurdles) Tj
+/F2 12 Tf 0.1 0.14 0.49 rg 1 0 0 1 50 154 Tm (Pairing & UX) Tj
+0 0 0 rg /F1 10 Tf
+/F2 10 Tf 1 0 0 1 50 134 Tm (Submit button / pair loop) Tj
+/F1 10 Tf
+1 0 0 1 50 117 Tm (Problem: Code on TV but no submit; Pair again re-sent code.) Tj
+1 0 0 1 50 100 Tm (Solution: Complete Pairing + waitingForCode guard.) Tj
+/F2 10 Tf 1 0 0 1 50 78 Tm (Manual IP first) Tj
+/F1 10 Tf
+ET
+endstream
+endobj
+5 0 obj
+<< /Length 2576 >>
+stream
+BT /F1 11 Tf
+1 0 0 1 50 767 Tm (Problem: Users wanted tap-to-pair from scan list.) Tj
+1 0 0 1 50 750 Tm (Solution: TV cards primary; manual IP optional.) Tj
+/F2 10 Tf 1 0 0 1 50 728 Tm (Re-pair after cast) Tj
+/F1 10 Tf
+1 0 0 1 50 711 Tm (Problem: Cast broke remote; endless new pairing codes.) Tj
+1 0 0 1 50 694 Tm (Solution: PairingStore, connect vs pair, ConnectionCoordinator pause/resume.) Tj
+/F2 12 Tf 0.1 0.14 0.49 rg 1 0 0 1 50 668 Tm (Threading & Lifecycle) Tj
+0 0 0 rg /F1 10 Tf
+/F2 10 Tf 1 0 0 1 50 648 Tm (Wrong thread UI) Tj
+/F1 10 Tf
+1 0 0 1 50 631 Tm (Problem: Callbacks updated UI off main thread.) Tj
+1 0 0 1 50 614 Tm (Solution: mainHandler post on all manager callbacks.) Tj
+/F2 10 Tf 1 0 0 1 50 592 Tm (Binding NPE) Tj
+/F1 10 Tf
+1 0 0 1 50 575 Tm (Problem: Tab switch crashed on null binding.) Tj
+1 0 0 1 50 558 Tm (Solution: _binding guards; repeatOnLifecycle.) Tj
+/F2 10 Tf 1 0 0 1 50 536 Tm (Fragment transaction crash) Tj
+/F1 10 Tf
+1 0 0 1 50 519 Tm (Problem: commit during state save.) Tj
+1 0 0 1 50 502 Tm (Solution: isStateSaved / isDestroyed checks.) Tj
+/F2 12 Tf 0.1 0.14 0.49 rg 1 0 0 1 50 476 Tm (Build & Code) Tj
+0 0 0 rg /F1 10 Tf
+/F2 10 Tf 1 0 0 1 50 456 Tm (Windows path too long) Tj
+/F1 10 Tf
+1 0 0 1 50 439 Tm (Problem: Gradle transform MAX_PATH error.) Tj
+1 0 0 1 50 422 Tm (Solution: Short build dir in build.gradle.kts.) Tj
+/F2 10 Tf 1 0 0 1 50 400 Tm (combine\(\) 5-flow limit) Tj
+/F1 10 Tf
+1 0 0 1 50 383 Tm (Problem: SettingsViewModel compile error.) Tj
+1 0 0 1 50 366 Tm (Solution: Nested combine for 6+ flows.) Tj
+/F2 10 Tf 1 0 0 1 50 344 Tm (MVVM refactor duplicates) Tj
+/F1 10 Tf
+1 0 0 1 50 327 Tm (Problem: Old root files caused duplicate class errors.) Tj
+1 0 0 1 50 310 Tm (Solution: Deleted legacy files; manifest path updates.) Tj
+/F2 12 Tf 0.1 0.14 0.49 rg 1 0 0 1 50 284 Tm (Cast vs Remote) Tj
+0 0 0 rg /F1 10 Tf
+/F2 10 Tf 1 0 0 1 50 264 Tm (Protocols conflict) Tj
+/F1 10 Tf
+1 0 0 1 50 247 Tm (Problem: Cast dropped remote socket.) Tj
+1 0 0 1 50 230 Tm (Solution: Separate session modes; pause remote on cast.) Tj
+/F2 10 Tf 1 0 0 1 50 208 Tm (Auto-pair fallback) Tj
+/F1 10 Tf
+1 0 0 1 50 191 Tm (Problem: 8s timeout re-paired already-paired TVs.) Tj
+1 0 0 1 50 174 Tm (Solution: Fallback only on explicit pair; reconnect backoff.) Tj
+/F2 12 Tf 0.1 0.14 0.49 rg 1 0 0 1 50 148 Tm (Stability) Tj
+0 0 0 rg /F1 10 Tf
+/F2 10 Tf 1 0 0 1 50 128 Tm (Unhandled exceptions) Tj
+/F1 10 Tf
+1 0 0 1 50 111 Tm (Problem: NSD, Cast, projection could crash.) Tj
+1 0 0 1 50 94 Tm (Solution: SafeRun, OperationResult, protocol try/catch.) Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Length 596 >>
+stream
+BT /F1 11 Tf
+1 0 0 1 50 756 Tm (5. Test Checklist) Tj
+1 0 0 1 58 735 Tm (- Pair, remote keys, tab switch during scan) Tj
+1 0 0 1 58 722 Tm (- Cast photo/video; mirror start/stop; remote pause/resume) Tj
+1 0 0 1 58 709 Tm (- Reconnect paired TV without new code) Tj
+1 0 0 1 58 696 Tm (- Deny permissions — no crash) Tj
+1 0 0 1 50 672 Tm (6. Limitations) Tj
+1 0 0 1 58 651 Tm (- Same WiFi required; emulator cannot reach real TV) Tj
+1 0 0 1 58 638 Tm (- Mirror quality depends on network \(MJPEG over HTTP\)) Tj
+1 0 0 1 58 625 Tm (- Cast and Remote are separate protocols, coordinated in app) Tj
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 11 0 R /MediaBox [0 0 595 842] /Contents 3 0 R /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> >>
+endobj
+8 0 obj
+<< /Type /Page /Parent 11 0 R /MediaBox [0 0 595 842] /Contents 4 0 R /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> >>
+endobj
+9 0 obj
+<< /Type /Page /Parent 11 0 R /MediaBox [0 0 595 842] /Contents 5 0 R /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> >>
+endobj
+10 0 obj
+<< /Type /Page /Parent 11 0 R /MediaBox [0 0 595 842] /Contents 6 0 R /Resources << /Font << /F1 1 0 R /F2 2 0 R >> >> >>
+endobj
+11 0 obj
+<< /Type /Pages /Kids [7 0 R 8 0 R 9 0 R 10 0 R] /Count 4 >>
+endobj
+12 0 obj
+<< /Type /Catalog /Pages 11 0 R >>
+endobj
+xref
+0 13
+0000000000 65535 f 
+0000000009 00000 n 
+0000000079 00000 n 
+0000000154 00000 n 
+0000000206 00000 n 
+0000003164 00000 n 
+0000005792 00000 n 
+0000006439 00000 n 
+0000006576 00000 n 
+0000006713 00000 n 
+0000006850 00000 n 
+0000006988 00000 n 
+0000007065 00000 n 
+trailer
+<< /Size 13 /Root 12 0 R >>
+startxref
+7116
+%%EOF

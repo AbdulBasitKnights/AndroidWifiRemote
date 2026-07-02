@@ -37,6 +37,13 @@
     <string name="settings_pair_subtitle">Tap your TV below to start pairing. A code will appear on TV.</string>
     <string name="tvs_on_wifi">TVs on your WiFi</string>
     <string name="tap_to_pair">Tap to pair</string>
+    <string name="tap_to_reconnect">Tap to reconnect</string>
+    <string name="reconnect_remote">Reconnect Remote</string>
+    <string name="reconnecting_remote">Reconnecting remote…</string>
+    <string name="remote_paused_casting">Remote paused while casting</string>
+    <string name="remote_paused_screen_mirror">Remote paused — screen mirroring active</string>
+    <string name="stop_cast_before_remote">Stop casting before using remote or pairing</string>
+    <string name="settings_reconnect_subtitle">Paired TVs reconnect without a new code. Use Get new code only if pairing fails.</string>
     <string name="pairing_in_progress">Pairing…</string>
     <string name="enter_ip_manually">Can\'t see your TV? Enter IP manually</string>
     <string name="hide_manual_ip">Hide manual IP</string>

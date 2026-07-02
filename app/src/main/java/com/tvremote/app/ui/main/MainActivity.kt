@@ -11,63 +11,77 @@ import com.tvremote.app.ui.cast.CastFragment
 import com.tvremote.app.ui.common.AppViewModelFactory
 import com.tvremote.app.ui.remote.RemoteFragment
 import com.tvremote.app.ui.settings.SettingsFragment
+import com.tvremote.app.util.SafeRun
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
-    private lateinit var container: AppContainer
+    private var binding: ActivityMainBinding? = null
+    private var container: AppContainer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        SafeRun.run(TAG) {
+            binding = ActivityMainBinding.inflate(layoutInflater)
+            setContentView(binding!!.root)
 
-        container = (application as TvRemoteApp).container
-        container.castRepository.initialize()
+            container = (application as? TvRemoteApp)?.container
+            container?.castRepository?.initialize()
 
-        if (savedInstanceState == null) {
-            showFragment(RemoteFragment(), TAG_REMOTE)
-        }
+            if (savedInstanceState == null) {
+                showFragment(RemoteFragment(), TAG_REMOTE)
+            }
 
-        binding.bottomNav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_remote -> {
-                    showFragment(RemoteFragment(), TAG_REMOTE)
-                    true
+            binding?.bottomNav?.setOnItemSelectedListener { item ->
+                SafeRun.run(TAG) {
+                    when (item.itemId) {
+                        R.id.nav_remote -> showFragment(RemoteFragment(), TAG_REMOTE)
+                        R.id.nav_cast -> showFragment(CastFragment(), TAG_CAST)
+                        R.id.nav_settings -> showFragment(SettingsFragment(), TAG_SETTINGS)
+                        else -> return@run
+                    }
                 }
-                R.id.nav_cast -> {
-                    showFragment(CastFragment(), TAG_CAST)
-                    true
-                }
-                R.id.nav_settings -> {
-                    showFragment(SettingsFragment(), TAG_SETTINGS)
-                    true
-                }
-                else -> false
+                true
             }
         }
     }
 
     private fun showFragment(fragment: Fragment, tag: String) {
-        val current = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
-        if (current?.javaClass == fragment.javaClass) return
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainer, fragment, tag)
-            .commit()
+        SafeRun.run(TAG) {
+            if (isFinishing || isDestroyed) return@run
+            val fm = supportFragmentManager
+            if (fm.isStateSaved) return@run
+            val current = fm.findFragmentById(R.id.fragmentContainer)
+            if (current?.javaClass == fragment.javaClass) return@run
+            fm.beginTransaction()
+                .replace(R.id.fragmentContainer, fragment, tag)
+                .commit()
+        }
     }
 
-    fun appContainer(): AppContainer = container
+    fun appContainer(): AppContainer {
+        return container ?: (application as TvRemoteApp).container
+    }
 
-    fun viewModelFactory(): AppViewModelFactory = AppViewModelFactory(container)
+    fun viewModelFactory(): AppViewModelFactory = AppViewModelFactory(appContainer())
 
     fun navigateToCast() {
-        binding.bottomNav.selectedItemId = R.id.nav_cast
+        SafeRun.runOnMain(TAG) {
+            binding?.bottomNav?.selectedItemId = R.id.nav_cast
+        }
     }
 
     fun navigateToSettings() {
-        binding.bottomNav.selectedItemId = R.id.nav_settings
+        SafeRun.runOnMain(TAG) {
+            binding?.bottomNav?.selectedItemId = R.id.nav_settings
+        }
+    }
+
+    override fun onDestroy() {
+        binding = null
+        super.onDestroy()
     }
 
     companion object {
+        private const val TAG = "MainActivity"
         private const val TAG_REMOTE = "remote"
         private const val TAG_CAST = "cast"
         private const val TAG_SETTINGS = "settings"

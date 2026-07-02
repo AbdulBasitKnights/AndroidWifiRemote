@@ -2,6 +2,7 @@ package com.tvremote.app.ui.remote
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -10,6 +11,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.tvremote.app.R
 import com.tvremote.app.databinding.FragmentRemoteBinding
 import com.tvremote.app.ui.main.MainActivity
+import com.tvremote.app.util.SafeRun
 import com.tvremote.control.commands.Key
 import kotlinx.coroutines.launch
 
@@ -28,32 +30,34 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
 
     private fun setupControls() {
         val binding = _binding ?: return
-        binding.powerButton.setOnClickListener { viewModel.power() }
+        binding.powerButton.setOnClickListener { SafeRun.run(TAG) { viewModel.power() } }
         binding.headerCastButton.setOnClickListener {
-            (requireActivity() as MainActivity).navigateToCast()
+            SafeRun.run(TAG) {
+                (requireActivity() as? MainActivity)?.navigateToCast()
+            }
         }
-        binding.netflixChip.setOnClickListener { viewModel.runNetflix() }
-        binding.youtubeChip.setOnClickListener { viewModel.runYouTube() }
-        binding.primeChip.setOnClickListener { viewModel.runPrime() }
-        binding.hotstarChip.setOnClickListener { viewModel.runHotstar() }
-        binding.upButton.setOnClickListener { viewModel.sendKey(Key.KEYCODE_DPAD_UP) }
-        binding.downButton.setOnClickListener { viewModel.sendKey(Key.KEYCODE_DPAD_DOWN) }
-        binding.leftButton.setOnClickListener { viewModel.sendKey(Key.KEYCODE_DPAD_LEFT) }
-        binding.rightButton.setOnClickListener { viewModel.sendKey(Key.KEYCODE_DPAD_RIGHT) }
-        binding.okButton.setOnClickListener { viewModel.sendKey(Key.KEYCODE_DPAD_CENTER) }
-        binding.volUpButton.setOnClickListener { viewModel.volUp() }
-        binding.volDownButton.setOnClickListener { viewModel.volDown() }
-        binding.channelUpButton.setOnClickListener { viewModel.channelUp() }
-        binding.channelDownButton.setOnClickListener { viewModel.channelDown() }
-        binding.homeButton.setOnClickListener { viewModel.sendKey(Key.KEYCODE_HOME) }
-        binding.backButton.setOnClickListener { viewModel.sendKey(Key.KEYCODE_BACK) }
-        binding.appsButton.setOnClickListener { viewModel.apps() }
-        binding.inputButton.setOnClickListener { viewModel.tvInput() }
-        binding.micButton.setOnClickListener { viewModel.voiceSearch() }
-        binding.muteButton.setOnClickListener { viewModel.mute() }
-        binding.rewindButton.setOnClickListener { viewModel.rewind() }
-        binding.playPauseButton.setOnClickListener { viewModel.playPause() }
-        binding.forwardButton.setOnClickListener { viewModel.forward() }
+        binding.netflixChip.setOnClickListener { SafeRun.run(TAG) { viewModel.runNetflix() } }
+        binding.youtubeChip.setOnClickListener { SafeRun.run(TAG) { viewModel.runYouTube() } }
+        binding.primeChip.setOnClickListener { SafeRun.run(TAG) { viewModel.runPrime() } }
+        binding.hotstarChip.setOnClickListener { SafeRun.run(TAG) { viewModel.runHotstar() } }
+        binding.upButton.setOnClickListener { SafeRun.run(TAG) { viewModel.sendKey(Key.KEYCODE_DPAD_UP) } }
+        binding.downButton.setOnClickListener { SafeRun.run(TAG) { viewModel.sendKey(Key.KEYCODE_DPAD_DOWN) } }
+        binding.leftButton.setOnClickListener { SafeRun.run(TAG) { viewModel.sendKey(Key.KEYCODE_DPAD_LEFT) } }
+        binding.rightButton.setOnClickListener { SafeRun.run(TAG) { viewModel.sendKey(Key.KEYCODE_DPAD_RIGHT) } }
+        binding.okButton.setOnClickListener { SafeRun.run(TAG) { viewModel.sendKey(Key.KEYCODE_DPAD_CENTER) } }
+        binding.volUpButton.setOnClickListener { SafeRun.run(TAG) { viewModel.volUp() } }
+        binding.volDownButton.setOnClickListener { SafeRun.run(TAG) { viewModel.volDown() } }
+        binding.channelUpButton.setOnClickListener { SafeRun.run(TAG) { viewModel.channelUp() } }
+        binding.channelDownButton.setOnClickListener { SafeRun.run(TAG) { viewModel.channelDown() } }
+        binding.homeButton.setOnClickListener { SafeRun.run(TAG) { viewModel.sendKey(Key.KEYCODE_HOME) } }
+        binding.backButton.setOnClickListener { SafeRun.run(TAG) { viewModel.sendKey(Key.KEYCODE_BACK) } }
+        binding.appsButton.setOnClickListener { SafeRun.run(TAG) { viewModel.apps() } }
+        binding.inputButton.setOnClickListener { SafeRun.run(TAG) { viewModel.tvInput() } }
+        binding.micButton.setOnClickListener { SafeRun.run(TAG) { viewModel.voiceSearch() } }
+        binding.muteButton.setOnClickListener { SafeRun.run(TAG) { viewModel.mute() } }
+        binding.rewindButton.setOnClickListener { SafeRun.run(TAG) { viewModel.rewind() } }
+        binding.playPauseButton.setOnClickListener { SafeRun.run(TAG) { viewModel.playPause() } }
+        binding.forwardButton.setOnClickListener { SafeRun.run(TAG) { viewModel.forward() } }
     }
 
     private fun observeState() {
@@ -67,6 +71,17 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
                 launch {
                     viewModel.volumeLevel.collect { level ->
                         updateVolumeFill(level)
+                    }
+                }
+                launch {
+                    viewModel.events.collect { event ->
+                        if (event == RemoteViewModel.RemoteEvent.PausedWhileCasting) {
+                            Toast.makeText(
+                                requireContext(),
+                                R.string.remote_paused_casting,
+                                Toast.LENGTH_SHORT,
+                            ).show()
+                        }
                     }
                 }
             }
@@ -85,5 +100,9 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
+    }
+
+    companion object {
+        private const val TAG = "RemoteFragment"
     }
 }

@@ -18,6 +18,8 @@ import com.tvremote.app.TvRemoteApp
 import com.tvremote.app.databinding.ActivityCastPhotoBinding
 import com.tvremote.app.ui.cast.adapter.PhotoGridAdapter
 import com.tvremote.app.ui.common.AppViewModelFactory
+import com.tvremote.app.util.OperationResult
+import com.tvremote.app.util.SafeRun
 
 class CastPhotoActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCastPhotoBinding
@@ -72,33 +74,40 @@ class CastPhotoActivity : AppCompatActivity() {
     }
 
     private fun loadPhotos() {
-        val selection = if (currentSource == PhotoSource.DOWNLOADS) {
-            "${MediaStore.Images.Media.DATA} LIKE ?"
-        } else {
-            null
-        }
-        val selectionArgs = if (currentSource == PhotoSource.DOWNLOADS) {
-            arrayOf("%/Download/%")
-        } else {
-            null
-        }
-        val photos = mutableListOf<Uri>()
-        contentResolver.query(
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            arrayOf(MediaStore.Images.Media._ID),
-            selection,
-            selectionArgs,
-            "${MediaStore.Images.Media.DATE_ADDED} DESC",
-        )?.use { cursor ->
-            val idCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
-            while (cursor.moveToNext() && photos.size < 120) {
-                val id = cursor.getLong(idCol)
-                photos.add(
-                    Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id.toString()),
-                )
+        SafeRun.run(TAG) {
+            val photos = mutableListOf<Uri>()
+            try {
+                val selection = if (currentSource == PhotoSource.DOWNLOADS) {
+                    "${MediaStore.Images.Media.DATA} LIKE ?"
+                } else {
+                    null
+                }
+                val selectionArgs = if (currentSource == PhotoSource.DOWNLOADS) {
+                    arrayOf("%/Download/%")
+                } else {
+                    null
+                }
+                contentResolver.query(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    arrayOf(MediaStore.Images.Media._ID),
+                    selection,
+                    selectionArgs,
+                    "${MediaStore.Images.Media.DATE_ADDED} DESC",
+                )?.use { cursor ->
+                    val idCol = cursor.getColumnIndex(MediaStore.Images.Media._ID)
+                    if (idCol < 0) return@use
+                    while (cursor.moveToNext() && photos.size < 120) {
+                        val id = cursor.getLong(idCol)
+                        photos.add(
+                            Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id.toString()),
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this, getString(R.string.cast_failed, e.message ?: "error"), Toast.LENGTH_SHORT).show()
             }
+            adapter.submit(photos)
         }
-        adapter.submit(photos)
     }
 
     private fun castPhoto(uri: Uri) {
@@ -106,11 +115,11 @@ class CastPhotoActivity : AppCompatActivity() {
             Toast.makeText(this, R.string.cast_select_device, Toast.LENGTH_SHORT).show()
             return
         }
-        try {
-            viewModel.castPhoto(uri, getString(R.string.cast_photos_title))
-            Toast.makeText(this, R.string.cast_photo_sent, Toast.LENGTH_SHORT).show()
-        } catch (e: Exception) {
-            Toast.makeText(this, getString(R.string.cast_failed, e.message ?: "error"), Toast.LENGTH_SHORT).show()
+        when (val result = viewModel.castPhoto(uri, getString(R.string.cast_photos_title))) {
+            is OperationResult.Success ->
+                Toast.makeText(this, R.string.cast_photo_sent, Toast.LENGTH_SHORT).show()
+            is OperationResult.Failure ->
+                Toast.makeText(this, getString(R.string.cast_failed, result.message), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -120,4 +129,8 @@ class CastPhotoActivity : AppCompatActivity() {
     }
 
     private enum class PhotoSource { DOWNLOADS, GALLERY }
+
+    companion object {
+        private const val TAG = "CastPhotoActivity"
+    }
 }

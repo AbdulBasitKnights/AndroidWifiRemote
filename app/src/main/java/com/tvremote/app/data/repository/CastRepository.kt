@@ -4,11 +4,13 @@ import android.content.Context
 import android.net.Uri
 import com.tvremote.app.data.cast.CastManager
 import com.tvremote.app.data.cast.LocalMediaServer
-import com.google.android.gms.cast.framework.CastSession
+import com.tvremote.app.data.session.ConnectionCoordinator
+import com.tvremote.app.util.OperationResult
 
 class CastRepository(
     private val castManager: CastManager,
     private val context: Context,
+    private val coordinator: ConnectionCoordinator,
 ) {
     fun initialize() = castManager.initialize()
 
@@ -16,17 +18,18 @@ class CastRepository(
 
     fun deviceName(): String? = castManager.deviceName()
 
-    var onSessionChanged: ((CastSession?) -> Unit)?
-        get() = castManager.onSessionChanged
-        set(value) { castManager.onSessionChanged = value }
+    fun isCastingActive(): Boolean = coordinator.isCastingActive()
 
-    fun castImage(uri: Uri, title: String = "Photo") = castManager.castImage(uri, title)
+    fun castImage(uri: Uri, title: String = "Photo"): OperationResult =
+        castManager.castImage(uri, title)
 
-    fun castVideo(uri: Uri, title: String = "Video") = castManager.castVideo(uri, title)
+    fun castVideo(uri: Uri, title: String = "Video"): OperationResult =
+        castManager.castVideo(uri, title)
 
-    fun castAudio(uri: Uri, title: String = "Audio") = castManager.castAudio(uri, title)
+    fun castAudio(uri: Uri, title: String = "Audio"): OperationResult =
+        castManager.castAudio(uri, title)
 
-    fun castLiveStream(url: String, title: String = "Screen Mirror") =
+    fun castLiveStream(url: String, title: String = "Screen Mirror"): OperationResult =
         castManager.castLiveStream(url, title)
 
     fun serveLocalMedia(uri: Uri, fileName: String): String =

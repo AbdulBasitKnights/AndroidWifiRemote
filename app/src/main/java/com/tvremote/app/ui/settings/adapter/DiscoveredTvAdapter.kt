@@ -13,6 +13,7 @@ class DiscoveredTvAdapter(
     private val items = mutableListOf<DiscoveredTv>()
     private var selectedHost: String? = null
     private var pairingHost: String? = null
+    private var pairedHost: String? = null
 
     fun submit(devices: List<DiscoveredTv>) {
         items.clear()
@@ -27,6 +28,11 @@ class DiscoveredTvAdapter(
 
     fun setPairingHost(host: String?) {
         pairingHost = host
+        notifyDataSetChanged()
+    }
+
+    fun setPairedHost(host: String?) {
+        pairedHost = host
         notifyDataSetChanged()
     }
 
@@ -48,10 +54,11 @@ class DiscoveredTvAdapter(
             binding.tvName.text = tv.name.ifBlank { "Android TV" }
             binding.tvHost.text = tv.host
             val isPairing = pairingHost == tv.host
-            binding.pairActionLabel.text = if (isPairing) {
-                binding.root.context.getString(R.string.pairing_in_progress)
-            } else {
-                binding.root.context.getString(R.string.tap_to_pair)
+            val isPairedTv = pairedHost == tv.host
+            binding.pairActionLabel.text = when {
+                isPairing -> binding.root.context.getString(R.string.pairing_in_progress)
+                isPairedTv -> binding.root.context.getString(R.string.tap_to_reconnect)
+                else -> binding.root.context.getString(R.string.tap_to_pair)
             }
             binding.root.setOnClickListener { onTvSelected(tv) }
             binding.root.alpha = if (isPairing) 0.85f else 1f

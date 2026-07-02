@@ -41,7 +41,11 @@ class RemoteManager(
         set(value) {
             field = value
             logState(value)
-            stateChanged?.invoke(value)
+            try {
+                stateChanged?.invoke(value)
+            } catch (e: Exception) {
+                logger.errorLog("$LOG_PREFIX state callback error: ${e.message}")
+            }
         }
 
     fun connect(host: String, timeoutMs: Int = 60_000) {
@@ -123,15 +127,16 @@ class RemoteManager(
     }
 
     private fun handleData() {
-        val data = buffer.toByteArray()
-        logger.debugLog("$LOG_PREFIX handle: ${data.toList()}")
+        try {
+            val data = buffer.toByteArray()
+            logger.debugLog("$LOG_PREFIX handle: ${data.toList()}")
 
-        if (handlePing()) {
-            receiveLoop()
-            return
-        }
+            if (handlePing()) {
+                receiveLoop()
+                return
+            }
 
-        when (remoteState) {
+            when (remoteState) {
             RemoteState.Connected -> {
                 val configMessage = try {
                     AndroidTVConfigurationMessage(data)
@@ -198,6 +203,9 @@ class RemoteManager(
                 receiveLoop()
             }
         }
+        } catch (e: Exception) {
+            remoteState = RemoteState.Error(TvRemoteError.ReceiveDataError(e))
+        }
     }
 
     private fun handlePing(): Boolean {
@@ -211,12 +219,16 @@ class RemoteManager(
     }
 
     private fun readChunk(): ByteArray? {
-        val input = socket?.inputStream ?: return null
-        val buffer = ByteArray(512)
-        val read = input.read(buffer)
-        if (read < 0) return byteArrayOf()
-        if (read == 0) return byteArrayOf()
-        return buffer.copyOf(read)
+        return try {
+            val input = socket?.inputStream ?: return null
+            val buffer = ByteArray(512)
+            val read = input.read(buffer)
+            if (read < 0) return byteArrayOf()
+            if (read == 0) return byteArrayOf()
+            buffer.copyOf(read)
+        } catch (e: Exception) {
+            null
+        }
     }
 
     private fun logState(state: RemoteState) {
