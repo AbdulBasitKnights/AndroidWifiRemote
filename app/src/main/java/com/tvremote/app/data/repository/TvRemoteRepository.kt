@@ -171,9 +171,11 @@ class TvRemoteRepository(
         }
         if (!validateHost(target)) return
         _pairingHost.value = null
-        remoteManager.connect(target)
+        remoteManager.reconnectTo(target)
         scope.launch { _events.emit(RepositoryEvent.Reconnecting) }
     }
+
+    fun isConnectionBusy(): Boolean = remoteManager.isConnectionBusy()
 
     fun restartPairing(host: String) {
         if (host.isBlank()) {

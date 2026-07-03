@@ -6,6 +6,7 @@ import com.tvremote.app.di.AppContainer
 import com.tvremote.app.util.AppLogger
 import com.tvremote.app.util.CrashGuard
 import com.tvremote.app.util.SafeRun
+import com.tvremote.app.util.ThemeHelper
 
 class TvRemoteApp : Application() {
     lateinit var container: AppContainer
@@ -13,6 +14,7 @@ class TvRemoteApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        ThemeHelper.applySavedTheme(this)
         CrashGuard.install(this)
         container = AppContainer(this)
         SafeRun.run(TAG) {

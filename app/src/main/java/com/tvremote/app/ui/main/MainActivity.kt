@@ -1,7 +1,6 @@
 package com.tvremote.app.ui.main
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.tvremote.app.R
 import com.tvremote.app.TvRemoteApp
@@ -9,15 +8,18 @@ import com.tvremote.app.databinding.ActivityMainBinding
 import com.tvremote.app.di.AppContainer
 import com.tvremote.app.ui.cast.CastFragment
 import com.tvremote.app.ui.common.AppViewModelFactory
+import com.tvremote.app.ui.common.BaseActivity
 import com.tvremote.app.ui.remote.RemoteFragment
 import com.tvremote.app.ui.settings.SettingsFragment
 import com.tvremote.app.util.SafeRun
+import com.tvremote.app.util.ThemeHelper
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
     private var binding: ActivityMainBinding? = null
     private var container: AppContainer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        ThemeHelper.applySavedTheme(this)
         super.onCreate(savedInstanceState)
         SafeRun.run(TAG) {
             binding = ActivityMainBinding.inflate(layoutInflater)

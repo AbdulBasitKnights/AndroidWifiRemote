@@ -1,38 +1,54 @@
 package com.tvremote.app.ui.cast
 
+import android.Manifest
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
+import com.tvremote.app.ui.common.BaseActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.mediarouter.media.MediaControlIntent
 import androidx.mediarouter.media.MediaRouteSelector
 import com.tvremote.app.R
 import com.tvremote.app.TvRemoteApp
 import com.tvremote.app.data.cast.ScreenCastService
-import com.tvremote.app.util.OperationResult
-import com.tvremote.app.util.SafeRun
 import com.tvremote.app.databinding.ActivityScreenMirrorBinding
 import com.tvremote.app.ui.common.AppViewModelFactory
+import com.tvremote.app.util.NetworkUtils
+import com.tvremote.app.util.OperationResult
+import com.tvremote.app.util.SafeRun
 
-class ScreenMirrorActivity : AppCompatActivity() {
+class ScreenMirrorActivity : BaseActivity() {
     private lateinit var binding: ActivityScreenMirrorBinding
     private var mirroring = false
+    private var pendingProjectionStart = false
 
     private val viewModel: CastViewModel by viewModels {
         AppViewModelFactory((application as TvRemoteApp).container)
     }
 
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { granted ->
+        if (granted) {
+            requestScreenCapture()
+        } else {
+            Toast.makeText(this, R.string.mirror_notification_required, Toast.LENGTH_LONG).show()
+        }
+    }
+
     private val projectionLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
     ) { result ->
+        pendingProjectionStart = false
         if (result.resultCode != RESULT_OK || result.data == null) {
             Toast.makeText(this, R.string.mirror_permission_denied, Toast.LENGTH_SHORT).show()
             return@registerForActivityResult
@@ -47,7 +63,7 @@ class ScreenMirrorActivity : AppCompatActivity() {
                     mirroring = true
                     val url = intent.getStringExtra(ScreenCastService.EXTRA_STREAM_URL).orEmpty()
                     when (val result = viewModel.castLiveStream(url, getString(R.string.mirror_title))) {
-                        is com.tvremote.app.util.OperationResult.Success -> {
+                        is OperationResult.Success -> {
                             updateUi()
                             Toast.makeText(
                                 this@ScreenMirrorActivity,
@@ -55,7 +71,7 @@ class ScreenMirrorActivity : AppCompatActivity() {
                                 Toast.LENGTH_LONG,
                             ).show()
                         }
-                        is com.tvremote.app.util.OperationResult.Failure -> {
+                        is OperationResult.Failure -> {
                             mirroring = false
                             ScreenCastService.stop(this@ScreenMirrorActivity)
                             updateUi()
@@ -99,11 +115,29 @@ class ScreenMirrorActivity : AppCompatActivity() {
     }
 
     private fun startMirrorFlow() {
+        if (NetworkUtils.getWifiIpv4Address() == null) {
+            Toast.makeText(this, R.string.mirror_wifi_required, Toast.LENGTH_LONG).show()
+            return
+        }
         if (!viewModel.isConnected()) {
             Toast.makeText(this, R.string.cast_select_device, Toast.LENGTH_SHORT).show()
             binding.mirrorRouteButton.performClick()
             return
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                return
+            }
+        }
+        requestScreenCapture()
+    }
+
+    private fun requestScreenCapture() {
+        if (pendingProjectionStart) return
+        pendingProjectionStart = true
         val projectionManager = getSystemService(MediaProjectionManager::class.java)
         projectionLauncher.launch(projectionManager.createScreenCaptureIntent())
     }

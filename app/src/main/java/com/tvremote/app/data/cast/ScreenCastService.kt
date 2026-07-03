@@ -90,6 +90,14 @@ class ScreenCastService : Service() {
         projection = projectionManager.getMediaProjection(resultCode, data)
             ?: throw IllegalStateException("MediaProjection permission invalid")
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            projection?.registerCallback(object : MediaProjection.Callback() {
+                override fun onStop() {
+                    handler.post { stopMirror(); stopSelf() }
+                }
+            }, handler)
+        }
+
         imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2)
         virtualDisplay = projection?.createVirtualDisplay(
             "ScreenCast",
@@ -137,7 +145,11 @@ class ScreenCastService : Service() {
                 throw e
             }
         }
-        sendBroadcast(Intent(ACTION_MIRROR_STARTED).putExtra(EXTRA_STREAM_URL, streamUrl()))
+        handler.postDelayed({
+            if (running.get()) {
+                sendBroadcast(Intent(ACTION_MIRROR_STARTED).putExtra(EXTRA_STREAM_URL, streamUrl()))
+            }
+        }, 600)
     }
 
     private fun stopMirror() {
@@ -207,7 +219,11 @@ class ScreenCastService : Service() {
                         SafeRun.run(TAG) {
                             try {
                                 while (!Thread.interrupted()) {
-                                    val frame = frameRef.get() ?: continue
+                                    val frame = frameRef.get()
+                                    if (frame == null) {
+                                        Thread.sleep(50)
+                                        continue
+                                    }
                                     val header = (
                                         "--BoundaryString\r\n" +
                                             "Content-Type: image/jpeg\r\n" +
@@ -217,7 +233,7 @@ class ScreenCastService : Service() {
                                     output.write(frame)
                                     output.write("\r\n".toByteArray())
                                     output.flush()
-                                    Thread.sleep(100)
+                                    Thread.sleep(66)
                                 }
                             } catch (_: Exception) {
                             } finally {
@@ -230,7 +246,7 @@ class ScreenCastService : Service() {
                     }.start()
                     newChunkedResponse(
                         Response.Status.OK,
-                        "multipart/x-mixed-replace; boundary=--BoundaryString",
+                        "multipart/x-mixed-replace; boundary=BoundaryString",
                         input,
                     )
                 } else {

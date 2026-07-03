@@ -15,4 +15,5 @@ data class SettingsUiState(
     val isPaired: Boolean = false,
     val sessionMode: AppSessionMode = AppSessionMode.REMOTE,
     val isSessionReady: Boolean = false,
+    val showPairingLoader: Boolean = false,
 )

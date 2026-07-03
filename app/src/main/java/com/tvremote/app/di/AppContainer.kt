@@ -11,17 +11,21 @@ import com.tvremote.app.data.discovery.TvDiscovery
 import com.tvremote.app.data.remote.RemoteTvManager
 import com.tvremote.app.data.repository.CastRepository
 import com.tvremote.app.data.repository.TvRemoteRepository
+import com.tvremote.app.data.session.AppPreferences
 import com.tvremote.app.data.session.ConnectionCoordinator
 import com.tvremote.app.data.session.PairingStore
 import com.tvremote.app.util.SafeRun
+import com.tvremote.app.util.VoiceInputHelper
 
 class AppContainer(context: Context) {
     private val appContext = context.applicationContext
 
+    val appPreferences = AppPreferences(appContext)
     private val pairingStore = PairingStore(appContext)
     val remoteManager = RemoteTvManager(appContext)
     val tvDiscovery = TvDiscovery(appContext)
     val castManager = CastManager(appContext)
+    val voiceInputHelper = VoiceInputHelper(appContext, remoteManager)
 
     val connectionCoordinator = ConnectionCoordinator(remoteManager, pairingStore)
 

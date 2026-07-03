@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_app_gradient">
+    android:background="@color/splash_background">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainer"
@@ -18,10 +18,8 @@
         android:id="@+id/bottomNavCard"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_nav_glass"
-        android:elevation="8dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
+        android:layout_marginHorizontal="16dp"
+        android:background="@drawable/bg_nav_pill_dark"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -29,9 +27,9 @@
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNav"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="10dp"
-            android:background="@drawable/bg_nav_glass"
+            android:layout_height="60dp"
+            android:foreground="@null"
+            android:background="@drawable/bg_nav_pill_dark"
             app:itemIconTint="@color/bottom_nav_color"
             app:itemTextColor="@color/bottom_nav_color"
             app:labelVisibilityMode="labeled"

@@ -47,6 +47,9 @@ class RemoteTvManager(context: Context) {
     private var userDisconnectRequested = false
     /** Only true after loadSavedSession — one cold-start connect, no retry loops. */
     private var autoConnectAllowed = false
+    private val connectionBusy = AtomicBoolean(false)
+
+    fun isConnectionBusy(): Boolean = connectionBusy.get()
     private val clientName = "Android TV Remote"
     private val serviceName = "atvremote"
 
@@ -160,7 +163,11 @@ class RemoteTvManager(context: Context) {
                     is PairingManager.PairingState.SecretSent -> {
                         notifyPairingState("Submitting pairing code…")
                     }
+                    is PairingManager.PairingState.WaitingCode -> {
+                        connectionBusy.set(false)
+                    }
                     is PairingManager.PairingState.Error -> {
+                        connectionBusy.set(false)
                         waitingForCode.set(false)
                         notifyWaitingForCode(false)
                         pairingStarted.set(false)
@@ -182,6 +189,7 @@ class RemoteTvManager(context: Context) {
                     }
                     is RemoteManager.RemoteState.Paired -> {
                         autoConnectAllowed = false
+                        connectionBusy.set(false)
                         pairingStarted.set(false)
                         waitingForCode.set(false)
                         explicitPairingRequested.set(false)
@@ -201,6 +209,7 @@ class RemoteTvManager(context: Context) {
 
     private fun handleRemoteError(error: TvRemoteError) {
         autoConnectAllowed = false
+        connectionBusy.set(false)
         if (userDisconnectRequested) return
         if (!connectionHeld) {
             notifyRemoteState("Not connected — pair your TV in Settings")
@@ -251,22 +260,37 @@ class RemoteTvManager(context: Context) {
                 waitingForCode.get() -> notifyPairingState(
                     "Code already on TV — enter it below and tap Complete Pairing",
                 )
-                remoteManager.isSessionReady() -> notifyRemoteState(
-                    remoteManager.currentRemoteState().toDisplayString(),
-                )
+                remoteManager.isSessionReady() -> {
+                    connectionBusy.set(false)
+                    notifyRemoteState(remoteManager.currentRemoteState().toDisplayString())
+                }
                 else -> connectRemoteOnlyInternal(force = false)
             }
+        }
+    }
+
+    /** Force socket reconnect — use after user disconnect or connection drop. */
+    fun reconnectTo(host: String? = null) {
+        host?.trim()?.takeIf { it.isNotEmpty() }?.let { pendingHost = it }
+        if (pendingHost.isEmpty()) return
+        userDisconnectRequested = false
+        connectionHeld = true
+        autoConnectAllowed = false
+        executeSafe {
+            connectRemoteOnlyInternal(force = true)
         }
     }
 
     private fun connectRemoteOnlyInternal(force: Boolean) {
         if (userDisconnectRequested) return
         if (!force && remoteManager.isSessionReady()) {
+            connectionBusy.set(false)
             notifyRemoteState(remoteManager.currentRemoteState().toDisplayString())
             return
         }
         if (remoteManager.isConnecting() || (!force && remoteManager.isHandshakeInProgress())) return
 
+        connectionBusy.set(true)
         pairingStarted.set(false)
         explicitPairingRequested.set(false)
         cancelPairingFallback()
@@ -334,6 +358,7 @@ class RemoteTvManager(context: Context) {
         if (!force && !pairingStarted.compareAndSet(false, true)) return
         if (force) pairingStarted.set(true)
 
+        connectionBusy.set(true)
         cancelPairingFallback()
         remoteManager.disconnect()
         pairingManager.disconnect()
@@ -377,6 +402,8 @@ class RemoteTvManager(context: Context) {
     fun rewind() = sendKey(Key.KEYCODE_MEDIA_REWIND)
     fun forward() = sendKey(Key.KEYCODE_MEDIA_FAST_FORWARD)
     fun voiceSearch() = sendKey(Key.KEYCODE_SEARCH)
+
+    fun runSearchQuery(encodedQuery: String) = runDeepLink("https://www.google.com/search?q=$encodedQuery")
     fun tvInput() = sendKey(Key.KEYCODE_TV_INPUT)
     fun apps() = sendKey(Key.KEYCODE_APP_SWITCH)
 
@@ -400,6 +427,7 @@ class RemoteTvManager(context: Context) {
         userDisconnectRequested = true
         connectionHeld = false
         autoConnectAllowed = false
+        connectionBusy.set(false)
         executeSafe {
             performDisconnect()
             notifyRemoteState("Disconnected")

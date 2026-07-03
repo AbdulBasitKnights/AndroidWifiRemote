@@ -106,4 +106,94 @@
     <string name="right">Right</string>
     <string name="home">Home</string>
     <string name="back">Back</string>
+
+    <!-- Splash -->
+    <string name="splash_title">ANDROID TV REMOTE</string>
+    <string name="splash_title_purple">ANDROID</string>
+    <string name="splash_title_white">TV REMOTE</string>
+    <string name="splash_subtitle">Your ultimate Android TV companion</string>
+
+    <!-- Language -->
+    <string name="language_title">App Languages</string>
+    <string name="language_apply">Apply</string>
+    <string name="app_languages">App Languages</string>
+    <string name="lang_english">English (US)</string>
+    <string name="lang_english_native">English</string>
+    <string name="lang_spanish">Spanish</string>
+    <string name="lang_spanish_native">español</string>
+    <string name="lang_french">French</string>
+    <string name="lang_french_native">français</string>
+    <string name="lang_arabic">Arabic</string>
+    <string name="lang_arabic_native">العربية</string>
+    <string name="lang_german">German</string>
+    <string name="lang_german_native">Deutsch</string>
+    <string name="lang_indonesian">Indonesian</string>
+    <string name="lang_indonesian_native">Bahasa Indonesia</string>
+    <string name="lang_russian">Russian</string>
+    <string name="lang_russian_native">русский</string>
+    <string name="lang_chinese">Chinese</string>
+    <string name="lang_chinese_native">中文</string>
+    <string name="lang_persian">Persian</string>
+    <string name="lang_persian_native">فارسی</string>
+    <string name="lang_portuguese">Portuguese</string>
+    <string name="lang_portuguese_native">português</string>
+    <string name="lang_turkish">Turkish</string>
+    <string name="lang_turkish_native">Türkçe</string>
+    <string name="lang_korean">Korean</string>
+    <string name="lang_korean_native">한국어</string>
+    <string name="lang_filipino">Filipino</string>
+    <string name="lang_filipino_native">Filipino</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_get_started">Get Started</string>
+    <string name="onboarding_title_1">Control Your TV</string>
+    <string name="onboarding_desc_1">Use your phone as a full remote — D-pad, volume, apps, and power.</string>
+    <string name="onboarding_title_2">Cast &amp; Mirror</string>
+    <string name="onboarding_desc_2">Cast photos, videos, and mirror your screen to the big screen.</string>
+    <string name="onboarding_title_3">Easy Setup</string>
+    <string name="onboarding_desc_3">Pair once in Settings. Connection stays active until you disconnect.</string>
+
+    <!-- Theme -->
+    <string name="theme_title">App Theme</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_system">System</string>
+
+    <!-- Remote connectivity -->
+    <string name="go_to_settings">Connect TV</string>
+    <string name="remote_connected">Connected — ready to control</string>
+    <string name="remote_reconnect_needed">Paired — tap Reconnect in Settings</string>
+
+    <!-- Pairing loader -->
+    <string name="pairing_loader_message">Pairing with TV…</string>
+    <string name="pairing_loader_hint">Keep the pairing screen open on your TV</string>
+
+    <!-- Voice -->
+    <string name="mic_permission_required">Allow microphone access for voice search</string>
+    <string name="voice_listening">Listening… speak now</string>
+
+    <!-- Mirror -->
+    <string name="mirror_wifi_required">Connect phone and TV to the same WiFi network</string>
+    <string name="mirror_notification_required">Allow notifications to start screen mirroring</string>
+
+    <string name="remote_tab_title">Remote</string>
+    <string name="connect_wifi_hint">Make sure your phone and TV are connected to the same WiFi network.</string>
+    <string name="touchpad_hint">Swipe to navigate</string>
+    <string name="numpad_exit">Exit</string>
+
+    <string name="settings_screen_title">Setting</string>
+    <string name="how_to_connect">How to Connect with Android TV Remote</string>
+    <string name="cant_find_remote">Can\'t Find My Remote</string>
+    <string name="cant_find_remote_sub">Tell us your TV Brand</string>
+    <string name="feedback">Feedback &amp; Suggestion</string>
+    <string name="rate_us">Rate us</string>
+    <string name="rate_us_sub">Rate us to improve</string>
+    <string name="share_app">Share App</string>
+    <string name="share_app_sub">Share with friends &amp; family</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="privacy_policy_sub">Our Terms &amp; Conditions</string>
+    <string name="app_version">version %1$s</string>
+    <string name="others_section">Others</string>
 </resources>

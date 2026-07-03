@@ -20,19 +20,19 @@ class CastRepository(
 
     fun isCastingActive(): Boolean = coordinator.isCastingActive()
 
-    fun castImage(uri: Uri, title: String = "Photo"): OperationResult =
-        castManager.castImage(uri, title)
+    fun castImage(uri: Uri, title: String = "Photo", contentType: String = "image/jpeg"): OperationResult =
+        castManager.castImage(uri, title, contentType)
 
-    fun castVideo(uri: Uri, title: String = "Video"): OperationResult =
-        castManager.castVideo(uri, title)
+    fun castVideo(uri: Uri, title: String = "Video", contentType: String = "video/mp4"): OperationResult =
+        castManager.castVideo(uri, title, contentType)
 
-    fun castAudio(uri: Uri, title: String = "Audio"): OperationResult =
-        castManager.castAudio(uri, title)
+    fun castAudio(uri: Uri, title: String = "Audio", contentType: String = "audio/mpeg"): OperationResult =
+        castManager.castAudio(uri, title, contentType)
 
     fun castLiveStream(url: String, title: String = "Screen Mirror"): OperationResult =
         castManager.castLiveStream(url, title)
 
-    fun serveLocalMedia(uri: Uri, fileName: String): String =
+    fun serveLocalMedia(uri: Uri, fileName: String): LocalMediaServer.ServedMedia =
         LocalMediaServer.serve(context, uri, fileName)
 
     fun stopLocalMediaServer() = LocalMediaServer.stop()

@@ -15,9 +15,9 @@ class AppViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(SettingsViewModel::class.java) ->
-                SettingsViewModel(container.tvRemoteRepository) as T
+                SettingsViewModel() as T
             modelClass.isAssignableFrom(RemoteViewModel::class.java) ->
-                RemoteViewModel(container.tvRemoteRepository) as T
+                RemoteViewModel(container.tvRemoteRepository, container.voiceInputHelper) as T
             modelClass.isAssignableFrom(CastViewModel::class.java) ->
                 CastViewModel(container.castRepository) as T
             else -> throw IllegalArgumentException("Unknown ViewModel: ${modelClass.name}")

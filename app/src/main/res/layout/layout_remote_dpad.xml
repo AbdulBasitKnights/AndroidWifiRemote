@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="@dimen/remote_dpad_size"
+    android:layout_height="@dimen/remote_dpad_size"
+    android:layout_gravity="center">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@null"
+        android:scaleType="fitCenter"
+        android:src="@drawable/img_dpad_cross" />
+
+    <ImageButton
+        android:id="@+id/upButton"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_gravity="top|center_horizontal"
+        android:background="@drawable/img_dpad_ok"
+        android:layout_marginTop="10dp"
+        android:contentDescription="@string/up"
+        android:padding="20dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_arrow_up_white" />
+
+    <ImageButton
+        android:id="@+id/downButton"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:contentDescription="@string/down"
+        android:padding="20dp"
+        android:background="@drawable/img_dpad_ok"
+        android:layout_marginBottom="10dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_arrow_down_white" />
+
+    <ImageButton
+        android:id="@+id/leftButton"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:background="@drawable/img_dpad_ok"
+        android:layout_marginStart="10dp"
+        android:layout_gravity="center_vertical|start"
+        android:contentDescription="@string/left"
+        android:padding="20dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_arrow_left_white" />
+
+    <ImageButton
+        android:id="@+id/rightButton"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_gravity="center_vertical|end"
+        android:background="@drawable/img_dpad_ok"
+        android:layout_marginEnd="10dp"
+        android:contentDescription="@string/right"
+        android:padding="20dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_arrow_right_white" />
+
+    <FrameLayout
+        android:id="@+id/okButton"
+        android:layout_width="@dimen/remote_ok_size"
+        android:layout_height="@dimen/remote_ok_size"
+        android:layout_gravity="center"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@null"
+            android:scaleType="fitCenter"
+            android:src="@drawable/img_dpad_ok" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/ok"
+            android:textColor="@color/text_on_accent"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </FrameLayout>
+</FrameLayout>

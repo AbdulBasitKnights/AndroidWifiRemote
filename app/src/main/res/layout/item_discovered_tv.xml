@@ -7,7 +7,7 @@
     android:layout_marginBottom="8dp"
     android:clickable="true"
     android:focusable="true"
-    app:cardBackgroundColor="@color/glass_white_solid"
+    app:cardBackgroundColor="@color/card_background"
     app:cardCornerRadius="16dp"
     app:cardElevation="2dp"
     app:strokeColor="@color/glass_border"
@@ -23,7 +23,7 @@
         <FrameLayout
             android:layout_width="44dp"
             android:layout_height="44dp"
-            android:background="@drawable/bg_glass_circle_btn">
+            android:background="@drawable/img_btn_circle_dark">
 
             <ImageView
                 android:layout_width="24dp"

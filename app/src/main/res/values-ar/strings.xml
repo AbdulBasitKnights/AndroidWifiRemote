@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ريموت Android TV</string>
+    <string name="app_title">ريموت التلفاز</string>
+    <string name="nav_remote">ريموت</string>
+    <string name="nav_cast">بث</string>
+    <string name="nav_settings">الإعدادات</string>
+    <string name="splash_title">ريموت ANDROID TV</string>
+    <string name="splash_subtitle">رفيقك المثالي لـ Android TV</string>
+    <string name="language_title">لغات التطبيق</string>
+    <string name="language_apply">تطبيق</string>
+    <string name="not_connected">غير متصل بالتلفاز</string>
+    <string name="connect_tv_first">اتصل واربط التلفاز من الإعدادات أولاً</string>
+    <string name="remote_connected">متصل — جاهز للتحكم</string>
+    <string name="go_to_settings">ربط التلفاز</string>
+    <string name="settings_title">اتصال التلفاز</string>
+    <string name="onboarding_get_started">ابدأ</string>
+    <string name="theme_light">فاتح</string>
+    <string name="theme_dark">داكن</string>
+    <string name="theme_system">النظام</string>
+</resources>

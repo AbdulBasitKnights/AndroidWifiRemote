@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Control Remoto Android TV</string>
+    <string name="app_title">Control Remoto</string>
+    <string name="nav_remote">Remoto</string>
+    <string name="nav_cast">Transmitir</string>
+    <string name="nav_settings">Ajustes</string>
+    <string name="splash_title">CONTROL REMOTO ANDROID TV</string>
+    <string name="splash_subtitle">Tu compañero definitivo para Android TV</string>
+    <string name="language_title">Idiomas de la app</string>
+    <string name="language_apply">Aplicar</string>
+    <string name="not_connected">No conectado al TV</string>
+    <string name="connect_tv_first">Conecta y empareja el TV en Ajustes primero</string>
+    <string name="remote_connected">Conectado — listo para controlar</string>
+    <string name="go_to_settings">Conectar TV</string>
+    <string name="settings_title">Conexión TV</string>
+    <string name="onboarding_get_started">Comenzar</string>
+    <string name="theme_light">Claro</string>
+    <string name="theme_dark">Oscuro</string>
+    <string name="theme_system">Sistema</string>
+</resources>

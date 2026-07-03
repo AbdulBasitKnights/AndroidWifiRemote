@@ -9,7 +9,7 @@ import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
+import com.tvremote.app.ui.common.BaseActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.tabs.TabLayout
@@ -21,7 +21,7 @@ import com.tvremote.app.ui.common.AppViewModelFactory
 import com.tvremote.app.util.OperationResult
 import com.tvremote.app.util.SafeRun
 
-class CastPhotoActivity : AppCompatActivity() {
+class CastPhotoActivity : BaseActivity() {
     private lateinit var binding: ActivityCastPhotoBinding
     private var currentSource = PhotoSource.DOWNLOADS
     private val adapter = PhotoGridAdapter { uri -> castPhoto(uri) }

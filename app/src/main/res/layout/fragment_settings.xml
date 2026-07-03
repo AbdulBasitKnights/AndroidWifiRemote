@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/splash_background"
     android:clipToPadding="false"
     android:fillViewport="true"
     android:overScrollMode="never"
@@ -14,48 +14,9 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/settings_title"
-            android:textColor="@color/text_primary"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="@string/settings_pair_subtitle"
-            android:textColor="@color/text_secondary"
-            android:textSize="13sp" />
-
-        <TextView
-            android:id="@+id/phoneIpLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center"
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp"
-            tools:text="Phone WiFi IP: 192.168.1.42" />
-
-        <TextView
-            android:id="@+id/pairingHintLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_glass_panel"
-            android:gravity="center"
-            android:padding="10dp"
-            android:text="@string/pairing_hint"
-            android:textColor="@color/text_secondary"
-            android:textSize="11sp" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -63,228 +24,155 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/tvs_on_wifi"
+                android:text="@string/settings_screen_title"
                 android:textColor="@color/text_primary"
-                android:textSize="16sp"
+                android:textSize="24sp"
                 android:textStyle="bold" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/scanButton"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="0dp"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:text="@string/scan_tvs" />
+                android:background="@drawable/bg_pro_badge"
+                android:paddingStart="10dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="4dp"
+                android:text="Pro"
+                android:textColor="@color/text_on_accent"
+                android:textSize="12sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/scanStatusLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="@string/scanning_tvs"
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/discoveredTvsList"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:nestedScrollingEnabled="false"
-            tools:itemCount="2"
-            tools:listitem="@layout/item_discovered_tv" />
-
-        <TextView
-            android:id="@+id/noTvsLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_glass_panel"
-            android:gravity="center"
-            android:padding="14dp"
-            android:text="@string/discovered_tvs_none"
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp"
-            android:visibility="gone" />
-
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/pairingCodeCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:visibility="gone"
-            app:cardBackgroundColor="@color/glass_white_solid"
+            android:layout_marginTop="20dp"
+            app:cardBackgroundColor="@color/card_background"
             app:cardCornerRadius="16dp"
-            app:strokeColor="@color/primary"
-            app:strokeWidth="2dp"
-            tools:visibility="visible">
+            app:cardElevation="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:orientation="vertical">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/pairing_code_step_title"
-                    android:textColor="@color/text_primary"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:id="@+id/howToConnectRow"
+                    style="@style/SettingsRow"
+                    android:drawablePadding="12dp"
+                    android:text="@string/how_to_connect"
+                    app:drawableStartCompat="@drawable/ic_onboarding_connect" />
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/glass_border" />
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:gravity="center"
-                    android:text="@string/pairing_code_step_hint"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp" />
+                    android:id="@+id/languageButton"
+                    style="@style/SettingsRow"
+                    android:text="@string/app_languages"
+                    app:drawableStartCompat="@drawable/ic_language" />
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/codeInputLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="200dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:hint="@string/pairing_code_hint">
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/glass_border" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/codeInput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:imeOptions="actionDone"
-                        android:inputType="textCapCharacters"
-                        android:maxLength="6"
-                        android:textSize="20sp" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/completePairingButton"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:enabled="false"
-                    android:text="@string/complete_pairing" />
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/restartPairingButton"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/restart_pairing"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/theme_title"
+                        android:textColor="@color/text_primary"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/themeSubtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/theme_dark"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="13sp" />
+
+                    <com.google.android.material.button.MaterialButtonToggleGroup
+                        android:id="@+id/themeToggle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        app:singleSelection="true">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/themeLight"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/theme_light"
+                            android:textAllCaps="false" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/themeDark"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/theme_dark"
+                            android:textAllCaps="false" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/themeSystem"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/theme_system"
+                            android:textAllCaps="false" />
+                    </com.google.android.material.button.MaterialButtonToggleGroup>
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <TextView
-            android:id="@+id/sessionStatusLabel"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/bg_glass_panel"
-            android:padding="12dp"
-            android:text="@string/remote_paused_casting"
-            android:textColor="@color/primary"
-            android:textSize="13sp"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/reconnectButton"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/reconnect_remote"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/disconnectButton"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/disconnect_remote"
+            android:layout_marginTop="20dp"
+            android:text="@string/others_section"
             android:textColor="@color/text_secondary"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-        <TextView
-            android:id="@+id/pairingStateLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/bg_glass_panel"
-            android:padding="12dp"
-            android:text="@string/pairing_state_idle"
-            android:textColor="@color/text_primary"
             android:textSize="13sp" />
 
-        <TextView
-            android:id="@+id/remoteStateLabel"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:background="@drawable/bg_glass_panel"
-            android:padding="12dp"
-            android:text="@string/remote_state_idle"
-            android:textColor="@color/text_secondary"
-            android:textSize="13sp" />
+            app:cardBackgroundColor="@color/card_background"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/manualIpToggle"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView android:id="@+id/cantFindRow" style="@style/SettingsRow" android:text="@string/cant_find_remote" android:hint="@string/cant_find_remote_sub" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/glass_border" />
+                <TextView android:id="@+id/feedbackRow" style="@style/SettingsRow" android:text="@string/feedback" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/glass_border" />
+                <TextView android:id="@+id/rateRow" style="@style/SettingsRow" android:text="@string/rate_us" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/glass_border" />
+                <TextView android:id="@+id/shareRow" style="@style/SettingsRow" android:text="@string/share_app" />
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/glass_border" />
+                <TextView android:id="@+id/privacyRow" style="@style/SettingsRow" android:text="@string/privacy_policy" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/versionLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="12dp"
-            android:text="@string/enter_ip_manually" />
-
-        <LinearLayout
-            android:id="@+id/manualIpSection"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/hostInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:hint="@string/tv_ip_hint"
-                app:boxBackgroundColor="@color/glass_white_solid"
-                app:boxCornerRadiusBottomEnd="16dp"
-                app:boxCornerRadiusBottomStart="16dp"
-                app:boxCornerRadiusTopEnd="16dp"
-                app:boxCornerRadiusTopStart="16dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/hostInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/tv_ip_placeholder"
-                    android:inputType="textNoSuggestions" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/pairManualButton"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/pair_now" />
-        </LinearLayout>
-
+            android:layout_marginTop="24dp"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp" />
     </LinearLayout>
 </ScrollView>

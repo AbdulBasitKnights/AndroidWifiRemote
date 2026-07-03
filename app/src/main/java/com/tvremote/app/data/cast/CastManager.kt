@@ -2,7 +2,6 @@ package com.tvremote.app.data.cast
 
 import android.content.Context
 import android.net.Uri
-import com.google.android.gms.cast.CastMediaControlIntent
 import com.google.android.gms.cast.MediaInfo
 import com.google.android.gms.cast.MediaLoadRequestData
 import com.google.android.gms.cast.MediaMetadata
@@ -66,52 +65,62 @@ class CastManager(context: Context) {
         currentSession()?.castDevice?.friendlyName
     }
 
-    fun castImage(uri: Uri, title: String = "Photo"): OperationResult = castMedia {
-        val metadata = MediaMetadata(MediaMetadata.MEDIA_TYPE_PHOTO).apply {
-            putString(MediaMetadata.KEY_TITLE, title)
-            addImage(WebImage(uri))
+    fun castImage(uri: Uri, title: String = "Photo", contentType: String = "image/jpeg"): OperationResult =
+        castMedia(contentType, MediaInfo.STREAM_TYPE_NONE) {
+            val metadata = MediaMetadata(MediaMetadata.MEDIA_TYPE_PHOTO).apply {
+                putString(MediaMetadata.KEY_TITLE, title)
+                addImage(WebImage(uri))
+            }
+            MediaInfo.Builder(uri.toString())
+                .setStreamType(MediaInfo.STREAM_TYPE_NONE)
+                .setContentType(contentType)
+                .setMetadata(metadata)
+                .build()
         }
-        MediaInfo.Builder(uri.toString())
-            .setStreamType(MediaInfo.STREAM_TYPE_NONE)
-            .setContentType("image/jpeg")
-            .setMetadata(metadata)
-            .build()
-    }
 
-    fun castVideo(uri: Uri, title: String = "Video"): OperationResult = castMedia {
-        val metadata = MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE).apply {
-            putString(MediaMetadata.KEY_TITLE, title)
+    fun castVideo(uri: Uri, title: String = "Video", contentType: String = "video/mp4"): OperationResult =
+        castMedia(contentType, MediaInfo.STREAM_TYPE_BUFFERED) {
+            val metadata = MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE).apply {
+                putString(MediaMetadata.KEY_TITLE, title)
+            }
+            MediaInfo.Builder(uri.toString())
+                .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
+                .setContentType(contentType)
+                .setMetadata(metadata)
+                .build()
         }
-        MediaInfo.Builder(uri.toString())
-            .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
-            .setContentType("video/mp4")
-            .setMetadata(metadata)
-            .build()
-    }
 
-    fun castAudio(uri: Uri, title: String = "Audio"): OperationResult = castMedia {
-        val metadata = MediaMetadata(MediaMetadata.MEDIA_TYPE_MUSIC_TRACK).apply {
-            putString(MediaMetadata.KEY_TITLE, title)
+    fun castAudio(uri: Uri, title: String = "Audio", contentType: String = "audio/mpeg"): OperationResult =
+        castMedia(contentType, MediaInfo.STREAM_TYPE_BUFFERED) {
+            val metadata = MediaMetadata(MediaMetadata.MEDIA_TYPE_MUSIC_TRACK).apply {
+                putString(MediaMetadata.KEY_TITLE, title)
+            }
+            MediaInfo.Builder(uri.toString())
+                .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
+                .setContentType(contentType)
+                .setMetadata(metadata)
+                .build()
         }
-        MediaInfo.Builder(uri.toString())
-            .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
-            .setContentType("audio/mp3")
-            .setMetadata(metadata)
-            .build()
-    }
 
-    fun castLiveStream(url: String, title: String = "Screen Mirror"): OperationResult = castMedia {
+    fun castLiveStream(url: String, title: String = "Screen Mirror"): OperationResult = castMedia(
+        "multipart/x-mixed-replace; boundary=BoundaryString",
+        MediaInfo.STREAM_TYPE_LIVE,
+    ) {
         val metadata = MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE).apply {
             putString(MediaMetadata.KEY_TITLE, title)
         }
         MediaInfo.Builder(url)
             .setStreamType(MediaInfo.STREAM_TYPE_LIVE)
-            .setContentType("multipart/x-mixed-replace; boundary=--BoundaryString")
+            .setContentType("multipart/x-mixed-replace; boundary=BoundaryString")
             .setMetadata(metadata)
             .build()
     }
 
-    private fun castMedia(buildMedia: () -> MediaInfo): OperationResult {
+    private fun castMedia(
+        contentType: String,
+        streamTypeHint: Int,
+        buildMedia: () -> MediaInfo,
+    ): OperationResult {
         return SafeRun.runCatching(TAG, OperationResult.Failure("Cast failed")) {
             val session = currentSession()
             if (session == null) {
@@ -122,7 +131,13 @@ class CastManager(context: Context) {
                     OperationResult.Failure("Cast media client unavailable")
                 } else {
                     val mediaInfo = buildMedia()
-                    client.load(MediaLoadRequestData.Builder().setMediaInfo(mediaInfo).build())
+                    AppLogger.d(TAG, "Loading media: ${mediaInfo.contentId} ($contentType)")
+                    client.load(
+                        MediaLoadRequestData.Builder()
+                            .setMediaInfo(mediaInfo)
+                            .setAutoplay(true)
+                            .build(),
+                    )
                     OperationResult.Success
                 }
             }
@@ -131,6 +146,6 @@ class CastManager(context: Context) {
 
     companion object {
         private const val TAG = "CastManager"
-        const val DEFAULT_RECEIVER = CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID
+        const val DEFAULT_RECEIVER = com.google.android.gms.cast.CastMediaControlIntent.DEFAULT_MEDIA_RECEIVER_APPLICATION_ID
     }
 }
