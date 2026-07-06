@@ -7,8 +7,10 @@ import com.tvremote.app.TvRemoteApp
 import com.tvremote.app.databinding.ActivityMainBinding
 import com.tvremote.app.di.AppContainer
 import com.tvremote.app.ui.cast.CastFragment
+import com.tvremote.app.ui.channels.ChannelsFragment
 import com.tvremote.app.ui.common.AppViewModelFactory
 import com.tvremote.app.ui.common.BaseActivity
+import com.tvremote.app.ui.mirror.MirrorFragment
 import com.tvremote.app.ui.remote.RemoteFragment
 import com.tvremote.app.ui.settings.SettingsFragment
 import com.tvremote.app.util.SafeRun
@@ -36,8 +38,9 @@ class MainActivity : BaseActivity() {
                 SafeRun.run(TAG) {
                     when (item.itemId) {
                         R.id.nav_remote -> showFragment(RemoteFragment(), TAG_REMOTE)
+                        R.id.nav_channel -> showFragment(ChannelsFragment(), TAG_CHANNEL)
+                        R.id.nav_mirror -> showFragment(MirrorFragment(), TAG_MIRROR)
                         R.id.nav_cast -> showFragment(CastFragment(), TAG_CAST)
-                        R.id.nav_settings -> showFragment(SettingsFragment(), TAG_SETTINGS)
                         else -> return@run
                     }
                 }
@@ -53,6 +56,9 @@ class MainActivity : BaseActivity() {
             if (fm.isStateSaved) return@run
             val current = fm.findFragmentById(R.id.fragmentContainer)
             if (current?.javaClass == fragment.javaClass) return@run
+            if (fm.backStackEntryCount > 0) {
+                fm.popBackStack(null, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            }
             fm.beginTransaction()
                 .replace(R.id.fragmentContainer, fragment, tag)
                 .commit()
@@ -71,14 +77,24 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    fun navigateToSettings() {
-        SafeRun.runOnMain(TAG) {
-            binding?.bottomNav?.selectedItemId = R.id.nav_settings
+    fun openSettings() {
+        SafeRun.run(TAG) {
+            if (isFinishing || isDestroyed) return@run
+            val fm = supportFragmentManager
+            if (fm.isStateSaved) return@run
+            fm.beginTransaction()
+                .replace(R.id.fragmentContainer, SettingsFragment(), TAG_SETTINGS)
+                .addToBackStack(TAG_SETTINGS)
+                .commit()
         }
     }
 
+    @Deprecated("Use openSettings()", ReplaceWith("openSettings()"))
+    fun navigateToSettings() = openSettings()
+
     override fun onStart() {
         super.onStart()
+        container?.tvRemoteRepository?.syncConnectionState()
         container?.tvRemoteRepository?.ensureConnected()
     }
 
@@ -93,6 +109,8 @@ class MainActivity : BaseActivity() {
     companion object {
         private const val TAG = "MainActivity"
         private const val TAG_REMOTE = "remote"
+        private const val TAG_CHANNEL = "channel"
+        private const val TAG_MIRROR = "mirror"
         private const val TAG_CAST = "cast"
         private const val TAG_SETTINGS = "settings"
     }

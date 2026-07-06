@@ -23,5 +23,5 @@
         android:contentDescription="@string/nav_cast"
         android:padding="8dp"
         android:src="@drawable/ic_cast"
-        app:tint="@color/accent_purple" />
+        android:scaleType="centerInside" />
 </LinearLayout>

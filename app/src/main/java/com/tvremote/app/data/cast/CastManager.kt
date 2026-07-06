@@ -5,6 +5,7 @@ import android.net.Uri
 import com.google.android.gms.cast.MediaInfo
 import com.google.android.gms.cast.MediaLoadRequestData
 import com.google.android.gms.cast.MediaMetadata
+import com.google.android.gms.cast.MediaQueueItem
 import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.cast.framework.CastSession
 import com.google.android.gms.cast.framework.SessionManagerListener
@@ -102,19 +103,41 @@ class CastManager(context: Context) {
                 .build()
         }
 
-    fun castLiveStream(url: String, title: String = "Screen Mirror"): OperationResult = castMedia(
-        "multipart/x-mixed-replace; boundary=BoundaryString",
-        MediaInfo.STREAM_TYPE_LIVE,
+    fun startMirrorPlayback(url: String, title: String = "Screen Mirror"): OperationResult = castMedia(
+        "video/mp4",
+        MediaInfo.STREAM_TYPE_BUFFERED,
     ) {
+        buildMirrorMediaInfo(url, title)
+    }
+
+    fun queueMirrorSegment(url: String, title: String = "Screen Mirror"): OperationResult {
+        return SafeRun.runCatching(TAG, OperationResult.Failure("Cast queue failed")) {
+            val session = currentSession()
+                ?: return@runCatching OperationResult.Failure("No Cast device connected")
+            val client = session.remoteMediaClient
+                ?: return@runCatching OperationResult.Failure("Cast media client unavailable")
+            val item = MediaQueueItem.Builder(buildMirrorMediaInfo(url, title))
+                .setAutoplay(true)
+                .build()
+            client.queueInsertItems(arrayOf(item), 0, null)
+            OperationResult.Success
+        }
+    }
+
+    private fun buildMirrorMediaInfo(url: String, title: String): MediaInfo {
         val metadata = MediaMetadata(MediaMetadata.MEDIA_TYPE_MOVIE).apply {
             putString(MediaMetadata.KEY_TITLE, title)
         }
-        MediaInfo.Builder(url)
-            .setStreamType(MediaInfo.STREAM_TYPE_LIVE)
-            .setContentType("multipart/x-mixed-replace; boundary=BoundaryString")
+        return MediaInfo.Builder(url)
+            .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
+            .setContentType("video/mp4")
             .setMetadata(metadata)
             .build()
     }
+
+    @Deprecated("Use startMirrorPlayback for screen mirror")
+    fun castLiveStream(url: String, title: String = "Screen Mirror"): OperationResult =
+        startMirrorPlayback(url, title)
 
     private fun castMedia(
         contentType: String,
@@ -132,12 +155,22 @@ class CastManager(context: Context) {
                 } else {
                     val mediaInfo = buildMedia()
                     AppLogger.d(TAG, "Loading media: ${mediaInfo.contentId} ($contentType)")
-                    client.load(
+                    val pending = client.load(
                         MediaLoadRequestData.Builder()
                             .setMediaInfo(mediaInfo)
                             .setAutoplay(true)
                             .build(),
                     )
+                    pending.setResultCallback { result ->
+                        if (result.status.isSuccess) {
+                            AppLogger.d(TAG, "Cast load success: ${mediaInfo.contentId}")
+                        } else {
+                            AppLogger.e(
+                                TAG,
+                                "Cast load failed: ${result.status.statusMessage} code=${result.status.statusCode}",
+                            )
+                        }
+                    }
                     OperationResult.Success
                 }
             }

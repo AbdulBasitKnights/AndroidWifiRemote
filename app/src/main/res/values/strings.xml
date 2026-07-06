@@ -2,8 +2,25 @@
     <string name="app_name">Android TV Remote</string>
     <string name="app_title">Android TV Remote</string>
     <string name="nav_remote">Remote</string>
+    <string name="nav_channel">Channel</string>
+    <string name="nav_mirror">Mirror</string>
     <string name="nav_cast">Cast</string>
     <string name="nav_settings">Settings</string>
+    <string name="not_connected">Not connected</string>
+    <string name="connected_tv_default">Smart TV</string>
+    <string name="tap_to_connect">Tap to connect TV</string>
+    <string name="mode_remote">Remote</string>
+    <string name="mode_number">Keyboard</string>
+    <string name="mode_touchpad">Touch Pad</string>
+    <string name="channels_title">Channel</string>
+    <string name="channels_search_hint">Search Channel</string>
+    <string name="cast_section_title">Casting</string>
+    <string name="mirror_section_title">Screen Mirroring</string>
+    <string name="connect_tv_first_channel">Connect TV first to launch apps</string>
+    <string name="channel_launched">Opening on TV…</string>
+    <string name="connection_timed_out">Connection timed out — tap Reconnect</string>
+    <string name="shortcut_apple_tv">Apple TV</string>
+    <string name="shortcut_disney">Disney+</string>
 
     <string name="pairing_state_idle">Pairing state: idle</string>
     <string name="remote_state_idle">Remote state: idle</string>
@@ -52,12 +69,11 @@
     <string name="hide_manual_ip">Hide manual IP</string>
     <string name="select_tv_first">Select a TV from the list or enter IP</string>
     <string name="pairing_started_toast">Pairing started — check code on TV</string>
-    <string name="not_connected">Not connected to TV</string>
     <string name="connected_to">Connected to %1$s</string>
 
     <string name="cast_title">Cast</string>
     <string name="cast_screen_mirror_title">Screen Mirroring</string>
-    <string name="cast_screen_mirror_desc">Mirror your entire screen wirelessly to your TV for presentations and entertainment</string>
+    <string name="cast_screen_mirror_desc">Use your phone\'s built-in Cast or Screen Cast settings to mirror to TV</string>
     <string name="cast_media_section">Media Casting</string>
     <string name="cast_photos_title">Photos</string>
     <string name="cast_photos_desc">Share memories on big screen</string>
@@ -77,11 +93,11 @@
     <string name="cast_audio_sent">Audio sent to TV</string>
 
     <string name="mirror_title">Screen Mirroring</string>
-    <string name="mirror_step1">1. Select your TV or Chromecast device</string>
-    <string name="mirror_step2">2. Allow screen capture when prompted</string>
-    <string name="mirror_step3">3. Your screen will appear on TV</string>
+    <string name="mirror_step1">1. Tap Open Mirror Settings below</string>
+    <string name="mirror_step2">2. Choose your TV, Chromecast, or wireless display</string>
+    <string name="mirror_step3">3. Follow your phone\'s on-screen steps to start mirroring</string>
     <string name="mirror_select_device">Select Cast Device</string>
-    <string name="mirror_start">Start Mirroring</string>
+    <string name="mirror_start">Open Mirror Settings</string>
     <string name="mirror_stop">Stop Mirroring</string>
     <string name="mirror_active">Mirroring active on %1$s</string>
     <string name="mirror_permission_denied">Screen capture permission denied</string>
@@ -106,6 +122,7 @@
     <string name="right">Right</string>
     <string name="home">Home</string>
     <string name="back">Back</string>
+    <string name="ai_feature">AI features</string>
 
     <!-- Splash -->
     <string name="splash_title">ANDROID TV REMOTE</string>
@@ -170,6 +187,14 @@
     <string name="pairing_loader_message">Pairing with TV…</string>
     <string name="pairing_loader_hint">Keep the pairing screen open on your TV</string>
 
+    <!-- Connectivity loaders -->
+    <string name="loader_remote_title">Connecting to TV</string>
+    <string name="loader_remote_subtitle">Securing remote session with your Android TV</string>
+    <string name="loader_cast_title">Casting to TV</string>
+    <string name="loader_cast_subtitle">Preparing your media on Chromecast</string>
+    <string name="loader_mirror_title">Starting screen mirror</string>
+    <string name="loader_mirror_subtitle">Capturing your screen and streaming to TV</string>
+
     <!-- Voice -->
     <string name="mic_permission_required">Allow microphone access for voice search</string>
     <string name="voice_listening">Listening… speak now</string>
@@ -177,6 +202,7 @@
     <!-- Mirror -->
     <string name="mirror_wifi_required">Connect phone and TV to the same WiFi network</string>
     <string name="mirror_notification_required">Allow notifications to start screen mirroring</string>
+    <string name="mirror_system_settings_unavailable">Could not open mirror settings on this device. Open Settings → Connected devices → Cast or Screen cast manually.</string>
 
     <string name="remote_tab_title">Remote</string>
     <string name="connect_wifi_hint">Make sure your phone and TV are connected to the same WiFi network.</string>

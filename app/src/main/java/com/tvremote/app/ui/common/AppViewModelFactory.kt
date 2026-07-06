@@ -17,7 +17,11 @@ class AppViewModelFactory(
             modelClass.isAssignableFrom(SettingsViewModel::class.java) ->
                 SettingsViewModel() as T
             modelClass.isAssignableFrom(RemoteViewModel::class.java) ->
-                RemoteViewModel(container.tvRemoteRepository, container.voiceInputHelper) as T
+                RemoteViewModel(
+                    container.tvRemoteRepository,
+                    container.castRepository,
+                    container.voiceInputHelper,
+                ) as T
             modelClass.isAssignableFrom(CastViewModel::class.java) ->
                 CastViewModel(container.castRepository) as T
             else -> throw IllegalArgumentException("Unknown ViewModel: ${modelClass.name}")

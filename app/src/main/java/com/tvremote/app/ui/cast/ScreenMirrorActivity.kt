@@ -22,14 +22,15 @@ import com.tvremote.app.TvRemoteApp
 import com.tvremote.app.data.cast.ScreenCastService
 import com.tvremote.app.databinding.ActivityScreenMirrorBinding
 import com.tvremote.app.ui.common.AppViewModelFactory
+import com.tvremote.app.ui.common.ConnectionLoader
 import com.tvremote.app.util.NetworkUtils
-import com.tvremote.app.util.OperationResult
 import com.tvremote.app.util.SafeRun
 
 class ScreenMirrorActivity : BaseActivity() {
     private lateinit var binding: ActivityScreenMirrorBinding
     private var mirroring = false
     private var pendingProjectionStart = false
+    private var mirrorLoaderVisible = false
 
     private val viewModel: CastViewModel by viewModels {
         AppViewModelFactory((application as TvRemoteApp).container)
@@ -50,9 +51,11 @@ class ScreenMirrorActivity : BaseActivity() {
     ) { result ->
         pendingProjectionStart = false
         if (result.resultCode != RESULT_OK || result.data == null) {
+            hideMirrorLoader()
             Toast.makeText(this, R.string.mirror_permission_denied, Toast.LENGTH_SHORT).show()
             return@registerForActivityResult
         }
+        showMirrorLoader()
         ScreenCastService.start(this, result.resultCode, result.data!!)
     }
 
@@ -61,30 +64,17 @@ class ScreenMirrorActivity : BaseActivity() {
             when (intent?.action) {
                 ScreenCastService.ACTION_MIRROR_STARTED -> {
                     mirroring = true
-                    val url = intent.getStringExtra(ScreenCastService.EXTRA_STREAM_URL).orEmpty()
-                    when (val result = viewModel.castLiveStream(url, getString(R.string.mirror_title))) {
-                        is OperationResult.Success -> {
-                            updateUi()
-                            Toast.makeText(
-                                this@ScreenMirrorActivity,
-                                getString(R.string.mirror_active, viewModel.deviceName() ?: "TV"),
-                                Toast.LENGTH_LONG,
-                            ).show()
-                        }
-                        is OperationResult.Failure -> {
-                            mirroring = false
-                            ScreenCastService.stop(this@ScreenMirrorActivity)
-                            updateUi()
-                            Toast.makeText(
-                                this@ScreenMirrorActivity,
-                                getString(R.string.cast_failed, result.message),
-                                Toast.LENGTH_LONG,
-                            ).show()
-                        }
-                    }
+                    hideMirrorLoader()
+                    updateUi()
+                    Toast.makeText(
+                        this@ScreenMirrorActivity,
+                        getString(R.string.mirror_active, viewModel.deviceName() ?: "TV"),
+                        Toast.LENGTH_LONG,
+                    ).show()
                 }
                 ScreenCastService.ACTION_MIRROR_STOPPED -> {
                     mirroring = false
+                    hideMirrorLoader()
                     updateUi()
                 }
             }
@@ -97,6 +87,7 @@ class ScreenMirrorActivity : BaseActivity() {
         setContentView(binding.root)
 
         viewModel.initialize()
+        (application as? TvRemoteApp)?.container?.castRepository?.initialize()
         binding.backButton.setOnClickListener { finish() }
         binding.mirrorRouteButton.routeSelector = MediaRouteSelector.Builder()
             .addControlCategory(MediaControlIntent.CATEGORY_LIVE_VIDEO)
@@ -138,8 +129,22 @@ class ScreenMirrorActivity : BaseActivity() {
     private fun requestScreenCapture() {
         if (pendingProjectionStart) return
         pendingProjectionStart = true
+        showMirrorLoader()
         val projectionManager = getSystemService(MediaProjectionManager::class.java)
         projectionLauncher.launch(projectionManager.createScreenCaptureIntent())
+    }
+
+    private fun showMirrorLoader() {
+        if (mirrorLoaderVisible) return
+        ConnectionLoader.show(binding.connectionLoader.root, ConnectionLoader.Mode.MIRROR)
+        binding.connectionLoader.root.bringToFront()
+        mirrorLoaderVisible = true
+    }
+
+    private fun hideMirrorLoader() {
+        if (!mirrorLoaderVisible) return
+        ConnectionLoader.hide(binding.connectionLoader.root)
+        mirrorLoaderVisible = false
     }
 
     private fun updateUi() {
@@ -174,6 +179,11 @@ class ScreenMirrorActivity : BaseActivity() {
             }
         }
         super.onStop()
+    }
+
+    override fun onDestroy() {
+        hideMirrorLoader()
+        super.onDestroy()
     }
 
     companion object {

@@ -1,5 +1,6 @@
 package com.tvremote.app.ui.remote
 
+import android.content.res.ColorStateList
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
@@ -12,7 +13,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -23,6 +24,7 @@ import com.tvremote.app.data.model.DiscoveredTv
 import com.tvremote.app.data.repository.TvRemoteRepository
 import com.tvremote.app.data.session.AppPreferences
 import com.tvremote.app.databinding.FragmentRemoteBinding
+import com.tvremote.app.ui.common.ConnectionLoader
 import com.tvremote.app.ui.main.MainActivity
 import com.tvremote.app.ui.settings.adapter.DiscoveredTvAdapter
 import com.tvremote.control.commands.Key
@@ -34,8 +36,9 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
     private var tvAdapter: DiscoveredTvAdapter? = null
     private var touchStartX = 0f
     private var touchStartY = 0f
+    private var connectPanelOpen = false
 
-    private val viewModel: RemoteViewModel by viewModels {
+    private val viewModel: RemoteViewModel by activityViewModels {
         (requireActivity() as MainActivity).viewModelFactory()
     }
 
@@ -63,13 +66,13 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
         setupTouchpad()
         setupNumpad()
         observeState()
-        viewModel.startScan()
     }
 
     override fun onResume() {
         super.onResume()
-        val state = viewModel.uiState.value
-        if (!state.isSessionReady && state.discoveredTvs.isEmpty() && !state.isScanning) {
+        viewModel.refreshConnectionState()
+        viewModel.refreshCastState()
+        if (connectPanelOpen) {
             viewModel.startScan()
         }
     }
@@ -82,9 +85,8 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
 
     private fun setupConnectPanel() {
         val binding = _binding ?: return
-        binding.connectCastButton.setOnClickListener {
-            (requireActivity() as? MainActivity)?.navigateToCast()
-        }
+        binding.connectPanelClose.setOnClickListener { hideConnectPanel() }
+        binding.rescanButton.setOnClickListener { viewModel.startScan() }
         binding.manualIpToggle.setOnClickListener {
             binding.manualIpSection.isVisible = !binding.manualIpSection.isVisible
         }
@@ -119,11 +121,19 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
     private fun setupRemoteControls() {
         val binding = _binding ?: return
         val dpad = binding.dpadPanel
-        binding.remoteHeader.headerCastButton.setOnClickListener {
-            (requireActivity() as? MainActivity)?.navigateToCast()
+        val topBar = binding.remoteTopBar
+
+        topBar.settingsButton.setOnClickListener {
+            (requireActivity() as? MainActivity)?.openSettings()
         }
-        binding.powerButton.setOnClickListener { viewModel.power() }
+        topBar.devicePill.setOnClickListener {
+            if (viewModel.uiState.value.isSessionReady) return@setOnClickListener
+            if (connectPanelOpen) hideConnectPanel() else showConnectPanel()
+        }
+        topBar.powerButton.setOnClickListener { viewModel.power() }
+        binding.backNavButton.setOnClickListener { viewModel.sendKey(Key.KEYCODE_BACK) }
         binding.homeButton.setOnClickListener { viewModel.sendKey(Key.KEYCODE_HOME) }
+        binding.appsNavButton.setOnClickListener { viewModel.apps() }
         dpad.upButton.setOnClickListener { viewModel.sendKey(Key.KEYCODE_DPAD_UP) }
         dpad.downButton.setOnClickListener { viewModel.sendKey(Key.KEYCODE_DPAD_DOWN) }
         dpad.leftButton.setOnClickListener { viewModel.sendKey(Key.KEYCODE_DPAD_LEFT) }
@@ -139,9 +149,6 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
         binding.mediaRow.rewindButton.setOnClickListener { viewModel.rewind() }
         binding.mediaRow.playPauseButton.setOnClickListener { viewModel.playPause() }
         binding.mediaRow.forwardButton.setOnClickListener { viewModel.forward() }
-        binding.mediaRow.headerSettingsShortcut.setOnClickListener {
-            (requireActivity() as? MainActivity)?.navigateToSettings()
-        }
     }
 
     private fun setupModeToggle() {
@@ -183,22 +190,7 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
     }
 
     private fun setupNumpad() {
-        val binding = _binding ?: return
-        val map = mapOf(
-            binding.num0 to Key.KEYCODE_0,
-            binding.num1 to Key.KEYCODE_1,
-            binding.num2 to Key.KEYCODE_2,
-            binding.num3 to Key.KEYCODE_3,
-            binding.num4 to Key.KEYCODE_4,
-            binding.num5 to Key.KEYCODE_5,
-            binding.num6 to Key.KEYCODE_6,
-            binding.num7 to Key.KEYCODE_7,
-            binding.num8 to Key.KEYCODE_8,
-            binding.num9 to Key.KEYCODE_9,
-        )
-        map.forEach { (btn, key) -> btn.setOnClickListener { viewModel.sendKey(key) } }
-        binding.numExit.setOnClickListener { viewModel.sendKey(Key.KEYCODE_ESCAPE) }
-        binding.numDel.setOnClickListener { viewModel.sendKey(Key.KEYCODE_DEL) }
+        _binding?.numpadPanel?.onKeyPress = { key -> viewModel.sendKey(key) }
     }
 
     private fun requestMicAndSpeak() {
@@ -224,8 +216,10 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
                 launch {
                     viewModel.events.collect { event ->
                         when (event) {
-                            is TvRemoteRepository.RepositoryEvent.PairingStarted ->
+                            is TvRemoteRepository.RepositoryEvent.PairingStarted -> {
+                                showConnectPanel()
                                 Toast.makeText(requireContext(), R.string.pairing_started_toast, Toast.LENGTH_SHORT).show()
+                            }
                             is TvRemoteRepository.RepositoryEvent.Disconnected ->
                                 Toast.makeText(requireContext(), R.string.disconnected_from_tv, Toast.LENGTH_SHORT).show()
                             is TvRemoteRepository.RepositoryEvent.Reconnecting ->
@@ -249,14 +243,52 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
         }
     }
 
+    private fun showConnectPanel() {
+        val binding = _binding ?: return
+        connectPanelOpen = true
+        binding.connectPanel.isVisible = true
+        binding.connectPanel.bringToFront()
+        binding.connectionLoader.root.bringToFront()
+        castRepositoryInitializeForDiscovery()
+        viewModel.startScan()
+    }
+
+    private fun castRepositoryInitializeForDiscovery() {
+        (requireActivity() as? MainActivity)?.appContainer()?.castRepository?.initialize()
+    }
+
+    private fun hideConnectPanel() {
+        val binding = _binding ?: return
+        connectPanelOpen = false
+        binding.connectPanel.isVisible = false
+        viewModel.stopScan()
+    }
+
     private fun render(state: RemoteViewModel.RemoteUiState) {
         val binding = _binding ?: return
         val adapter = tvAdapter ?: return
 
-        val connected = state.isSessionReady
-        binding.connectPanel.isVisible = !connected
-        binding.remotePanel.isVisible = connected
-        binding.connectionLoader.isVisible = state.showConnectionLoader
+        if (state.isSessionReady && connectPanelOpen) {
+            hideConnectPanel()
+        }
+        if (state.waitingForCode && !connectPanelOpen) {
+            showConnectPanel()
+        }
+
+        binding.connectPanel.isVisible = connectPanelOpen
+        if (connectPanelOpen) {
+            binding.connectPanel.bringToFront()
+        }
+        if (state.showConnectionLoader) {
+            ConnectionLoader.show(
+                binding.connectionLoader.root,
+                ConnectionLoader.Mode.REMOTE,
+                state.remoteState.takeIf { it != "idle" && it.isNotBlank() },
+            )
+            binding.connectionLoader.root.bringToFront()
+        } else {
+            ConnectionLoader.hide(binding.connectionLoader.root)
+        }
 
         adapter.submit(state.discoveredTvs)
         adapter.setSelectedHost(state.pairingHost ?: state.savedTvHost)
@@ -271,11 +303,39 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
 
         binding.pairingCodeCard.isVisible = state.waitingForCode
         binding.completePairingButton.isEnabled = state.waitingForCode
-        binding.reconnectButton.isVisible = state.isPaired && !state.waitingForCode && !connected
-        binding.disconnectButton.isVisible = state.isPaired && !connected
+        binding.reconnectButton.isVisible = state.isPaired && !state.waitingForCode && !state.isSessionReady
+        binding.disconnectButton.isVisible = state.isPaired && !state.isSessionReady
+
+        updateTopBar(state)
+    }
+
+    private fun updateTopBar(state: RemoteViewModel.RemoteUiState) {
+        val binding = _binding ?: return
+        val topBar = binding.remoteTopBar
+        val displayName = state.discoveredTvs
+            .find { it.host == state.savedTvHost }
+            ?.name
+            ?.takeIf { it.isNotBlank() }
+            ?: state.savedTvHost.takeIf { it.isNotBlank() }
+            ?: getString(R.string.connected_tv_default)
+
+        topBar.deviceNameLabel.text = when {
+            state.isSessionReady -> displayName
+            state.isPaired && state.savedTvHost.isNotBlank() -> displayName
+            else -> getString(R.string.tap_to_connect)
+        }
+        val dotColor = if (state.isSessionReady) {
+            R.color.connection_connected
+        } else {
+            R.color.connection_disconnected
+        }
+        topBar.deviceStatusDot.backgroundTintList = ColorStateList.valueOf(
+            ContextCompat.getColor(requireContext(), dotColor),
+        )
     }
 
     override fun onDestroyView() {
+        _binding?.connectionLoader?.root?.let { ConnectionLoader.hide(it) }
         tvAdapter = null
         _binding = null
         super.onDestroyView()

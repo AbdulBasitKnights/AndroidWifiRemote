@@ -27,8 +27,15 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentSettingsBinding.bind(view)
+        setupBackNavigation()
         setupTheme()
         setupRows()
+    }
+
+    private fun setupBackNavigation() {
+        _binding?.backButton?.setOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
     }
 
     private fun setupTheme() {

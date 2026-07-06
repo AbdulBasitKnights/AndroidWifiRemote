@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import com.tvremote.app.R
 import com.tvremote.app.databinding.FragmentCastBinding
 import com.tvremote.app.ui.main.MainActivity
+import com.tvremote.app.ui.common.ConnectionLoader
 import com.tvremote.app.util.OperationResult
 import com.tvremote.app.util.SafeRun
 import androidx.mediarouter.media.MediaControlIntent
@@ -46,12 +47,6 @@ class CastFragment : Fragment(R.layout.fragment_cast) {
                 .addControlCategory(MediaControlIntent.CATEGORY_REMOTE_PLAYBACK)
                 .build()
 
-            binding.screenMirrorCard.setOnClickListener {
-                SafeRun.run(TAG) {
-                    if (!ensureCastDevice()) return@run
-                    startActivity(Intent(requireContext(), ScreenMirrorActivity::class.java))
-                }
-            }
             binding.photosCard.setOnClickListener {
                 SafeRun.run(TAG) {
                     if (!ensureCastDevice()) return@run
@@ -85,30 +80,37 @@ class CastFragment : Fragment(R.layout.fragment_cast) {
 
     private fun castUri(uri: Uri, isVideo: Boolean, isAudio: Boolean = false) {
         SafeRun.run(TAG) {
+            val binding = _binding ?: return@run
+            ConnectionLoader.show(binding.connectionLoader.root, ConnectionLoader.Mode.CAST)
             try {
-                requireContext().contentResolver.takePersistableUriPermission(
-                    uri,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION,
-                )
-            } catch (_: SecurityException) {
-            } catch (_: Exception) {
-            }
-            when (val result = viewModel.castMedia(uri, isVideo, isAudio)) {
-                is OperationResult.Success -> Toast.makeText(
-                    requireContext(),
-                    getString(R.string.cast_started, viewModel.deviceName() ?: "TV"),
-                    Toast.LENGTH_SHORT,
-                ).show()
-                is OperationResult.Failure -> Toast.makeText(
-                    requireContext(),
-                    getString(R.string.cast_failed, result.message),
-                    Toast.LENGTH_SHORT,
-                ).show()
+                try {
+                    requireContext().contentResolver.takePersistableUriPermission(
+                        uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION,
+                    )
+                } catch (_: SecurityException) {
+                } catch (_: Exception) {
+                }
+                when (val result = viewModel.castMedia(uri, isVideo, isAudio)) {
+                    is OperationResult.Success -> Toast.makeText(
+                        requireContext(),
+                        getString(R.string.cast_started, viewModel.deviceName() ?: "TV"),
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                    is OperationResult.Failure -> Toast.makeText(
+                        requireContext(),
+                        getString(R.string.cast_failed, result.message),
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                }
+            } finally {
+                ConnectionLoader.hide(binding.connectionLoader.root)
             }
         }
     }
 
     override fun onDestroyView() {
+        _binding?.connectionLoader?.root?.let { ConnectionLoader.hide(it) }
         _binding = null
         super.onDestroyView()
     }

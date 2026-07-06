@@ -1,107 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/bg_app_gradient"
-    android:fillViewport="true"
-    android:padding="@dimen/screen_padding">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_app_gradient"
+        android:fillViewport="true"
+        android:padding="@dimen/screen_padding">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <ImageButton
-                android:id="@+id/backButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@drawable/bg_glass_circle_btn"
-                android:contentDescription="@string/back"
-                android:padding="8dp"
-                android:src="@drawable/ic_back_arrow" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <TextView
+                <ImageButton
+                    android:id="@+id/backButton"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_glass_circle_btn"
+                    android:contentDescription="@string/back"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_back_arrow" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="@string/mirror_title"
+                    android:textColor="@color/text_primary"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/bg_glass_card_blue"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mirror_step1"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/mirror_step2"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/mirror_step3"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <androidx.mediarouter.app.MediaRouteButton
+                android:id="@+id/mirrorRouteButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:text="@string/mirror_title"
-                android:textColor="@color/text_primary"
-                android:textSize="22sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:background="@drawable/bg_glass_card_blue"
-            android:orientation="vertical"
-            android:padding="20dp">
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:mediaRouteTypes="user"
+                android:visibility="visible" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/selectedDeviceLabel"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/mirror_step1"
-                android:textColor="@color/text_primary"
-                android:textSize="14sp" />
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:text="@string/cast_select_device"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp" />
 
-            <TextView
-                android:layout_width="wrap_content"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/startMirrorButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/mirror_start" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/stopMirrorButton"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="@string/mirror_step2"
-                android:textColor="@color/text_primary"
-                android:textSize="14sp" />
+                android:text="@string/mirror_stop"
+                android:visibility="gone" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/mirror_step3"
-                android:textColor="@color/text_primary"
-                android:textSize="14sp" />
         </LinearLayout>
+    </ScrollView>
 
-        <androidx.mediarouter.app.MediaRouteButton
-            android:id="@+id/mirrorRouteButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="20dp"
-            android:mediaRouteTypes="user"
-            android:visibility="visible" />
+    <include
+        android:id="@+id/connectionLoader"
+        layout="@layout/include_connection_loader"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-        <TextView
-            android:id="@+id/selectedDeviceLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:gravity="center"
-            android:text="@string/cast_select_device"
-            android:textColor="@color/text_secondary"
-            android:textSize="13sp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/startMirrorButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="@string/mirror_start" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/stopMirrorButton"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/mirror_stop"
-            android:visibility="gone" />
-
-    </LinearLayout>
-</ScrollView>
+</FrameLayout>

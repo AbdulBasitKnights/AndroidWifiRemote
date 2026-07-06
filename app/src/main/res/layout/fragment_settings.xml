@@ -20,9 +20,19 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
+            <ImageButton
+                android:id="@+id/backButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_glass_circle_btn"
+                android:contentDescription="@string/back"
+                android:padding="8dp"
+                android:src="@drawable/ic_back_arrow" />
+
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
                 android:layout_weight="1"
                 android:text="@string/settings_screen_title"
                 android:textColor="@color/text_primary"
@@ -61,23 +71,42 @@
                     style="@style/SettingsRow"
                     android:drawablePadding="12dp"
                     android:text="@string/how_to_connect"
-                    app:drawableStartCompat="@drawable/ic_onboarding_connect" />
+                    app:drawableStartCompat="@drawable/ic_settings_how_to_connect"
+                    app:drawableTint="@color/text_primary" />
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/glass_border" />
 
                 <TextView
                     android:id="@+id/languageButton"
                     style="@style/SettingsRow"
+                    android:drawablePadding="12dp"
                     android:text="@string/app_languages"
-                    app:drawableStartCompat="@drawable/ic_language" />
+                    app:drawableStartCompat="@drawable/ic_language"
+                    app:drawableTint="@color/text_primary" />
 
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/glass_border" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
+                    android:orientation="horizontal"
                     android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="2dp"
+                        android:contentDescription="@null"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_settings_theme_icon"
+                        app:tint="@color/text_primary" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -130,6 +159,7 @@
                             android:text="@string/theme_system"
                             android:textAllCaps="false" />
                     </com.google.android.material.button.MaterialButtonToggleGroup>
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -155,15 +185,53 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <TextView android:id="@+id/cantFindRow" style="@style/SettingsRow" android:text="@string/cant_find_remote" android:hint="@string/cant_find_remote_sub" />
+                <TextView
+                    android:id="@+id/cantFindRow"
+                    style="@style/SettingsRow"
+                    android:drawablePadding="12dp"
+                    android:text="@string/cant_find_remote"
+                    app:drawableStartCompat="@drawable/ic_settings_not_found_icon"
+                    app:drawableTint="@color/text_primary" />
+
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/glass_border" />
-                <TextView android:id="@+id/feedbackRow" style="@style/SettingsRow" android:text="@string/feedback" />
+
+                <TextView
+                    android:id="@+id/feedbackRow"
+                    style="@style/SettingsRow"
+                    android:drawablePadding="12dp"
+                    android:text="@string/feedback"
+                    app:drawableStartCompat="@drawable/ic_settings_feedback_icon"
+                    app:drawableTint="@color/text_primary" />
+
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/glass_border" />
-                <TextView android:id="@+id/rateRow" style="@style/SettingsRow" android:text="@string/rate_us" />
+
+                <TextView
+                    android:id="@+id/rateRow"
+                    style="@style/SettingsRow"
+                    android:drawablePadding="12dp"
+                    android:text="@string/rate_us"
+                    app:drawableStartCompat="@drawable/ic_settings_rate_icon"
+                    app:drawableTint="@color/text_primary" />
+
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/glass_border" />
-                <TextView android:id="@+id/shareRow" style="@style/SettingsRow" android:text="@string/share_app" />
+
+                <TextView
+                    android:id="@+id/shareRow"
+                    style="@style/SettingsRow"
+                    android:drawablePadding="12dp"
+                    android:text="@string/share_app"
+                    app:drawableStartCompat="@drawable/ic_settings_share_icon"
+                    app:drawableTint="@color/text_primary" />
+
                 <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/glass_border" />
-                <TextView android:id="@+id/privacyRow" style="@style/SettingsRow" android:text="@string/privacy_policy" />
+
+                <TextView
+                    android:id="@+id/privacyRow"
+                    style="@style/SettingsRow"
+                    android:drawablePadding="12dp"
+                    android:text="@string/privacy_policy"
+                    app:drawableStartCompat="@drawable/ic_settings_privacy_icon"
+                    app:drawableTint="@color/text_primary" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

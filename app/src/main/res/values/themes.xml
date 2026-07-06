@@ -60,7 +60,11 @@
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:drawablePadding">12dp</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:padding">16dp</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:paddingBottom">14dp</item>
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:textSize">15sp</item>
     </style>

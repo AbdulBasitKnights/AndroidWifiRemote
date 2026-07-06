@@ -3,6 +3,7 @@ package com.tvremote.app.ui.remote
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tvremote.app.data.model.DiscoveredTv
+import com.tvremote.app.data.repository.CastRepository
 import com.tvremote.app.data.repository.TvRemoteRepository
 import com.tvremote.app.util.VoiceInputHelper
 import com.tvremote.control.commands.Key
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.stateIn
 
 class RemoteViewModel(
     private val repository: TvRemoteRepository,
+    private val castRepository: CastRepository,
     private val voiceHelper: VoiceInputHelper,
 ) : ViewModel() {
 
@@ -27,31 +29,33 @@ class RemoteViewModel(
     val uiState: StateFlow<RemoteUiState> = combine(
         combine(
             repository.isPaired,
+            repository.sessionReady,
+            repository.connectionBusy,
             repository.remoteState,
             repository.pairingState,
-            repository.waitingForCode,
-            repository.discoveredTvs,
-        ) { paired, remote, pairing, waiting, tvs ->
-            Core(paired, remote, pairing, waiting, tvs)
+        ) { paired, sessionReady, busy, remote, pairing ->
+            ConnectionCore(paired, sessionReady, busy, remote, pairing)
         },
+        repository.waitingForCode,
+        repository.discoveredTvs,
         combine(repository.isScanning, repository.pairingHost) { scanning, host ->
             ScanHost(scanning, host)
         },
-    ) { core, extra ->
-        val ready = repository.isSessionReady()
-        val busy = repository.isConnectionBusy()
+        castRepository.castConnected,
+    ) { core, waiting, tvs, scanHost, castConnected ->
         RemoteUiState(
             isPaired = core.paired,
-            isSessionReady = ready,
+            isSessionReady = core.sessionReady,
             pairingState = core.pairing,
             remoteState = core.remote,
-            waitingForCode = core.waiting,
-            discoveredTvs = core.tvs,
-            isScanning = extra.scanning,
-            pairingHost = extra.host,
+            waitingForCode = waiting,
+            discoveredTvs = tvs,
+            isScanning = scanHost.scanning,
+            pairingHost = scanHost.host,
             savedTvHost = repository.savedTvHost,
             phoneIp = repository.getPhoneIp(),
-            showConnectionLoader = busy && !core.waiting,
+            showConnectionLoader = core.busy && !waiting && !core.sessionReady,
+            isCastConnected = castConnected,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), RemoteUiState())
 
@@ -60,6 +64,10 @@ class RemoteViewModel(
     init {
         voiceHelper.onListeningChanged = { listening -> _isListening.value = listening }
     }
+
+    fun refreshConnectionState() = repository.syncConnectionState()
+
+    fun refreshCastState() = castRepository.refreshCastConnectionState()
 
     fun startScan() = repository.startScan()
     fun stopScan() = repository.stopScan()
@@ -94,10 +102,16 @@ class RemoteViewModel(
     fun forward() = guarded { repository.forward() }
     fun tvInput() = guarded { repository.tvInput() }
     fun apps() = guarded { repository.apps() }
-    fun runNetflix() = guarded { repository.runNetflix() }
-    fun runYouTube() = guarded { repository.runYouTube() }
-    fun runPrime() = guarded { repository.runPrime() }
-    fun runHotstar() = guarded { repository.runHotstar() }
+    fun runNetflix() = launchChannel { repository.runNetflix() }
+    fun runYouTube() = launchChannel { repository.runYouTube() }
+    fun runPrime() = launchChannel { repository.runPrime() }
+    fun runHotstar() = launchChannel { repository.runHotstar() }
+    fun runAppleTv() = launchChannel { repository.runAppleTv() }
+    fun runDisney() = launchChannel { repository.runDisney() }
+
+    private fun launchChannel(action: () -> Boolean) {
+        repository.launchChannel(action)
+    }
 
     fun startVoiceInput(languageCode: String) {
         if (!repository.isSessionReady()) return
@@ -110,12 +124,12 @@ class RemoteViewModel(
         if (repository.isSessionReady()) block()
     }
 
-    private data class Core(
+    private data class ConnectionCore(
         val paired: Boolean,
+        val sessionReady: Boolean,
+        val busy: Boolean,
         val remote: String,
         val pairing: String,
-        val waiting: Boolean,
-        val tvs: List<DiscoveredTv>,
     )
 
     private data class ScanHost(val scanning: Boolean, val host: String?)
@@ -132,5 +146,6 @@ class RemoteViewModel(
         val savedTvHost: String = "",
         val phoneIp: String? = null,
         val showConnectionLoader: Boolean = false,
+        val isCastConnected: Boolean = false,
     )
 }

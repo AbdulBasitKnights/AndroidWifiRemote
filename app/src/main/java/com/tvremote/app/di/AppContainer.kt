@@ -29,7 +29,7 @@ class AppContainer(context: Context) {
 
     val connectionCoordinator = ConnectionCoordinator(remoteManager, pairingStore)
 
-    val tvRemoteRepository = TvRemoteRepository(remoteManager, tvDiscovery, connectionCoordinator)
+    val tvRemoteRepository = TvRemoteRepository(appContext, remoteManager, tvDiscovery, connectionCoordinator)
     val castRepository = CastRepository(castManager, appContext, connectionCoordinator)
 
     private val mirrorReceiver = object : BroadcastReceiver() {

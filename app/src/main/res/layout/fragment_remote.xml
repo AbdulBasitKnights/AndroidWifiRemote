@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/splash_background">
+    android:background="@color/splash_background"
+    android:orientation="vertical">
 
-    <!-- CONNECT / PAIR PANEL (Figma discovery screen) -->
-    <ScrollView
-        android:id="@+id/connectPanel"
+    <include
+        android:id="@+id/remoteTopBar"
+        layout="@layout/include_remote_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/screen_padding"
+        android:paddingTop="@dimen/screen_padding" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- REMOTE CONTROLS PANEL (always visible, bottom layer) -->
+        <ScrollView
+            android:id="@+id/remotePanel"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
@@ -24,319 +38,113 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/remote_tab_title"
-                    android:textColor="@color/text_primary"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
-
-                <ImageButton
-                    android:id="@+id/connectCastButton"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:background="@drawable/img_btn_circle_dark"
-                    android:contentDescription="@string/nav_cast"
-                    android:padding="8dp"
-                    android:src="@drawable/ic_cast"
-                    app:tint="@color/accent_purple" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:lineSpacingExtra="4dp"
-                android:text="@string/connect_wifi_hint"
-                android:textColor="@color/text_secondary"
-                android:textSize="14sp" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
-                android:orientation="horizontal">
-
-                <View android:layout_width="8dp" android:layout_height="8dp" android:layout_margin="4dp" android:background="@drawable/bg_dot_blue" />
-                <View android:layout_width="8dp" android:layout_height="8dp" android:layout_margin="4dp" android:background="@drawable/bg_dot_red" />
-                <View android:layout_width="8dp" android:layout_height="8dp" android:layout_margin="4dp" android:background="@drawable/bg_dot_yellow" />
-                <View android:layout_width="8dp" android:layout_height="8dp" android:layout_margin="4dp" android:background="@drawable/bg_dot_green" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/scanStatusLabel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:gravity="center"
-                android:text="@string/scanning_tvs"
-                android:textColor="@color/text_secondary"
-                android:textSize="13sp" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/discoveredTvsList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:nestedScrollingEnabled="false"
-                tools:itemCount="2"
-                tools:listitem="@layout/item_discovered_tv" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/pairingCodeCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:visibility="gone"
-                app:cardBackgroundColor="@color/card_background"
-                app:cardCornerRadius="16dp"
-                app:strokeColor="@color/accent_purple"
-                app:strokeWidth="2dp"
-                tools:visibility="visible">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/pairing_code_step_title"
-                        android:textColor="@color/text_primary"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:layout_width="200dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:hint="@string/pairing_code_hint">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/codeInput"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:imeOptions="actionDone"
-                            android:inputType="textCapCharacters"
-                            android:maxLength="6"
-                            android:textSize="20sp" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/completePairingButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:backgroundTint="@color/accent_purple"
-                        android:text="@string/complete_pairing"
-                        android:textAllCaps="false" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/reconnectButton"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="6dp"
-                    android:layout_weight="1"
-                    android:text="@string/reconnect_remote"
-                    android:textAllCaps="false"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/disconnectButton"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:layout_weight="1"
-                    android:text="@string/disconnect_remote"
-                    android:textAllCaps="false"
-                    android:textColor="@color/accent_red"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/manualIpToggle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
-                android:padding="8dp"
-                android:text="@string/enter_ip_manually"
-                android:textColor="@color/accent_purple" />
-
-            <LinearLayout
-                android:id="@+id/manualIpSection"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/tv_ip_hint">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/hostInput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="text" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/pairManualButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:backgroundTint="@color/accent_purple"
-                    android:text="@string/pair_now"
-                    android:textAllCaps="false" />
-            </LinearLayout>
-        </LinearLayout>
-    </ScrollView>
-
-    <!-- REMOTE CONTROLS PANEL (Figma remote UI) -->
-    <ScrollView
-        android:id="@+id/remotePanel"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:fillViewport="true"
-        android:overScrollMode="never"
-        android:padding="@dimen/screen_padding"
-        android:visibility="gone"
-        tools:visibility="visible">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <include
-                android:id="@+id/remoteHeader"
-                layout="@layout/include_remote_header" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <ImageButton
-                    android:id="@+id/powerButton"
+                    android:id="@+id/backNavButton"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@drawable/bg_power_orange"
-                    android:contentDescription="@string/nav_remote"
-                    android:padding="10dp"
-                    android:src="@drawable/ic_power"
-                    app:tint="@color/text_on_accent" />
-
-                <com.google.android.material.button.MaterialButtonToggleGroup
-                    android:id="@+id/modeToggle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="8dp"
-                    android:layout_weight="1"
+                    android:layout_margin="4dp"
                     android:background="@drawable/bg_remote_btn"
-                    android:padding="4dp"
-                    app:singleSelection="true">
+                    android:contentDescription="@string/back"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_back"
+                    app:tint="@color/text_primary" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/modeDpad"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        android:minWidth="0dp"
-                        android:padding="0dp"
-                        app:backgroundTint="@color/mode_toggle_bg"
-                        app:icon="@drawable/ic_onboarding_remote"
-                        app:iconGravity="textStart"
-                        app:iconPadding="0dp"
-                        app:iconTint="@color/mode_toggle_tint"
-                        app:rippleColor="@color/glass_border"
-                        app:strokeWidth="0dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/modeTouchpad"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        android:layout_width="0dp"
-                        android:layout_height="44dp"
-                        android:layout_weight="1"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        android:minWidth="0dp"
-                        android:padding="0dp"
-                        app:backgroundTint="@color/mode_toggle_bg"
-                        app:cornerRadius="12dp"
-                        app:icon="@drawable/ic_touchpad"
-                        app:iconGravity="textStart"
-                        app:iconPadding="0dp"
-                        app:iconTint="@color/mode_toggle_tint"
-                        app:rippleColor="@color/glass_border"
-                        app:strokeWidth="0dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/modeNumpad"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        android:layout_width="0dp"
-                        android:layout_height="44dp"
-                        android:layout_weight="1"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        android:minWidth="0dp"
-                        android:padding="0dp"
-                        app:backgroundTint="@color/mode_toggle_bg"
-                        app:cornerRadius="12dp"
-                        app:icon="@drawable/ic_numpad"
-                        app:iconGravity="textStart"
-                        app:iconPadding="0dp"
-                        app:iconTint="@color/mode_toggle_tint"
-                        app:rippleColor="@color/glass_border"
-                        app:strokeWidth="0dp" />
-                </com.google.android.material.button.MaterialButtonToggleGroup>
-
-                <ImageButton
+                <ImageView
                     android:id="@+id/homeButton"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="@drawable/img_btn_circle_dark"
+                    android:layout_margin="4dp"
                     android:contentDescription="@string/home"
-                    android:padding="10dp"
-                    android:src="@drawable/ic_home" />
+                    android:padding="12dp"
+                    android:background="@drawable/bg_remote_btn"
+                    android:src="@drawable/ic_home"
+                    app:tint="@color/text_primary" />
+
+                <ImageButton
+                    android:id="@+id/appsNavButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_remote_btn"
+                    android:contentDescription="@string/nav_settings"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_apps" />
             </LinearLayout>
+
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/modeToggle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_remote_btn"
+                app:singleSelection="true">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/modeDpad"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:minWidth="0dp"
+                    android:padding="0dp"
+                    android:text="@string/mode_remote"
+                    android:textAllCaps="false"
+                    android:textSize="12sp"
+                    app:backgroundTint="@color/mode_toggle_bg"
+                    app:cornerRadius="16dp"
+                    app:strokeWidth="0dp"
+                    android:textColor="@color/mode_toggle_tint" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/modeNumpad"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:minWidth="0dp"
+                    android:padding="0dp"
+                    android:text="@string/mode_number"
+                    android:textAllCaps="false"
+                    android:textSize="12sp"
+                    app:backgroundTint="@color/mode_toggle_bg"
+                    app:cornerRadius="16dp"
+                    app:strokeWidth="0dp"
+                    android:textColor="@color/mode_toggle_tint" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/modeTouchpad"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:minWidth="0dp"
+                    android:padding="0dp"
+                    android:text="@string/mode_touchpad"
+                    android:textAllCaps="false"
+                    android:textSize="12sp"
+                    app:backgroundTint="@color/mode_toggle_bg"
+                    app:cornerRadius="16dp"
+                    app:strokeWidth="0dp"
+                    android:textColor="@color/mode_toggle_tint" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
 
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:minHeight="280dp">
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_remote_control_card"
+                android:minHeight="280dp"
+                android:padding="12dp">
 
                 <include
                     android:id="@+id/dpadPanel"
@@ -354,31 +162,16 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="@string/touchpad_hint"
-                        android:textColor="@color/text_secondary"
+                        android:textColor="@color/glass_white"
                         android:textSize="14sp" />
                 </FrameLayout>
 
-                <GridLayout
+                <com.tvremote.app.ui.remote.RemoteKeyboardView
                     android:id="@+id/numpadPanel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:columnCount="4"
-                    android:visibility="gone">
-
-                    <com.google.android.material.button.MaterialButton android:id="@+id/num1" style="@style/NumpadKey" android:text="1" />
-                    <com.google.android.material.button.MaterialButton android:id="@+id/num2" style="@style/NumpadKey" android:text="2" />
-                    <com.google.android.material.button.MaterialButton android:id="@+id/num3" style="@style/NumpadKey" android:text="3" />
-                    <com.google.android.material.button.MaterialButton android:id="@+id/numExit" style="@style/NumpadKey" android:text="@string/numpad_exit" />
-                    <com.google.android.material.button.MaterialButton android:id="@+id/num4" style="@style/NumpadKey" android:text="4" />
-                    <com.google.android.material.button.MaterialButton android:id="@+id/num5" style="@style/NumpadKey" android:text="5" />
-                    <com.google.android.material.button.MaterialButton android:id="@+id/num6" style="@style/NumpadKey" android:text="6" />
-                    <com.google.android.material.button.MaterialButton android:id="@+id/num0" style="@style/NumpadKey" android:text="0" />
-                    <com.google.android.material.button.MaterialButton android:id="@+id/num7" style="@style/NumpadKey" android:text="7" />
-                    <com.google.android.material.button.MaterialButton android:id="@+id/num8" style="@style/NumpadKey" android:text="8" />
-                    <com.google.android.material.button.MaterialButton android:id="@+id/num9" style="@style/NumpadKey" android:text="9" />
-                    <ImageButton android:id="@+id/numDel" style="@style/NumpadKeyIcon" android:contentDescription="@string/back" android:src="@drawable/ic_back" />
-                </GridLayout>
+                    android:visibility="gone" />
             </FrameLayout>
 
             <include
@@ -387,38 +180,224 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- Connection loader -->
-    <FrameLayout
-        android:id="@+id/connectionLoader"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#99000000"
-        android:clickable="true"
-        android:focusable="true"
-        android:visibility="gone">
+        <!-- CONNECT / PAIR PANEL (overlay on top of remote) -->
+        <ScrollView
+            android:id="@+id/connectPanel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/splash_background"
+            android:clickable="true"
+            android:clipToPadding="false"
+            android:elevation="16dp"
+            android:fillViewport="true"
+            android:focusable="true"
+            android:overScrollMode="never"
+            android:padding="@dimen/screen_padding"
+            android:visibility="gone"
+            tools:visibility="gone">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@drawable/bg_glass_panel"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="32dp">
-
-            <ProgressBar
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:indeterminateTint="@color/accent_purple" />
-
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/pairing_loader_message"
-                android:textColor="@color/text_primary"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/remote_tab_title"
+                        android:textColor="@color/text_primary"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <ImageButton
+                        android:id="@+id/connectPanelClose"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/img_btn_circle_dark"
+                        android:contentDescription="@string/back"
+                        android:padding="10dp"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_back"
+                        app:tint="@color/text_primary" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:lineSpacingExtra="4dp"
+                    android:text="@string/connect_wifi_hint"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/rescanButton"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/scan_tvs"
+                    android:textAllCaps="false" />
+
+                <TextView
+                    android:id="@+id/scanStatusLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:text="@string/scanning_tvs"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/discoveredTvsList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:nestedScrollingEnabled="false"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/item_discovered_tv" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/pairingCodeCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:visibility="gone"
+                    app:cardBackgroundColor="@color/card_background"
+                    app:cardCornerRadius="16dp"
+                    app:strokeColor="@color/accent_purple"
+                    app:strokeWidth="2dp"
+                    tools:visibility="visible">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/pairing_code_step_title"
+                            android:textColor="@color/text_primary"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="200dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:hint="@string/pairing_code_hint">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/codeInput"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:imeOptions="actionDone"
+                                android:inputType="textCapCharacters"
+                                android:maxLength="6"
+                                android:textSize="20sp" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/completePairingButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:backgroundTint="@color/accent_purple"
+                            android:text="@string/complete_pairing"
+                            android:textAllCaps="false" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/reconnectButton"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:text="@string/reconnect_remote"
+                        android:textAllCaps="false"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/disconnectButton"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:text="@string/disconnect_remote"
+                        android:textAllCaps="false"
+                        android:textColor="@color/accent_red"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/manualIpToggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="16dp"
+                    android:padding="8dp"
+                    android:text="@string/enter_ip_manually"
+                    android:textColor="@color/accent_purple" />
+
+                <LinearLayout
+                    android:id="@+id/manualIpSection"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/tv_ip_hint">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/hostInput"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="text" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/pairManualButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:backgroundTint="@color/accent_purple"
+                        android:text="@string/pair_now"
+                        android:textAllCaps="false" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+    <include
+        android:id="@+id/connectionLoader"
+        layout="@layout/include_connection_loader"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
     </FrameLayout>
-</FrameLayout>
+</LinearLayout>

@@ -136,7 +136,9 @@ class RemoteManager(
             logger.debugLog("$LOG_PREFIX Success sent")
             nextData?.let { sendRaw(it) }
         } catch (e: Exception) {
+            receiving.set(false)
             remoteState = RemoteState.Error(TvRemoteError.SendDataError(e))
+            disconnect()
         }
     }
 
@@ -148,8 +150,9 @@ class RemoteManager(
                     val chunk = readChunk()
                     if (chunk == null) {
                         if (receiving.get()) {
-                            remoteState = RemoteState.Error(TvRemoteError.ReceiveDataError(IOException("Socket closed")))
+                remoteState = RemoteState.Error(TvRemoteError.ReceiveDataError(IOException("Socket closed")))
                             receiving.set(false)
+                            disconnect()
                         }
                         break
                     }
@@ -161,7 +164,9 @@ class RemoteManager(
                     handleData()
                 }
             } catch (e: Exception) {
+                receiving.set(false)
                 remoteState = RemoteState.Error(TvRemoteError.ReceiveDataError(e))
+                disconnect()
             }
         }
     }
