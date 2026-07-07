@@ -4,13 +4,13 @@
     <color name="background">#FF121212</color>
     <color name="splash_background">#FF1A1A1A</color>
     <color name="card_background">#FF2A2A2A</color>
-    <color name="glass_white">#33FFFFFF</color>
+    <color name="glass_white">#BBFFFFFF</color>
     <color name="glass_white_solid">#FF2A2A2A</color>
     <color name="glass_border">#33FFFFFF</color>
-    <color name="glass_blue">#FF3D3566</color>
+    <color name="glass_blue">#7063B3</color>
     <color name="glass_blue_dark">#FF7B61FF</color>
-    <color name="glass_pink">#FF3D2A35</color>
-    <color name="glass_lavender">#FF2E2844</color>
+    <color name="glass_pink">#80566E</color>
+    <color name="glass_lavender">#625590</color>
     <color name="glass_gray">#FF333333</color>
     <color name="primary">#1F97F6</color>
     <color name="primary_dark">#005FAD</color>

@@ -12,6 +12,7 @@
         android:contentDescription="@string/app_name"
         android:scaleType="fitCenter"
         android:src="@drawable/img_dpad_cross"
+        app:tint="@color/primary"
         app:layout_constraintBottom_toTopOf="@id/splashTitleRow"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

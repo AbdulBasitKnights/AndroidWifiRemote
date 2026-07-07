@@ -15,11 +15,13 @@
 
     <ImageButton
         android:id="@+id/upButton"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_gravity="top|center_horizontal"
-        android:layout_marginTop="10dp"
-        android:background="@android:color/transparent"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/bg_glass_circle_btn"
+        android:backgroundTint="@color/primary_dark2"
+        app:tint="@color/glass_white"
         android:contentDescription="@string/up"
         android:padding="18dp"
         android:scaleType="fitCenter"
@@ -27,11 +29,13 @@
 
     <ImageButton
         android:id="@+id/downButton"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="10dp"
-        android:background="@android:color/transparent"
+        android:background="@drawable/bg_glass_circle_btn"
+        android:backgroundTint="@color/primary_dark2"
+        app:tint="@color/glass_white"
+        android:layout_marginBottom="12dp"
         android:contentDescription="@string/down"
         android:padding="18dp"
         android:scaleType="fitCenter"
@@ -39,11 +43,15 @@
 
     <ImageButton
         android:id="@+id/leftButton"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_gravity="center_vertical|start"
         android:layout_marginStart="10dp"
-        android:background="@android:color/transparent"
+        android:background="@drawable/bg_glass_circle_btn"
+        android:backgroundTint="@color/primary_dark2"
+        app:tint="@color/glass_white"
+        android:layout_marginBottom="4dp"
+
         android:contentDescription="@string/left"
         android:padding="18dp"
         android:scaleType="fitCenter"
@@ -51,11 +59,14 @@
 
     <ImageButton
         android:id="@+id/rightButton"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_gravity="center_vertical|end"
         android:layout_marginEnd="10dp"
-        android:background="@android:color/transparent"
+        android:background="@drawable/bg_glass_circle_btn"
+        android:backgroundTint="@color/primary_dark2"
+        app:tint="@color/glass_white"
+        android:layout_marginBottom="4dp"
         android:contentDescription="@string/right"
         android:padding="18dp"
         android:scaleType="fitCenter"
@@ -74,8 +85,8 @@
             android:layout_height="match_parent"
             android:contentDescription="@null"
             android:scaleType="fitCenter"
-            app:tint="@color/primary_dark"
-            android:src="@drawable/img_dpad_ok" />
+            app:tint="@color/primary_dark2"
+            android:src="@drawable/bg_glass_circle_btn" />
 
         <TextView
             android:layout_width="match_parent"
