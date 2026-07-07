@@ -106,7 +106,7 @@ class RemoteKeyboardView @JvmOverloads constructor(
             isFocusable = true
             setTextSize(TypedValue.COMPLEX_UNIT_SP, cell.textSizeSp)
             setTextColor(ContextCompat.getColor(context, R.color.text_primary))
-            setBackgroundResource(R.drawable.bg_remote_btn)
+            setBackgroundResource(R.drawable.bg_remote_key_ripple)
             layoutParams = LayoutParams(0, dp(44), cell.weight).apply {
                 marginStart = dp(2)
                 marginEnd = dp(2)
@@ -125,7 +125,7 @@ class RemoteKeyboardView @JvmOverloads constructor(
         return ImageButton(context).apply {
             setImageResource(R.drawable.ic_back)
             imageTintList = ContextCompat.getColorStateList(context, R.color.text_primary)
-            setBackgroundResource(R.drawable.bg_remote_btn)
+            setBackgroundResource(R.drawable.bg_remote_key_ripple)
             scaleType = ImageView.ScaleType.CENTER_INSIDE
             setPadding(dp(12), dp(12), dp(12), dp(12))
             contentDescription = context.getString(R.string.back)
