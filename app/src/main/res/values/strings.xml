@@ -232,4 +232,60 @@
     <string name="facebook_app_id" translatable="false">YOUR_FACEBOOK_APP_ID</string>
     <string name="facebook_client_token" translatable="false">YOUR_FACEBOOK_CLIENT_TOKEN</string>
     <string name="adjust_app_token" translatable="false">YOUR_ADJUST_APP_TOKEN</string>
+
+    <string name="ad_loading">Ad Loading…</string>
+    <string name="done">Done</string>
+    <string name="select_language">Select Language</string>
+    <string name="plz_select_language">Please select language first</string>
+    <string name="create_your_perfect_experience">Create Your Perfect TV Experience</string>
+    <string name="customize_feature">Customize features to fit your needs.</string>
+
+    <string name="full_onboard_continue">Continue -&gt;</string>
+    <string name="full_onboard_aging_title">Connect Instantly</string>
+    <string name="full_onboard_aging_desc">Pair with your Android TV in seconds using Wi‑Fi discovery.</string>
+    <string name="full_onboard_enhancer_title">Full Remote Control</string>
+    <string name="full_onboard_enhancer_desc">D-pad, touchpad, keyboard and voice — control everything from your phone.</string>
+    <string name="full_onboard_makeup_title">Cast &amp; Mirror</string>
+    <string name="full_onboard_makeup_desc">Cast photos, videos and mirror your phone screen to the big TV.</string>
+    <string name="full_onboard_hair_title">Launch Apps Fast</string>
+    <string name="full_onboard_hair_desc">Open Netflix, YouTube, Disney+ and more with one tap from your phone.</string>
+    <string name="full_onboard_compare_before">Before image</string>
+    <string name="full_onboard_compare_after">After image</string>
+
+    <string name="iap_unlock_title">Unlock TV Remote Pro</string>
+    <string name="iap_whats_included">What\'s Included</string>
+    <string name="iap_basic">Basic</string>
+    <string name="iap_premium">Premium</string>
+    <string name="iap_enable_free_trial">Enable Free Trial</string>
+    <string name="iap_continue_for_free">Continue For Free</string>
+    <string name="iap_continue">Continue</string>
+    <string name="iap_no_payment_now">No Payment Now</string>
+    <string name="iap_cancel_anytime">Cancel anytime</string>
+    <string name="iap_badge_cancel_anytime">Cancel Anytime</string>
+    <string name="iap_fetching_prices">Fetching prices…</string>
+    <string name="iap_fetch_failed">Unable to fetch plan details</string>
+    <string name="iap_feature_hd_camera">Ad-Free Experience</string>
+    <string name="iap_feature_body_editor">Unlimited Casting</string>
+    <string name="iap_feature_collage_maker">Screen Mirror HD</string>
+    <string name="iap_feature_ai_nanobanana">Quick App Launch</string>
+    <string name="iap_feature_photo_enhancer">Voice Remote</string>
+    <string name="iap_feature_remove_ads">Remove Ads</string>
+    <string name="iap_plan_weekly">Weekly</string>
+    <string name="iap_plan_price_placeholder">-- / Weekly</string>
+    <string name="iap_trial_enabled">Trial Enabled</string>
+    <string name="iap_trial_disabled">Trial Disabled</string>
+    <string name="iap_disclaimer_trial_disabled">Payment will be charged to your Google Play account upon purchase confirmation. Cancel anytime via Google Play Subscriptions.</string>
+    <string name="iap_disclaimer_trial_enabled">The first 3-days of trial usage are free, then %1$s per week automatically renew. Cancel anytime in Subscriptions on Google Play.</string>
+
+    <string name="close">Close</string>
+    <string name="please_wait">Please wait…</string>
+    <string name="terms_of_use">Terms of use</string>
+    <string name="iap_continue_with_ads">Continue with Ads</string>
+    <string name="next">Next</string>
+    <string name="pro_capture" translatable="false">TV Remote</string>
+    <string name="editPhoto">Remote Control</string>
+    <string name="ai_nanobanana">Screen Cast</string>
+    <string name="photo_enhancer">Screen Mirror</string>
+    <string name="bodyMaker">Channel Apps</string>
+    <string name="collage_maker">Quick Connect</string>
 </resources>

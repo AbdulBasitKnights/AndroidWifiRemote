@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView
+        android:id="@+id/ivBefore"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/full_onboard_compare_before"
+        android:scaleType="centerCrop" />
+
+    <FrameLayout
+        android:id="@+id/afterClipContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="true"
+        android:clipToPadding="true">
+
+        <ImageView
+            android:id="@+id/ivAfter"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/full_onboard_compare_after"
+            android:scaleType="centerCrop" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/dividerTouchTarget"
+        android:layout_width="@dimen/full_onboard_compare_touch_width"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true">
+
+        <View
+            android:id="@+id/dividerLine"
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/white" />
+
+        <FrameLayout
+            android:layout_width="@dimen/full_onboard_compare_handle_size"
+            android:layout_height="@dimen/full_onboard_compare_handle_size"
+            android:layout_gravity="center"
+            android:background="@drawable/compare">
+
+        </FrameLayout>
+    </FrameLayout>
+
+</merge>

@@ -10,4 +10,11 @@
     <dimen name="bottom_nav_height">72dp</dimen>
     <dimen name="screen_padding">16dp</dimen>
     <dimen name="connection_banner_stroke">1dp</dimen>
+
+    <dimen name="full_onboard_progress_height">4dp</dimen>
+    <dimen name="full_onboard_progress_gap">6dp</dimen>
+    <dimen name="full_onboard_progress_radius">2dp</dimen>
+    <dimen name="full_onboard_progress_top_margin">12dp</dimen>
+    <dimen name="full_onboard_compare_touch_width">56dp</dimen>
+    <dimen name="full_onboard_compare_handle_size">40dp</dimen>
 </resources>

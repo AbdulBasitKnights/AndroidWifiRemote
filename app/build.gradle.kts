@@ -25,9 +25,33 @@ android {
     buildTypes {
         debug {
             buildConfigField("String", "ADJUST_ENVIRONMENT", "\"sandbox\"")
+            buildConfigField("String", "inter_splash", "\"ca-app-pub-3940256099942544/1033173712\"")
+            buildConfigField("String", "inter_splash_high", "\"ca-app-pub-3940256099942544/1033173712\"")
+            buildConfigField("String", "native_splash", "\"ca-app-pub-3940256099942544/2247696110\"")
+            buildConfigField("String", "native_splash_high", "\"ca-app-pub-3940256099942544/2247696110\"")
+            buildConfigField("String", "native_language", "\"ca-app-pub-3940256099942544/2247696110\"")
+            buildConfigField("String", "native_language_high", "\"ca-app-pub-3940256099942544/2247696110\"")
+            buildConfigField("String", "native_language_alt", "\"ca-app-pub-3940256099942544/2247696110\"")
+            buildConfigField("String", "native_language_alt_high", "\"ca-app-pub-3940256099942544/2247696110\"")
+            buildConfigField("String", "native_survey", "\"ca-app-pub-3940256099942544/2247696110\"")
+            buildConfigField("String", "native_survey_hf", "\"ca-app-pub-3940256099942544/2247696110\"")
+            buildConfigField("String", "inter_survey", "\"ca-app-pub-3940256099942544/1033173712\"")
+            buildConfigField("String", "inter_survey_high", "\"ca-app-pub-3940256099942544/1033173712\"")
         }
         release {
             buildConfigField("String", "ADJUST_ENVIRONMENT", "\"production\"")
+            buildConfigField("String", "inter_splash", "\"ca-app-pub-3940256099942544/1033173712\"")
+            buildConfigField("String", "inter_splash_high", "\"ca-app-pub-3940256099942544/1033173712\"")
+            buildConfigField("String", "native_splash", "\"ca-app-pub-3940256099942544/2247696110\"")
+            buildConfigField("String", "native_splash_high", "\"ca-app-pub-3940256099942544/2247696110\"")
+            buildConfigField("String", "native_language", "\"ca-app-pub-3940256099942544/2247696110\"")
+            buildConfigField("String", "native_language_high", "\"ca-app-pub-3940256099942544/2247696110\"")
+            buildConfigField("String", "native_language_alt", "\"ca-app-pub-3940256099942544/2247696110\"")
+            buildConfigField("String", "native_language_alt_high", "\"ca-app-pub-3940256099942544/2247696110\"")
+            buildConfigField("String", "native_survey", "\"ca-app-pub-3940256099942544/2247696110\"")
+            buildConfigField("String", "native_survey_hf", "\"ca-app-pub-3940256099942544/2247696110\"")
+            buildConfigField("String", "inter_survey", "\"ca-app-pub-3940256099942544/1033173712\"")
+            buildConfigField("String", "inter_survey_high", "\"ca-app-pub-3940256099942544/1033173712\"")
         }
     }
 
@@ -64,4 +88,12 @@ dependencies {
     implementation(libs.play.services.ads)
     implementation(libs.facebook.android.sdk)
     implementation(libs.adjust.android)
+    implementation(libs.billing.ktx)
+    implementation(libs.androidx.datastore)
+    implementation(libs.androidx.viewpager2)
+    implementation(libs.lottie)
+    implementation(libs.shimmer)
+    implementation(libs.sdp.android)
+    implementation(libs.ssp.android)
+    implementation(libs.firebase.config)
 }

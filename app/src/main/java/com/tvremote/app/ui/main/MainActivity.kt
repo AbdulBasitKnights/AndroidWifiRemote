@@ -28,6 +28,7 @@ class MainActivity : BaseActivity() {
             setContentView(binding!!.root)
 
             container = (application as? TvRemoteApp)?.container
+            com.tvremote.app.util.OnboardSessionCounter.increment(this)
             container?.castRepository?.initialize()
 
             if (savedInstanceState == null) {

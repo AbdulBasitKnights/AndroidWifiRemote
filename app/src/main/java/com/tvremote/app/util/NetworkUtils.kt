@@ -1,5 +1,8 @@
 package com.tvremote.app.util
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import java.net.Inet4Address
 import java.net.NetworkInterface
 import java.util.regex.Pattern
@@ -8,6 +11,14 @@ object NetworkUtils {
     private val IPV4_PATTERN = Pattern.compile(
         "^((25[0-5]|2[0-4]\\d|[01]?\\d\\d?)\\.){3}(25[0-5]|2[0-4]\\d|[01]?\\d\\d?)$",
     )
+
+    fun isOnline(context: Context): Boolean {
+        val manager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+            ?: return false
+        val network = manager.activeNetwork ?: return false
+        val capabilities = manager.getNetworkCapabilities(network) ?: return false
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
 
     fun isValidIpv4(host: String): Boolean = IPV4_PATTERN.matcher(host).matches()
 
