@@ -91,13 +91,16 @@
     <string name="cast_no_device">No Cast device found. Connect phone and TV to same WiFi.</string>
     <string name="cast_photo_sent">Photo sent to TV</string>
     <string name="cast_video_sent">Video sent to TV</string>
-    <string name="cast_audio_sent">Audio sent to TV</string>
+    <string name="cast_add_photos">Add photos</string>
+    <string name="cast_add_videos">Add video</string>
+    <string name="cast_picker_hint">Pick media, tap to cast. Swipe down to close.</string>
 
     <string name="mirror_title">Screen Mirroring</string>
-    <string name="mirror_step1">1. Tap Open Mirror Settings below</string>
-    <string name="mirror_step2">2. Choose your TV, Chromecast, or wireless display</string>
-    <string name="mirror_step3">3. Follow your phone\'s on-screen steps to start mirroring</string>
+    <string name="mirror_step1">1. Tap Select Cast Device and connect your TV or Chromecast</string>
+    <string name="mirror_step2">2. Tap Open Mirror Settings to start system screen mirroring</string>
+    <string name="mirror_step3">3. Choose your TV and follow on-screen steps</string>
     <string name="mirror_select_device">Select Cast Device</string>
+    <string name="mirror_cast_first">Connect a Cast device first, then open mirror settings</string>
     <string name="mirror_start">Open Mirror Settings</string>
     <string name="mirror_stop">Stop Mirroring</string>
     <string name="mirror_active">Mirroring active on %1$s</string>

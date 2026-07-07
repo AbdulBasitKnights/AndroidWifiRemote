@@ -95,7 +95,6 @@ class MainActivity : BaseActivity() {
     override fun onStart() {
         super.onStart()
         container?.tvRemoteRepository?.syncConnectionState()
-        container?.tvRemoteRepository?.ensureConnected()
     }
 
     override fun onDestroy() {

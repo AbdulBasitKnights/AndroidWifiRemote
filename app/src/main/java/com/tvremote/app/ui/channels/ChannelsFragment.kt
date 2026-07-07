@@ -37,7 +37,6 @@ class ChannelsFragment : Fragment(R.layout.fragment_channels) {
 
         val shortcuts = buildShortcuts()
         adapter = ChannelShortcutAdapter(shortcuts) { shortcut ->
-            viewModel.refreshConnectionState()
             shortcut.action()
         }
         binding.channelsGrid.layoutManager = GridLayoutManager(requireContext(), 2)

@@ -1,6 +1,8 @@
 package com.tvremote.control
 
 import com.tvremote.control.coding.Encoder
+import com.tvremote.control.commands.ImeBatchEdit
+import com.tvremote.control.commands.ImeBatchEditParser
 import com.tvremote.control.misc.DefaultLogger
 import com.tvremote.control.misc.Logger
 import com.tvremote.control.misc.TvRemoteError
@@ -116,6 +118,17 @@ class RemoteManager(
         if (remoteState !is RemoteState.Idle) {
             remoteState = RemoteState.Idle
         }
+    }
+
+    @Volatile
+    private var imeCounter: Int = 0
+
+    @Volatile
+    private var imeFieldCounter: Int = 0
+
+    fun sendText(text: String) {
+        if (text.isEmpty()) return
+        send(ImeBatchEdit(text, imeCounter, imeFieldCounter))
     }
 
     fun send(request: RequestData) {
@@ -239,6 +252,13 @@ class RemoteManager(
             }
 
             else -> {
+                ImeBatchEditParser.parseCounters(data)?.let { counters ->
+                    imeCounter = counters.imeCounter
+                    imeFieldCounter = counters.fieldCounter
+                    buffer.clear()
+                    receiveLoop()
+                    return
+                }
                 logger.debugLog("$LOG_PREFIX unrecognized data")
                 try {
                     VolumeLevel(data)

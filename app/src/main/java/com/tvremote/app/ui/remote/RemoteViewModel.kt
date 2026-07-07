@@ -30,11 +30,11 @@ class RemoteViewModel(
         combine(
             repository.isPaired,
             repository.sessionReady,
-            repository.connectionBusy,
+            repository.connectionLoaderVisible,
             repository.remoteState,
             repository.pairingState,
-        ) { paired, sessionReady, busy, remote, pairing ->
-            ConnectionCore(paired, sessionReady, busy, remote, pairing)
+        ) { paired, sessionReady, loaderVisible, remote, pairing ->
+            ConnectionCore(paired, sessionReady, loaderVisible, remote, pairing)
         },
         repository.waitingForCode,
         repository.discoveredTvs,
@@ -54,7 +54,7 @@ class RemoteViewModel(
             pairingHost = scanHost.host,
             savedTvHost = repository.savedTvHost,
             phoneIp = repository.getPhoneIp(),
-            showConnectionLoader = core.busy && !waiting && !core.sessionReady,
+            showConnectionLoader = core.loaderVisible && !waiting && !core.sessionReady,
             isCastConnected = castConnected,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), RemoteUiState())
@@ -65,7 +65,9 @@ class RemoteViewModel(
         voiceHelper.onListeningChanged = { listening -> _isListening.value = listening }
     }
 
-    fun refreshConnectionState() = repository.syncConnectionState()
+    fun refreshConnectionState() = repository.refreshConnectionUi()
+
+    fun healConnectionIfNeeded() = repository.syncConnectionState()
 
     fun refreshCastState() = castRepository.refreshCastConnectionState()
 
@@ -83,6 +85,11 @@ class RemoteViewModel(
     fun sendKey(key: Key) {
         if (!repository.isSessionReady()) return
         repository.sendKey(key)
+    }
+
+    fun sendText(text: String) {
+        if (!repository.isSessionReady()) return
+        repository.sendText(text)
     }
     fun volUp() {
         if (!repository.isSessionReady()) return
@@ -127,7 +134,7 @@ class RemoteViewModel(
     private data class ConnectionCore(
         val paired: Boolean,
         val sessionReady: Boolean,
-        val busy: Boolean,
+        val loaderVisible: Boolean,
         val remote: String,
         val pairing: String,
     )

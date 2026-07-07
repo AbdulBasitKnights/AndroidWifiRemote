@@ -18,6 +18,7 @@ class RemoteKeyboardView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
 ) : LinearLayout(context, attrs) {
 
+    var onTextInput: ((String) -> Unit)? = null
     var onKeyPress: ((Key) -> Unit)? = null
 
     private var shifted = false
@@ -31,7 +32,7 @@ class RemoteKeyboardView @JvmOverloads constructor(
     }
 
     private fun buildKeyboard() {
-        addKeyRow("1234567890".map { letterCell(it) })
+        addKeyRow("1234567890".map { textCell(it.toString()) })
         addKeyRow("qwertyuiop".map { letterCell(it) })
         addKeyRow(
             "asdfghjkl".map { letterCell(it) } +
@@ -40,16 +41,16 @@ class RemoteKeyboardView @JvmOverloads constructor(
         addKeyRow(
             listOf(actionCell("⇧", weight = 1.3f) { toggleShift() }) +
                 "zxcvbnm".map { letterCell(it) } +
-                listOf(textCell("⏎", Key.KEYCODE_ENTER, weight = 1.4f, textSizeSp = 12f)),
+                listOf(textCell("⏎", key = Key.KEYCODE_ENTER, weight = 1.4f, textSizeSp = 12f, sendAsText = false)),
         )
         addKeyRow(
             listOf(
-                textCell("@", Key.KEYCODE_AT),
-                textCell("-", Key.KEYCODE_MINUS),
-                textCell("_", Key.KEYCODE_MINUS),
-                textCell("Space", Key.KEYCODE_SPACE, weight = 3.2f, textSizeSp = 12f),
-                textCell(".", Key.KEYCODE_PERIOD),
-                textCell("/", Key.KEYCODE_SLASH),
+                textCell("@"),
+                textCell("-"),
+                textCell("_"),
+                textCell("Space", text = " ", weight = 3.2f, textSizeSp = 12f),
+                textCell("."),
+                textCell("/"),
             ),
         )
         updateLetterLabels()
@@ -58,24 +59,33 @@ class RemoteKeyboardView @JvmOverloads constructor(
     private fun letterCell(char: Char): KeyCell {
         return KeyCell(
             label = char.toString(),
-            key = keyForChar(char),
-            isLetter = char.isLetter(),
+            isLetter = true,
+            sendAsText = true,
         )
     }
 
     private fun textCell(
         label: String,
-        key: Key,
+        text: String? = null,
+        key: Key? = null,
         weight: Float = 1f,
         textSizeSp: Float = 15f,
-    ): KeyCell = KeyCell(label, key, weight, textSizeSp = textSizeSp)
+        sendAsText: Boolean = true,
+    ): KeyCell = KeyCell(
+        label = label,
+        textValue = text ?: label,
+        key = key,
+        weight = weight,
+        textSizeSp = textSizeSp,
+        sendAsText = sendAsText,
+    )
 
     private fun actionCell(label: String, weight: Float = 1f, onClick: () -> Unit): KeyCell {
         return KeyCell(label = label, weight = weight, onClick = onClick)
     }
 
     private fun iconCell(key: Key, weight: Float = 1f): KeyCell {
-        return KeyCell(label = "", key = key, weight = weight, isIcon = true)
+        return KeyCell(label = "", key = key, weight = weight, isIcon = true, sendAsText = false)
     }
 
     private fun addKeyRow(cells: List<KeyCell>) {
@@ -112,13 +122,27 @@ class RemoteKeyboardView @JvmOverloads constructor(
                 marginEnd = dp(2)
             }
             setOnClickListener {
-                cell.onClick?.invoke() ?: cell.key?.let { onKeyPress?.invoke(it) }
+                cell.onClick?.invoke() ?: dispatchCellInput(cell)
             }
             if (cell.isLetter && cell.label.length == 1) {
                 tag = cell.label[0]
                 letterButtons.add(this)
             }
         }
+    }
+
+    private fun dispatchCellInput(cell: KeyCell) {
+        if (cell.sendAsText) {
+            val text = if (cell.isLetter) {
+                val base = cell.label[0]
+                if (shifted) base.uppercaseChar().toString() else base.lowercaseChar().toString()
+            } else {
+                cell.textValue
+            }
+            onTextInput?.invoke(text)
+            return
+        }
+        cell.key?.let { onKeyPress?.invoke(it) }
     }
 
     private fun createIconKey(cell: KeyCell): ImageButton {
@@ -150,25 +174,19 @@ class RemoteKeyboardView @JvmOverloads constructor(
         }
     }
 
-    private fun keyForChar(char: Char): Key {
-        return when {
-            char.isDigit() -> Key.valueOf("KEYCODE_$char")
-            char.isLetter() -> Key.valueOf("KEYCODE_${char.uppercaseChar()}")
-            else -> Key.KEYCODE_UNKNOWN
-        }
-    }
-
     private fun dp(value: Int): Int {
         return (value * resources.displayMetrics.density).roundToInt()
     }
 
     private data class KeyCell(
         val label: String,
+        val textValue: String = label,
         val key: Key? = null,
         val weight: Float = 1f,
         val textSizeSp: Float = 15f,
         val isLetter: Boolean = false,
         val isIcon: Boolean = false,
+        val sendAsText: Boolean = true,
         val onClick: (() -> Unit)? = null,
     )
 }

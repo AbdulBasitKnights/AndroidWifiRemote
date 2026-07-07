@@ -50,8 +50,12 @@ class RemoteTvManager(context: Context) {
     private var connectionHeld = false
     private var userDisconnectRequested = false
     private val connectionBusy = AtomicBoolean(false)
+    private val connectionLoaderVisible = AtomicBoolean(false)
+    private val reconnectScheduled = AtomicBoolean(false)
 
     fun isConnectionBusy(): Boolean = connectionBusy.get()
+
+    fun isConnectionLoaderVisible(): Boolean = connectionLoaderVisible.get()
     private val clientName = "Android TV Remote"
     private val serviceName = "atvremote"
 
@@ -143,17 +147,20 @@ class RemoteTvManager(context: Context) {
         remoteManager.send(DeepLink(normalized))
     }
 
-    private fun setConnectionBusy(busy: Boolean) {
+    private fun setConnectionBusy(busy: Boolean, showLoader: Boolean = false) {
         connectionBusy.set(busy)
+        if (busy && showLoader) {
+            connectionLoaderVisible.set(true)
+        }
         busyTimeout?.cancel(false)
         busyTimeout = null
         if (busy) {
             busyTimeout = scheduler.schedule({
-                SafeRun.run(TAG) {
-                    if (!connectionBusy.get()) return@run
+                executeSafe {
+                    if (!connectionBusy.get()) return@executeSafe
                     if (remoteManager.isSessionReady() || waitingForCode.get()) {
                         clearConnectionBusy()
-                        return@run
+                        return@executeSafe
                     }
                     AppLogger.w(TAG, "Connection busy timeout — clearing loader")
                     clearConnectionBusy()
@@ -167,6 +174,7 @@ class RemoteTvManager(context: Context) {
 
     private fun clearConnectionBusy() {
         connectionBusy.set(false)
+        connectionLoaderVisible.set(false)
         busyTimeout?.cancel(false)
         busyTimeout = null
         cancelConnectionWatchdog()
@@ -176,14 +184,16 @@ class RemoteTvManager(context: Context) {
     private fun scheduleConnectionWatchdog() {
         cancelConnectionWatchdog()
         connectionWatchdog = scheduler.schedule({
-            SafeRun.run(TAG) {
-                if (!connectionBusy.get()) return@run
+            executeSafe {
+                if (!connectionBusy.get()) return@executeSafe
                 if (remoteManager.isSessionReady() || waitingForCode.get()) {
                     clearConnectionBusy()
-                    return@run
+                    return@executeSafe
+                }
+                if (remoteManager.isConnecting() || remoteManager.isHandshakeInProgress()) {
+                    return@executeSafe
                 }
                 AppLogger.w(TAG, "Connection watchdog timeout (${CONNECTION_TIMEOUT_SEC}s)")
-                remoteManager.disconnect()
                 clearConnectionBusy()
                 notifyRemoteState("Connection timed out — tap Reconnect")
                 scheduleAutoReconnect()
@@ -199,22 +209,25 @@ class RemoteTvManager(context: Context) {
     private fun cancelAutoReconnect() {
         autoReconnectFuture?.cancel(false)
         autoReconnectFuture = null
+        reconnectScheduled.set(false)
     }
 
     private fun scheduleAutoReconnect(immediate: Boolean = false) {
         if (!shouldMaintainConnection()) return
         if (remoteManager.isSessionReady() || waitingForCode.get()) return
         if (remoteManager.isConnecting() || remoteManager.isHandshakeInProgress()) return
+        if (connectionBusy.get()) return
+        if (!reconnectScheduled.compareAndSet(false, true)) return
         if (reconnectAttempt >= MAX_AUTO_RECONNECT_ATTEMPTS) {
             AppLogger.w(TAG, "Auto-reconnect attempts exhausted")
+            reconnectScheduled.set(false)
             notifyRemoteState("Could not reconnect — tap Reconnect")
-            reconnectAttempt = 0
             return
         }
 
         cancelAutoReconnect()
         val delaySec = if (immediate) {
-            0L
+            1L
         } else {
             (AUTO_RECONNECT_BASE_DELAY_SEC * (1L shl reconnectAttempt.coerceAtMost(4)))
                 .coerceAtMost(30L)
@@ -223,13 +236,13 @@ class RemoteTvManager(context: Context) {
         AppLogger.d(TAG, "Scheduling auto-reconnect attempt $attempt in ${delaySec}s")
 
         autoReconnectFuture = scheduler.schedule({
-            SafeRun.run(TAG) {
-                if (!shouldMaintainConnection()) return@run
-                if (remoteManager.isSessionReady() || waitingForCode.get()) return@run
-                if (remoteManager.isConnecting() || remoteManager.isHandshakeInProgress()) return@run
+            executeSafe {
+                reconnectScheduled.set(false)
+                if (!shouldMaintainConnection()) return@executeSafe
+                if (remoteManager.isSessionReady() || waitingForCode.get()) return@executeSafe
+                if (remoteManager.isConnecting() || remoteManager.isHandshakeInProgress()) return@executeSafe
                 reconnectAttempt = attempt
-                notifyRemoteState("Reconnecting to $pendingHost… (attempt $attempt)")
-                connectRemoteOnlyInternal(force = true)
+                connectRemoteOnlyInternal(force = false, showLoader = false)
             }
         }, delaySec, TimeUnit.SECONDS)
     }
@@ -245,6 +258,7 @@ class RemoteTvManager(context: Context) {
                 userDisconnectRequested -> Unit
                 remoteManager.isSessionReady() -> {
                     reconnectAttempt = 0
+                    reconnectScheduled.set(false)
                     cancelAutoReconnect()
                     clearConnectionBusy()
                     notifyRemoteState(remoteManager.currentRemoteState().toDisplayString())
@@ -262,9 +276,23 @@ class RemoteTvManager(context: Context) {
                 !waitingForCode.get() &&
                 !remoteManager.isConnecting() &&
                 !remoteManager.isHandshakeInProgress() &&
-                !connectionBusy.get()
+                !connectionBusy.get() &&
+                !reconnectScheduled.get()
             ) {
-                scheduleAutoReconnect(immediate = true)
+                scheduleAutoReconnect(immediate = false)
+            }
+            publishConnectionUiState()
+        }
+    }
+
+    /** Refresh UI snapshot only — no reconnect side effects. */
+    fun refreshConnectionUi() {
+        executeSafe {
+            if (remoteManager.isSessionReady()) {
+                reconnectAttempt = 0
+                reconnectScheduled.set(false)
+                cancelAutoReconnect()
+                clearConnectionBusy()
             }
             publishConnectionUiState()
         }
@@ -321,7 +349,7 @@ class RemoteTvManager(context: Context) {
                         notifyWaitingForCode(false)
                         notifyPaired(pendingHost)
                         pairingManager.disconnect()
-                        connectRemoteOnlyInternal(force = true)
+                        connectRemoteOnlyInternal(force = true, showLoader = true)
                     }
                     is PairingManager.PairingState.SecretSent -> {
                         notifyPairingState("Submitting pairing code…")
@@ -372,16 +400,15 @@ class RemoteTvManager(context: Context) {
 
     private fun handleRemoteError(error: TvRemoteError) {
         clearConnectionBusy()
-        remoteManager.disconnect()
         publishConnectionUiState()
         if (userDisconnectRequested) return
         if (!connectionHeld) {
             notifyRemoteState("Not connected — pair your TV first")
             return
         }
+        if (remoteManager.isSessionReady()) return
         AppLogger.w(TAG, "Remote error — scheduling reconnect: ${error.toDisplayString()}")
-        notifyRemoteState("Connection lost — reconnecting…")
-        scheduleAutoReconnect(immediate = true)
+        scheduleAutoReconnect(immediate = false)
     }
 
     private fun schedulePairingFallback() {
@@ -408,11 +435,16 @@ class RemoteTvManager(context: Context) {
         executeSafe {
             if (remoteManager.isSessionReady()) {
                 reconnectAttempt = 0
+                reconnectScheduled.set(false)
                 cancelAutoReconnect()
                 clearConnectionBusy()
                 notifyRemoteState(remoteManager.currentRemoteState().toDisplayString())
-            } else if (!remoteManager.isConnecting() && !remoteManager.isHandshakeInProgress()) {
-                scheduleAutoReconnect(immediate = true)
+            } else if (!remoteManager.isConnecting() &&
+                !remoteManager.isHandshakeInProgress() &&
+                !connectionBusy.get() &&
+                !reconnectScheduled.get()
+            ) {
+                scheduleAutoReconnect(immediate = false)
             }
         }
     }
@@ -423,6 +455,7 @@ class RemoteTvManager(context: Context) {
         userDisconnectRequested = false
         connectionHeld = true
         reconnectAttempt = 0
+        reconnectScheduled.set(false)
         cancelAutoReconnect()
         executeSafe {
             when {
@@ -433,7 +466,7 @@ class RemoteTvManager(context: Context) {
                     clearConnectionBusy()
                     notifyRemoteState(remoteManager.currentRemoteState().toDisplayString())
                 }
-                else -> connectRemoteOnlyInternal(force = false)
+                else -> connectRemoteOnlyInternal(force = false, showLoader = true)
             }
         }
     }
@@ -444,22 +477,27 @@ class RemoteTvManager(context: Context) {
         userDisconnectRequested = false
         connectionHeld = true
         reconnectAttempt = 0
+        reconnectScheduled.set(false)
         cancelAutoReconnect()
         executeSafe {
-            connectRemoteOnlyInternal(force = true)
+            connectRemoteOnlyInternal(force = true, showLoader = true)
         }
     }
 
-    private fun connectRemoteOnlyInternal(force: Boolean) {
+    private fun connectRemoteOnlyInternal(force: Boolean, showLoader: Boolean) {
         if (userDisconnectRequested) return
         if (remoteManager.isSessionReady()) {
             reconnectAttempt = 0
+            reconnectScheduled.set(false)
             cancelAutoReconnect()
             clearConnectionBusy()
             notifyRemoteState(remoteManager.currentRemoteState().toDisplayString())
             return
         }
         if (!force && (remoteManager.isConnecting() || remoteManager.isHandshakeInProgress())) {
+            if (showLoader) {
+                setConnectionBusy(true, showLoader = true)
+            }
             scheduleConnectionWatchdog()
             return
         }
@@ -468,7 +506,7 @@ class RemoteTvManager(context: Context) {
             remoteManager.disconnect()
         }
 
-        setConnectionBusy(true)
+        setConnectionBusy(true, showLoader = showLoader)
         pairingStarted.set(false)
         explicitPairingRequested.set(false)
         cancelPairingFallback()
@@ -492,7 +530,7 @@ class RemoteTvManager(context: Context) {
                 isPairedDevice && remoteManager.isSessionReady() -> notifyRemoteState(
                     remoteManager.currentRemoteState().toDisplayString(),
                 )
-                isPairedDevice -> connectRemoteOnlyInternal(force = false)
+                isPairedDevice -> connectRemoteOnlyInternal(force = false, showLoader = true)
                 else -> {
                     userDisconnectRequested = false
                     connectionHeld = true
@@ -524,7 +562,7 @@ class RemoteTvManager(context: Context) {
         if (!force && !pairingStarted.compareAndSet(false, true)) return
         if (force) pairingStarted.set(true)
 
-        setConnectionBusy(true)
+        setConnectionBusy(true, showLoader = true)
         scheduleConnectionWatchdog()
         cancelPairingFallback()
         cancelAutoReconnect()
@@ -554,13 +592,26 @@ class RemoteTvManager(context: Context) {
         executeSafe {
             if (!remoteManager.isSessionReady()) {
                 if (shouldMaintainConnection()) {
-                    notifyRemoteState("Reconnecting…")
-                    scheduleAutoReconnect(immediate = true)
+                    scheduleAutoReconnect(immediate = false)
                 } else {
                     notifyRemoteState("Not connected — tap Reconnect")
                 }
             } else {
                 remoteManager.send(KeyPress(key))
+            }
+        }
+    }
+
+    fun sendText(text: String) {
+        executeSafe {
+            if (!remoteManager.isSessionReady()) {
+                if (shouldMaintainConnection()) {
+                    scheduleAutoReconnect(immediate = false)
+                } else {
+                    notifyRemoteState("Not connected — tap Reconnect")
+                }
+            } else {
+                remoteManager.sendText(text)
             }
         }
     }
@@ -599,8 +650,7 @@ class RemoteTvManager(context: Context) {
         }
         pendingAppLink = link
         if (shouldMaintainConnection()) {
-            notifyRemoteState("Opening app — reconnecting to TV…")
-            scheduleAutoReconnect(immediate = true)
+            scheduleAutoReconnect(immediate = false)
             return false
         }
         pendingAppLink = null
@@ -614,6 +664,7 @@ class RemoteTvManager(context: Context) {
         userDisconnectRequested = true
         connectionHeld = false
         reconnectAttempt = 0
+        reconnectScheduled.set(false)
         pendingAppLink = null
         cancelAutoReconnect()
         clearConnectionBusy()

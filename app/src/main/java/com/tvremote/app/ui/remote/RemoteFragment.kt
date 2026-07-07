@@ -191,7 +191,9 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
     }
 
     private fun setupNumpad() {
-        _binding?.numpadPanel?.onKeyPress = { key -> viewModel.sendKey(key) }
+        val keyboard = _binding?.numpadPanel ?: return
+        keyboard.onTextInput = { text -> viewModel.sendText(text) }
+        keyboard.onKeyPress = { key -> viewModel.sendKey(key) }
     }
 
     private fun requestMicAndSpeak() {

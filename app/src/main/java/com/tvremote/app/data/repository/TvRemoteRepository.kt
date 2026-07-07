@@ -54,8 +54,8 @@ class TvRemoteRepository(
     private val _sessionReady = MutableStateFlow(false)
     val sessionReady: StateFlow<Boolean> = _sessionReady.asStateFlow()
 
-    private val _connectionBusy = MutableStateFlow(false)
-    val connectionBusy: StateFlow<Boolean> = _connectionBusy.asStateFlow()
+    private val _connectionLoaderVisible = MutableStateFlow(false)
+    val connectionLoaderVisible: StateFlow<Boolean> = _connectionLoaderVisible.asStateFlow()
 
     val sessionMode: StateFlow<AppSessionMode> = coordinator.sessionMode
 
@@ -133,14 +133,16 @@ class TvRemoteRepository(
     fun syncConnectionState() {
         remoteManager.syncConnectionState()
         refreshConnectionSnapshot()
-        if (coordinator.isPaired() && !remoteManager.isSessionReady()) {
-            remoteManager.ensureConnected()
-        }
+    }
+
+    fun refreshConnectionUi() {
+        remoteManager.refreshConnectionUi()
+        refreshConnectionSnapshot()
     }
 
     private fun refreshConnectionSnapshot() {
         _sessionReady.value = remoteManager.isSessionReady()
-        _connectionBusy.value = remoteManager.isConnectionBusy()
+        _connectionLoaderVisible.value = remoteManager.isConnectionLoaderVisible()
         if (_sessionReady.value) {
             _isPaired.value = coordinator.isPaired() || remoteManager.isPaired()
         }
@@ -235,7 +237,7 @@ class TvRemoteRepository(
         scope.launch { _events.emit(RepositoryEvent.Reconnecting) }
     }
 
-    fun isConnectionBusy(): Boolean = _connectionBusy.value
+    fun isConnectionBusy(): Boolean = _connectionLoaderVisible.value
 
     fun restartPairing(host: String) {
         if (host.isBlank()) {
@@ -264,6 +266,8 @@ class TvRemoteRepository(
 
     fun sendKey(key: Key) = remoteManager.sendKey(key)
 
+    fun sendText(text: String) = remoteManager.sendText(text)
+
     fun power() = remoteManager.power()
     fun volUp() = remoteManager.volUp()
     fun volDown() = remoteManager.volDown()
@@ -284,7 +288,6 @@ class TvRemoteRepository(
     fun runDisney() = remoteManager.runDisney()
 
     fun launchChannel(action: () -> Boolean) {
-        syncConnectionState()
         val launched = action()
         if (launched) {
             scope.launch { _events.emit(RepositoryEvent.ChannelLaunched) }

@@ -1,18 +1,13 @@
 package com.tvremote.app.ui.cast
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.tvremote.app.R
 import com.tvremote.app.databinding.FragmentCastBinding
 import com.tvremote.app.ui.main.MainActivity
-import com.tvremote.app.ui.common.ConnectionLoader
-import com.tvremote.app.util.OperationResult
 import com.tvremote.app.util.SafeRun
 import androidx.mediarouter.media.MediaControlIntent
 import androidx.mediarouter.media.MediaRouteSelector
@@ -22,16 +17,6 @@ class CastFragment : Fragment(R.layout.fragment_cast) {
 
     private val viewModel: CastViewModel by viewModels {
         (requireActivity() as MainActivity).viewModelFactory()
-    }
-
-    private val videoPicker = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        uri ?: return@registerForActivityResult
-        castUri(uri, isVideo = true)
-    }
-
-    private val audioPicker = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        uri ?: return@registerForActivityResult
-        castUri(uri, isVideo = false, isAudio = true)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -50,19 +35,15 @@ class CastFragment : Fragment(R.layout.fragment_cast) {
             binding.photosCard.setOnClickListener {
                 SafeRun.run(TAG) {
                     if (!ensureCastDevice()) return@run
-                    startActivity(Intent(requireContext(), CastPhotoActivity::class.java))
+                    CastMediaPickerSheet.newInstance(CastMediaPickerSheet.MediaType.PHOTO)
+                        .show(parentFragmentManager, TAG_PHOTO_PICKER)
                 }
             }
             binding.videosCard.setOnClickListener {
                 SafeRun.run(TAG) {
                     if (!ensureCastDevice()) return@run
-                    videoPicker.launch(arrayOf("video/*"))
-                }
-            }
-            binding.audioCard.setOnClickListener {
-                SafeRun.run(TAG) {
-                    if (!ensureCastDevice()) return@run
-                    audioPicker.launch(arrayOf("audio/*"))
+                    CastMediaPickerSheet.newInstance(CastMediaPickerSheet.MediaType.VIDEO)
+                        .show(parentFragmentManager, TAG_VIDEO_PICKER)
                 }
             }
         }
@@ -78,44 +59,14 @@ class CastFragment : Fragment(R.layout.fragment_cast) {
         return true
     }
 
-    private fun castUri(uri: Uri, isVideo: Boolean, isAudio: Boolean = false) {
-        SafeRun.run(TAG) {
-            val binding = _binding ?: return@run
-            ConnectionLoader.show(binding.connectionLoader.root, ConnectionLoader.Mode.CAST)
-            try {
-                try {
-                    requireContext().contentResolver.takePersistableUriPermission(
-                        uri,
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION,
-                    )
-                } catch (_: SecurityException) {
-                } catch (_: Exception) {
-                }
-                when (val result = viewModel.castMedia(uri, isVideo, isAudio)) {
-                    is OperationResult.Success -> Toast.makeText(
-                        requireContext(),
-                        getString(R.string.cast_started, viewModel.deviceName() ?: "TV"),
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                    is OperationResult.Failure -> Toast.makeText(
-                        requireContext(),
-                        getString(R.string.cast_failed, result.message),
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                }
-            } finally {
-                ConnectionLoader.hide(binding.connectionLoader.root)
-            }
-        }
-    }
-
     override fun onDestroyView() {
-        _binding?.connectionLoader?.root?.let { ConnectionLoader.hide(it) }
         _binding = null
         super.onDestroyView()
     }
 
     companion object {
         private const val TAG = "CastFragment"
+        private const val TAG_PHOTO_PICKER = "cast_photo_picker"
+        private const val TAG_VIDEO_PICKER = "cast_video_picker"
     }
 }
