@@ -15,6 +15,12 @@ glide = "4.16.0"
 mediarouter = "1.7.0"
 cast = "22.2.0"
 nanohttpd = "2.3.1"
+googleServices = "4.4.2"
+firebaseCrashlytics = "3.0.3"
+firebaseBom = "33.12.0"
+playServicesAds = "24.5.0"
+facebookSdk = "18.1.3"
+adjust = "5.4.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -33,8 +39,16 @@ glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "gl
 androidx-mediarouter = { group = "androidx.mediarouter", name = "mediarouter", version.ref = "mediarouter" }
 play-services-cast = { group = "com.google.android.gms", name = "play-services-cast-framework", version.ref = "cast" }
 nanohttpd = { group = "org.nanohttpd", name = "nanohttpd", version.ref = "nanohttpd" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx" }
+play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
+facebook-android-sdk = { group = "com.facebook.android", name = "facebook-android-sdk", version.ref = "facebookSdk" }
+adjust-android = { group = "com.adjust.sdk", name = "adjust-android", version.ref = "adjust" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlytics" }

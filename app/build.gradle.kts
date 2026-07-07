@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
@@ -8,15 +10,25 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.tvremote.app"
+        applicationId = "tf.smart.tvremote.cast.tv.mirroring"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.1"
     }
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
+    }
+
+    buildTypes {
+        debug {
+            buildConfigField("String", "ADJUST_ENVIRONMENT", "\"sandbox\"")
+        }
+        release {
+            buildConfigField("String", "ADJUST_ENVIRONMENT", "\"production\"")
+        }
     }
 
     compileOptions {
@@ -45,4 +57,11 @@ dependencies {
     implementation(libs.androidx.mediarouter)
     implementation(libs.play.services.cast)
     implementation(libs.nanohttpd)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.play.services.ads)
+    implementation(libs.facebook.android.sdk)
+    implementation(libs.adjust.android)
 }

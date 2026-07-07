@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import com.adjust.sdk.Adjust
 import com.tvremote.app.data.session.AppPreferences
 import com.tvremote.app.util.EdgeToEdgeHelper
 import java.util.Locale
@@ -25,6 +26,16 @@ abstract class BaseActivity : AppCompatActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         EdgeToEdgeHelper.configureSystemBars(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Adjust.onResume()
+    }
+
+    override fun onPause() {
+        Adjust.onPause()
+        super.onPause()
     }
 
     override fun setContentView(layoutResID: Int) {

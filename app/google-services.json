@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "726965338592",
+    "project_id": "tv-remote-tfl",
+    "storage_bucket": "tv-remote-tfl.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:726965338592:android:df0ff7ed6b053d36e6eb85",
+        "android_client_info": {
+          "package_name": "tf.smart.tvremote.cast.tv.mirroring"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwJYZul_HqQHMCtDiPEIl8qvYJTyEOp2o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

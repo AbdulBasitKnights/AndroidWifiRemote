@@ -226,4 +226,10 @@
     <string name="privacy_policy_sub">Our Terms &amp; Conditions</string>
     <string name="app_version">version %1$s</string>
     <string name="others_section">Others</string>
+
+    <!-- Analytics / Ads SDK (replace with production values) -->
+    <string name="admob_app_id" translatable="false">ca-app-pub-3940256099942544~3347511713</string>
+    <string name="facebook_app_id" translatable="false">YOUR_FACEBOOK_APP_ID</string>
+    <string name="facebook_client_token" translatable="false">YOUR_FACEBOOK_CLIENT_TOKEN</string>
+    <string name="adjust_app_token" translatable="false">YOUR_ADJUST_APP_TOKEN</string>
 </resources>

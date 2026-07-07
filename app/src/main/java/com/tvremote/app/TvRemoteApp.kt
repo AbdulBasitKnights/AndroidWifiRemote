@@ -3,6 +3,7 @@ package com.tvremote.app
 import android.app.Application
 import com.google.android.gms.cast.framework.CastContext
 import com.tvremote.app.di.AppContainer
+import com.tvremote.app.analytics.SdkInitializer
 import com.tvremote.app.util.AppLogger
 import com.tvremote.app.util.CrashGuard
 import com.tvremote.app.util.SafeRun
@@ -15,6 +16,7 @@ class TvRemoteApp : Application() {
     override fun onCreate() {
         super.onCreate()
         ThemeHelper.applySavedTheme(this)
+        SdkInitializer.init(this)
         CrashGuard.install(this)
         container = AppContainer(this)
         SafeRun.run(TAG) {
