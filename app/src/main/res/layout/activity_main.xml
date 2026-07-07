@@ -29,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:foreground="@null"
-            android:background="@drawable/bg_nav_pill_dark"
+            android:background="@drawable/bg_device_pill"
             app:itemIconTint="@color/bottom_nav_color"
             app:itemTextColor="@color/bottom_nav_color"
             app:labelVisibilityMode="labeled"
