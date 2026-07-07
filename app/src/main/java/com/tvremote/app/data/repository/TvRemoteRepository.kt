@@ -81,6 +81,10 @@ class TvRemoteRepository(
 
         remoteManager.onConnectionUiChanged = { refreshConnectionSnapshot() }
 
+        remoteManager.onAppLaunched = {
+            scope.launch { _events.emit(RepositoryEvent.ChannelLaunched) }
+        }
+
         remoteManager.pairingStateChanged = { _pairingState.value = it }
         remoteManager.remoteStateChanged = { state ->
             SafeRun.run("TvRemoteRepository") {
@@ -279,20 +283,18 @@ class TvRemoteRepository(
     fun runAppleTv() = remoteManager.runAppleTv()
     fun runDisney() = remoteManager.runDisney()
 
-    fun launchChannel(action: () -> Boolean): Boolean {
+    fun launchChannel(action: () -> Boolean) {
         syncConnectionState()
-        if (isSessionReady()) {
-            val launched = action()
-            if (launched) {
-                scope.launch { _events.emit(RepositoryEvent.ChannelLaunched) }
-            }
-            return launched
+        val launched = action()
+        if (launched) {
+            scope.launch { _events.emit(RepositoryEvent.ChannelLaunched) }
+            return
         }
         if (coordinator.isPaired()) {
-            reconnect()
+            scope.launch { _events.emit(RepositoryEvent.ChannelLaunching) }
+        } else {
+            scope.launch { _events.emit(RepositoryEvent.ChannelNotConnected) }
         }
-        scope.launch { _events.emit(RepositoryEvent.ChannelNotConnected) }
-        return false
     }
 
     sealed interface RepositoryEvent {
@@ -303,6 +305,7 @@ class TvRemoteRepository(
         data object Reconnecting : RepositoryEvent
         data object Disconnected : RepositoryEvent
         data object ChannelNotConnected : RepositoryEvent
+        data object ChannelLaunching : RepositoryEvent
         data object ChannelLaunched : RepositoryEvent
         data class Error(val message: String) : RepositoryEvent
     }

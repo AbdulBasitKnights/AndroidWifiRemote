@@ -18,6 +18,7 @@
     <string name="mirror_section_title">Screen Mirroring</string>
     <string name="connect_tv_first_channel">Connect TV first to launch apps</string>
     <string name="channel_launched">Opening on TV…</string>
+    <string name="channel_launching">Connecting to TV, then opening app…</string>
     <string name="connection_timed_out">Connection timed out — tap Reconnect</string>
     <string name="shortcut_apple_tv">Apple TV</string>
     <string name="shortcut_disney">Disney+</string>

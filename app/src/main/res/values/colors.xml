@@ -34,7 +34,7 @@
     <color name="dot_yellow">#FFFDD835</color>
     <color name="dot_purple">#1F97F6</color>
     <color name="remote_control_bg">#FFE8E8EC</color>
-    <color name="remote_key_bg">#80A8A8A8</color>
+    <color name="remote_key_bg">#80C7C7C7</color>
     <color name="channel_youtube">#FFFF0000</color>
     <color name="channel_netflix">#FFE50914</color>
     <color name="channel_prime">#FF00A8E1</color>

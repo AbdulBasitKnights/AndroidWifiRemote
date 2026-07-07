@@ -63,6 +63,8 @@ class ChannelsFragment : Fragment(R.layout.fragment_channels) {
                     when (event) {
                         is TvRemoteRepository.RepositoryEvent.ChannelLaunched ->
                             Toast.makeText(requireContext(), R.string.channel_launched, Toast.LENGTH_SHORT).show()
+                        is TvRemoteRepository.RepositoryEvent.ChannelLaunching ->
+                            Toast.makeText(requireContext(), R.string.channel_launching, Toast.LENGTH_SHORT).show()
                         is TvRemoteRepository.RepositoryEvent.ChannelNotConnected ->
                             Toast.makeText(requireContext(), R.string.connect_tv_first_channel, Toast.LENGTH_SHORT).show()
                         else -> Unit

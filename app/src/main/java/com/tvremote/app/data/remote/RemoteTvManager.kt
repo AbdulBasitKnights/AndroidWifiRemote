@@ -40,6 +40,9 @@ class RemoteTvManager(context: Context) {
     var onWaitingForCodeChanged: ((Boolean) -> Unit)? = null
     var onPaired: ((String) -> Unit)? = null
     var onConnectionUiChanged: (() -> Unit)? = null
+    var onAppLaunched: (() -> Unit)? = null
+
+    private var pendingAppLink: String? = null
 
     private var pendingHost: String = ""
     private var isPairedDevice = false
@@ -123,6 +126,21 @@ class RemoteTvManager(context: Context) {
         cancelAutoReconnect()
         clearConnectionBusy()
         mainHandler.post { SafeRun.invoke(TAG) { onPaired?.invoke(host) } }
+        flushPendingAppLaunch()
+    }
+
+    private fun flushPendingAppLaunch() {
+        val link = pendingAppLink ?: return
+        if (!remoteManager.isSessionReady()) return
+        pendingAppLink = null
+        sendAppLinkNow(link)
+        mainHandler.post { SafeRun.invoke(TAG) { onAppLaunched?.invoke() } }
+    }
+
+    private fun sendAppLinkNow(link: String) {
+        val normalized = TvChannelLinks.normalize(link)
+        AppLogger.d(TAG, "Launching TV app: $normalized")
+        remoteManager.send(DeepLink(normalized))
     }
 
     private fun setConnectionBusy(busy: Boolean) {
@@ -562,29 +580,41 @@ class RemoteTvManager(context: Context) {
     fun tvInput() = sendKey(Key.KEYCODE_TV_INPUT)
     fun apps() = sendKey(Key.KEYCODE_APP_SWITCH)
 
-    fun runNetflix() = runDeepLink(TvChannelLinks.NETFLIX)
-    fun runYouTube() = runDeepLink(TvChannelLinks.YOUTUBE)
-    fun runPrime() = runDeepLink(TvChannelLinks.PRIME)
-    fun runHotstar() = runDeepLink(TvChannelLinks.HOTSTAR)
-    fun runAppleTv() = runDeepLink(TvChannelLinks.APPLE_TV)
-    fun runDisney() = runDeepLink(TvChannelLinks.DISNEY)
+    fun runNetflix() = launchTvApp(TvChannelLinks.NETFLIX)
+    fun runYouTube() = launchTvApp(TvChannelLinks.YOUTUBE)
+    fun runPrime() = launchTvApp(TvChannelLinks.PRIME)
+    fun runHotstar() = launchTvApp(TvChannelLinks.HOTSTAR)
+    fun runAppleTv() = launchTvApp(TvChannelLinks.APPLE_TV)
+    fun runDisney() = launchTvApp(TvChannelLinks.DISNEY)
 
-    fun runDeepLink(url: String): Boolean {
-        if (!remoteManager.isSessionReady()) {
-            if (shouldMaintainConnection()) {
-                scheduleAutoReconnect(immediate = true)
-            }
-            notifyRemoteState("Not connected — reconnecting…")
+    /**
+     * Launch an installed Android TV app via market deep link.
+     * Queues launch if socket not ready yet.
+     */
+    fun launchTvApp(appLink: String): Boolean {
+        val link = TvChannelLinks.normalize(appLink)
+        if (remoteManager.isSessionReady()) {
+            executeSafe { sendAppLinkNow(link) }
+            return true
+        }
+        pendingAppLink = link
+        if (shouldMaintainConnection()) {
+            notifyRemoteState("Opening app — reconnecting to TV…")
+            scheduleAutoReconnect(immediate = true)
             return false
         }
-        executeSafe { remoteManager.send(DeepLink(url)) }
-        return true
+        pendingAppLink = null
+        notifyRemoteState("Not connected — pair your TV first")
+        return false
     }
+
+    fun runDeepLink(url: String): Boolean = launchTvApp(url)
 
     fun disconnectUser() {
         userDisconnectRequested = true
         connectionHeld = false
         reconnectAttempt = 0
+        pendingAppLink = null
         cancelAutoReconnect()
         clearConnectionBusy()
         executeSafe {

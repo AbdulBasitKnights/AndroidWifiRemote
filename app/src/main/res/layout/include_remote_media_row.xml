@@ -11,6 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
+        android:background="@drawable/bg_remote_control_card"
         android:orientation="vertical">
 
         <ImageButton
@@ -51,6 +52,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"
+        android:background="@drawable/bg_remote_control_card"
         android:columnCount="3"
         android:gravity="top">
 
@@ -64,18 +66,16 @@
             android:padding="12dp"
             android:src="@drawable/ic_back"
             app:tint="@color/text_primary" />
-
-        <ImageButton
-            android:id="@+id/inputButton"
+        <ImageView
+            android:id="@+id/homeButton"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_margin="4dp"
-            android:background="@drawable/bg_remote_btn"
-            android:contentDescription="@string/cast_photos_title"
+            android:contentDescription="@string/home"
             android:padding="12dp"
-            android:visibility="invisible"
-            android:src="@drawable/ic_photos" />
-
+            android:background="@drawable/bg_remote_btn"
+            android:src="@drawable/ic_home"
+            app:tint="@color/text_primary" />
         <ImageButton
             android:id="@+id/muteButton"
             android:layout_width="48dp"
@@ -85,6 +85,18 @@
             android:contentDescription="@string/cast_audio_title"
             android:padding="12dp"
             android:src="@drawable/ic_mute" />
+        <ImageButton
+            android:id="@+id/inputButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="4dp"
+            android:background="@drawable/bg_remote_btn"
+            android:contentDescription="@string/cast_photos_title"
+            android:padding="12dp"
+            android:visibility="gone"
+            android:src="@drawable/ic_photos" />
+
+
 
         <ImageButton
             android:id="@+id/micButton"
@@ -126,6 +138,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
+        android:background="@drawable/bg_remote_control_card"
         android:orientation="vertical">
 
         <TextView

@@ -142,6 +142,7 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
         binding.mediaRow.volUpButton.setOnClickListener { viewModel.volUp() }
         binding.mediaRow.volDownButton.setOnClickListener { viewModel.volDown() }
         binding.mediaRow.backButton.setOnClickListener { viewModel.sendKey(Key.KEYCODE_BACK) }
+        binding.mediaRow.homeButton.setOnClickListener { viewModel.sendKey(Key.KEYCODE_HOME) }
         binding.mediaRow.inputButton.setOnClickListener { viewModel.tvInput() }
         binding.mediaRow.appsButton.setOnClickListener { viewModel.apps() }
         binding.mediaRow.micButton.setOnClickListener { requestMicAndSpeak() }
