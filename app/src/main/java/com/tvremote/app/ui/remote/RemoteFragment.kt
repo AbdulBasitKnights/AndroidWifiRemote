@@ -1,8 +1,8 @@
 package com.tvremote.app.ui.remote
 
-import android.content.res.ColorStateList
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.MotionEvent
@@ -18,7 +18,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.button.MaterialButton
 import com.tvremote.app.R
 import com.tvremote.app.data.model.DiscoveredTv
 import com.tvremote.app.data.repository.TvRemoteRepository
@@ -37,6 +36,9 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
     private var touchStartX = 0f
     private var touchStartY = 0f
     private var connectPanelOpen = false
+    private var tvPowerOffVisible = false
+    private var lowBatteryDismissed = false
+    private val showLowBatteryWarning = false
 
     private val viewModel: RemoteViewModel by activityViewModels {
         (requireActivity() as MainActivity).viewModelFactory()
@@ -65,6 +67,10 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
         setupModeToggle()
         setupTouchpad()
         setupNumpad()
+        binding.lowBatteryDismiss.setOnClickListener {
+            lowBatteryDismissed = true
+            binding.lowBatteryBanner.isVisible = false
+        }
         observeState()
     }
 
@@ -130,15 +136,23 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
             if (viewModel.uiState.value.isSessionReady) return@setOnClickListener
             if (connectPanelOpen) hideConnectPanel() else showConnectPanel()
         }
-        topBar.powerButton.setOnClickListener { viewModel.power() }
+        topBar.powerButton.setOnClickListener {
+            if (viewModel.uiState.value.isSessionReady) {
+                tvPowerOffVisible = !tvPowerOffVisible
+            }
+            viewModel.power()
+            render(viewModel.uiState.value)
+        }
         binding.backNavButton.setOnClickListener { viewModel.sendKey(Key.KEYCODE_BACK) }
         binding.homeButton.setOnClickListener { viewModel.sendKey(Key.KEYCODE_HOME) }
         binding.appsNavButton.setOnClickListener { viewModel.apps() }
-        dpad.upButton.setOnClickListener { viewModel.sendKey(Key.KEYCODE_DPAD_UP) }
-        dpad.downButton.setOnClickListener { viewModel.sendKey(Key.KEYCODE_DPAD_DOWN) }
-        dpad.leftButton.setOnClickListener { viewModel.sendKey(Key.KEYCODE_DPAD_LEFT) }
-        dpad.rightButton.setOnClickListener { viewModel.sendKey(Key.KEYCODE_DPAD_RIGHT) }
-        dpad.okButton.setOnClickListener { viewModel.sendKey(Key.KEYCODE_DPAD_CENTER) }
+        val wheel = dpad.dpadWheel
+        wheel.onUpClick = { viewModel.sendKey(Key.KEYCODE_DPAD_UP) }
+        wheel.onDownClick = { viewModel.sendKey(Key.KEYCODE_DPAD_DOWN) }
+        wheel.onLeftClick = { viewModel.sendKey(Key.KEYCODE_DPAD_LEFT) }
+        wheel.onRightClick = { viewModel.sendKey(Key.KEYCODE_DPAD_RIGHT) }
+        wheel.onOkClick = { viewModel.sendKey(Key.KEYCODE_DPAD_CENTER) }
+        wheel.onOkLongClick = { viewModel.sendKey(Key.KEYCODE_DPAD_CENTER) }
         binding.mediaRow.volUpButton.setOnClickListener { viewModel.volUp() }
         binding.mediaRow.volDownButton.setOnClickListener { viewModel.volDown() }
         binding.mediaRow.backButton.setOnClickListener { viewModel.sendKey(Key.KEYCODE_BACK) }
@@ -274,6 +288,9 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
         if (state.isSessionReady && connectPanelOpen) {
             hideConnectPanel()
         }
+        if (!state.isSessionReady) {
+            tvPowerOffVisible = false
+        }
         if (state.waitingForCode && !connectPanelOpen) {
             showConnectPanel()
         }
@@ -310,6 +327,39 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
         binding.disconnectButton.isVisible = state.isPaired && !state.isSessionReady
 
         updateTopBar(state)
+        updateStateOverlay(state)
+        updateControlAlpha(state)
+    }
+
+    private fun updateStateOverlay(state: RemoteViewModel.RemoteUiState) {
+        val binding = _binding ?: return
+        val overlay = binding.stateOverlay
+        val connecting = state.showConnectionLoader || state.remoteState == "connecting"
+        val searching = state.isScanning && !state.isSessionReady
+
+        overlay.root.isVisible = connecting || tvPowerOffVisible
+        overlay.connectingOverlay.isVisible = connecting && !tvPowerOffVisible
+        overlay.tvOffOverlay.isVisible = tvPowerOffVisible && state.isSessionReady
+
+        overlay.connectingLabel.text = when {
+            searching -> getString(R.string.searching_for_tv)
+            else -> getString(R.string.connecting_tv)
+        }
+
+        binding.lowBatteryBanner.isVisible =
+            state.isSessionReady && !lowBatteryDismissed && showLowBatteryWarning
+    }
+
+    private fun updateControlAlpha(state: RemoteViewModel.RemoteUiState) {
+        val binding = _binding ?: return
+        val alpha = when {
+            tvPowerOffVisible && state.isSessionReady -> 0.35f
+            !state.isSessionReady -> 0.85f
+            else -> 1f
+        }
+        binding.mediaRow.root.alpha = alpha
+        binding.dpadPanel.root.alpha = alpha
+        binding.touchpadPanel.alpha = alpha
     }
 
     private fun updateTopBar(state: RemoteViewModel.RemoteUiState) {
@@ -323,14 +373,20 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
             ?: getString(R.string.connected_tv_default)
 
         topBar.deviceNameLabel.text = when {
+            state.showConnectionLoader -> getString(R.string.connecting_tv)
+            state.isScanning && !state.isSessionReady -> getString(R.string.searching_for_tv)
             state.isSessionReady -> displayName
             state.isPaired && state.savedTvHost.isNotBlank() -> displayName
             else -> getString(R.string.tap_to_connect)
         }
-        val dotColor = if (state.isSessionReady) {
-            R.color.connection_connected
-        } else {
-            R.color.connection_disconnected
+
+        topBar.deviceChevron.isVisible = !state.isSessionReady
+        topBar.deviceStatusDot.isVisible = state.isSessionReady || state.isPaired
+
+        val dotColor = when {
+            state.isSessionReady -> R.color.connection_connected
+            state.isPaired -> R.color.dot_yellow
+            else -> R.color.connection_disconnected
         }
         topBar.deviceStatusDot.backgroundTintList = ColorStateList.valueOf(
             ContextCompat.getColor(requireContext(), dotColor),

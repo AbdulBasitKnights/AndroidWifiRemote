@@ -21,10 +21,42 @@ object AnalyticsEvents {
 
     private var firebaseAnalytics: FirebaseAnalytics? = null
     private var metaLogger: AppEventsLogger? = null
+    private var appContext: Context? = null
 
     fun init(context: Context) {
+        appContext = context.applicationContext
         firebaseAnalytics = FirebaseAnalytics.getInstance(context.applicationContext)
         metaLogger = AppEventsLogger.newLogger(context.applicationContext)
+    }
+
+    /**
+     * Logs subscription purchase to Firebase, Adjust (lgpsov), and Meta.
+     */
+    fun logSubscription(
+        sku: String,
+        revenue: Double = 0.0,
+        currency: String = "USD",
+        isTrial: Boolean = false,
+    ) {
+        SafeRun.run(TAG) {
+            val params = mapOf(
+                "sku" to sku,
+                "currency" to currency,
+                "value" to revenue,
+                "trial" to isTrial,
+            )
+            logFirebaseEvent("subscription", params)
+            logFirebaseEvent("iap_success", params)
+            logMetaEvent("subscription", params)
+            if (isTrial) {
+                logMetaEvent("trial_success", params)
+            }
+            logAdjustEvent(
+                AdjustConstant.ADJUST_SUBSCRIPTION_TOKEN,
+                params + mapOf("product_id" to sku),
+            )
+            AppLogger.d(TAG, "Subscription logged: $sku $revenue $currency")
+        }
     }
 
     /**
@@ -84,6 +116,11 @@ object AnalyticsEvents {
                 adSourceName = adSourceName,
                 adPlacement = adPlacement ?: adFormat,
             )
+            logAdjustAdImpressionEvent(
+                revenue = revenue,
+                currency = currency,
+                adUnitId = adUnitId,
+            )
             logMetaAdImpression(
                 revenue = revenue,
                 currency = currency,
@@ -134,6 +171,26 @@ object AnalyticsEvents {
             adSourceName?.let { setAdRevenueNetwork(it) }
         }
         Adjust.trackAdRevenue(adRevenue)
+    }
+
+    private fun logAdjustAdImpressionEvent(
+        revenue: Double,
+        currency: String,
+        adUnitId: String,
+    ) {
+        val event = AdjustEvent(AdjustConstant.AD_IMPRESSION_TOKEN).apply {
+            addCallbackParameter("ad_unit_id", adUnitId)
+            setRevenue(revenue, currency)
+        }
+        Adjust.trackEvent(event)
+
+        val context = appContext ?: return
+        val metaParams = Bundle().apply {
+            putString("ad_unit_id", adUnitId)
+            putString("currency", currency)
+        }
+        AppEventsLogger.newLogger(context).logEvent("ad_impression", metaParams)
+        AppEventsLogger.newLogger(context).logEvent("ad_revenue", revenue, metaParams)
     }
 
     private fun logMetaAdImpression(

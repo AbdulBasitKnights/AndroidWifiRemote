@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import com.tvremote.app.R
 import com.tvremote.app.TvRemoteApp
 import com.tvremote.app.ads.AdsHelper
+import com.tvremote.app.analytics.AnalyticsEvents
 import com.tvremote.app.databinding.ActivityIapBinding
 import com.tvremote.app.features.fullonboard.FullOnboardActivity
 import com.tvremote.app.features.iap.utils.BillingClientConnectionListener
@@ -96,6 +97,14 @@ class IAPActivity : AppCompatActivity() {
 
             override fun onSubscriptionPurchased(purchaseInfo: DataWrappers.PurchaseInfo) {
                 FirebaseLogUtils.logEvent("iap_success")
+                val product = availableProductDetails[purchaseInfo.sku]
+                AnalyticsEvents.logSubscription(
+                    sku = purchaseInfo.sku,
+                    revenue = product?.priceAmount ?: 0.0,
+                    currency = product?.priceCurrencyCode ?: "USD",
+                    isTrial = purchaseInfo.sku.contains("trial", ignoreCase = true) ||
+                        product?.billingPeriod == "P3D",
+                )
                 AdsHelper.updateProVersion(purchaseInfo.sku == IapManager.skuKeyWeek)
                 prefs().edit { putInt("iap_purchase_count", prefs().getInt("iap_purchase_count", 0) + 1) }
                 startActivity(

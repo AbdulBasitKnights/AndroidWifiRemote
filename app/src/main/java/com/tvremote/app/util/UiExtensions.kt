@@ -37,11 +37,11 @@ fun View.invisible() {
 }
 
 fun Activity.openPrivacyPolicy() {
-  startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://sites.google.com/view/tv-remote-privacy")))
+    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.privacy_policy_url))))
 }
 
 fun Activity.openTermsOfUse() {
-    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://sites.google.com/view/tv-remote-terms")))
+    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.terms_of_service_url))))
 }
 
 fun AppCompatActivity.changeStatusBarColor(@ColorRes colorRes: Int, darkIcons: Boolean = false) {

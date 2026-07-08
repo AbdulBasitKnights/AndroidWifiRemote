@@ -12,6 +12,7 @@ import com.tvremote.app.data.session.AppPreferences
 import com.tvremote.app.databinding.FragmentSettingsBinding
 import com.tvremote.app.ui.language.LanguageActivity
 import com.tvremote.app.util.ThemeHelper
+import com.tvremote.app.util.openPrivacyPolicy
 
 class SettingsFragment : Fragment(R.layout.fragment_settings) {
     private var _binding: FragmentSettingsBinding? = null
@@ -96,7 +97,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 ),
             )
         }
-        binding.privacyRow.setOnClickListener { toast(getString(R.string.privacy_policy_sub)) }
+        binding.privacyRow.setOnClickListener { requireActivity().openPrivacyPolicy() }
     }
 
     override fun onDestroyView() {

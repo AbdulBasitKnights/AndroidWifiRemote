@@ -18,7 +18,14 @@ nanohttpd = "2.3.1"
 googleServices = "4.4.2"
 firebaseCrashlytics = "3.0.3"
 firebaseBom = "33.12.0"
-playServicesAds = "24.5.0"
+playServicesAds = "24.9.0"
+mediationFacebook = "6.20.0.0"
+mediationApplovin = "13.3.1.1"
+mediationMintegral = "16.9.91.1"
+mediationInmobi = "10.8.7.0"
+mediationFyber = "8.3.8.0"
+mediationVungle = "7.5.1.0"
+mediationPangle = "7.5.0.4.0"
 facebookSdk = "18.1.3"
 adjust = "5.4.4"
 billing = "8.0.0"
@@ -50,6 +57,13 @@ firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.r
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx" }
 play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
+mediation-facebook = { module = "com.google.ads.mediation:facebook", version.ref = "mediationFacebook" }
+mediation-applovin = { module = "com.google.ads.mediation:applovin", version.ref = "mediationApplovin" }
+mediation-mintegral = { module = "com.google.ads.mediation:mintegral", version.ref = "mediationMintegral" }
+mediation-inmobi = { module = "com.google.ads.mediation:inmobi", version.ref = "mediationInmobi" }
+mediation-fyber = { module = "com.google.ads.mediation:fyber", version.ref = "mediationFyber" }
+mediation-vungle = { module = "com.google.ads.mediation:vungle", version.ref = "mediationVungle" }
+mediation-pangle = { module = "com.google.ads.mediation:pangle", version.ref = "mediationPangle" }
 facebook-android-sdk = { group = "com.facebook.android", name = "facebook-android-sdk", version.ref = "facebookSdk" }
 adjust-android = { group = "com.adjust.sdk", name = "adjust-android", version.ref = "adjust" }
 billing-ktx = { group = "com.android.billingclient", name = "billing-ktx", version.ref = "billing" }

@@ -40,9 +40,9 @@
                 <com.google.android.material.button.MaterialButtonToggleGroup
                     android:id="@+id/modeToggle"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
                     android:layout_marginTop="12dp"
-                    android:background="@drawable/bg_remote_btn"
+                    android:background="@drawable/bg_mode_toggle_track"
                     app:singleSelection="true">
 
                     <com.google.android.material.button.MaterialButton
@@ -51,6 +51,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
+                        android:fontFamily="@font/inter_medium"
                         android:insetTop="0dp"
                         android:insetBottom="0dp"
                         android:minWidth="0dp"
@@ -58,9 +59,28 @@
                         android:text="@string/mode_remote"
                         android:textAllCaps="false"
                         android:textColor="@color/mode_toggle_tint"
-                        android:textSize="12sp"
+                        android:textSize="13sp"
                         app:backgroundTint="@color/mode_toggle_bg"
-                        app:cornerRadius="16dp"
+                        app:cornerRadius="26dp"
+                        app:strokeWidth="0dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/modeTouchpad"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/inter_medium"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:minWidth="0dp"
+                        android:padding="0dp"
+                        android:text="@string/mode_touchpad"
+                        android:textAllCaps="false"
+                        android:textColor="@color/mode_toggle_tint"
+                        android:textSize="13sp"
+                        app:backgroundTint="@color/mode_toggle_bg"
+                        app:cornerRadius="26dp"
                         app:strokeWidth="0dp" />
 
                     <com.google.android.material.button.MaterialButton
@@ -76,64 +96,90 @@
                         android:text="@string/mode_number"
                         android:textAllCaps="false"
                         android:textColor="@color/mode_toggle_tint"
-                        android:textSize="12sp"
+                        android:textSize="13sp"
+                        android:visibility="gone"
                         app:backgroundTint="@color/mode_toggle_bg"
-                        app:cornerRadius="16dp"
-                        app:strokeWidth="0dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/modeTouchpad"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        android:minWidth="0dp"
-                        android:padding="0dp"
-                        android:text="@string/mode_touchpad"
-                        android:textAllCaps="false"
-                        android:textColor="@color/mode_toggle_tint"
-                        android:textSize="12sp"
-                        app:backgroundTint="@color/mode_toggle_bg"
-                        app:cornerRadius="16dp"
+                        app:cornerRadius="20dp"
                         app:strokeWidth="0dp" />
                 </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                <LinearLayout
+                    android:id="@+id/lowBatteryBanner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_low_battery_banner"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="10dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/inter_medium"
+                        android:text="@string/low_battery_remote"
+                        android:textColor="@color/low_battery_text"
+                        android:textSize="13sp" />
+
+                    <ImageButton
+                        android:id="@+id/lowBatteryDismiss"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/back"
+                        android:padding="6dp"
+                        android:src="@drawable/ic_cross"
+                        app:tint="@color/low_battery_text" />
+                </LinearLayout>
 
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:background="@drawable/bg_remote_control_card"
-                    android:minHeight="280dp"
-                    android:padding="12dp">
-
-                    <include
-                        android:id="@+id/dpadPanel"
-                        layout="@layout/layout_remote_dpad" />
+                    android:minHeight="300dp">
 
                     <FrameLayout
-                        android:id="@+id/touchpadPanel"
-                        android:layout_width="match_parent"
-                        android:layout_height="240dp"
-                        android:background="@drawable/bg_touchpad"
-                        android:visibility="gone">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:text="@string/touchpad_hint"
-                            android:textColor="@color/glass_white"
-                            android:textSize="14sp" />
-                    </FrameLayout>
-
-                    <com.tvremote.app.ui.remote.RemoteKeyboardView
-                        android:id="@+id/numpadPanel"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:visibility="gone" />
+                        android:elevation="1dp"
+                        android:minHeight="280dp"
+                        android:padding="12dp">
+
+                        <include
+                            android:id="@+id/dpadPanel"
+                            layout="@layout/layout_remote_dpad" />
+
+                        <FrameLayout
+                            android:id="@+id/touchpadPanel"
+                            android:layout_width="match_parent"
+                            android:layout_height="260dp"
+                            android:background="@drawable/bg_touchpad_surface"
+                            android:visibility="gone">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:fontFamily="@font/inter_medium"
+                                android:text="@string/swipe_to_navigate"
+                                android:textColor="@color/touchpad_hint"
+                                android:textSize="14sp" />
+                        </FrameLayout>
+
+                        <com.tvremote.app.ui.remote.RemoteKeyboardView
+                            android:id="@+id/numpadPanel"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:visibility="gone" />
+                    </FrameLayout>
+
+                    <include
+                        android:id="@+id/stateOverlay"
+                        layout="@layout/include_remote_state_overlay" />
                 </FrameLayout>
 
                 <include

@@ -28,6 +28,7 @@ import com.tvremote.app.ads.AdsHelper.isProVersion
 import com.tvremote.app.ads.AdsHelper.obEnable
 import com.tvremote.app.ads.interstitialSurvey
 import com.tvremote.app.ads.showImmersive
+import com.tvremote.app.analytics.AdRevenueBindings
 import com.tvremote.app.databinding.ActivitySurveyBinding
 import com.tvremote.app.features.fullonboard.FullOnboardActivity
 import com.tvremote.app.ui.main.MainActivity
@@ -176,6 +177,7 @@ class SurveyActivity : AppCompatActivity() {
                 .forNativeAd { nativeAd ->
                     nativeSurvey?.destroy()
                     nativeSurvey = nativeAd
+                    AdRevenueBindings.bind(nativeAd, BuildConfig.native_survey_hf, adPlacement = "survey_high")
                     showNativeSurveyAd()
                 }
                 .withAdListener(object : AdListener() {
@@ -195,6 +197,7 @@ class SurveyActivity : AppCompatActivity() {
                 .forNativeAd { nativeAd ->
                     nativeSurvey?.destroy()
                     nativeSurvey = nativeAd
+                    AdRevenueBindings.bind(nativeAd, BuildConfig.native_survey, adPlacement = "survey")
                     showNativeSurveyAd()
                 }
                 .withAdListener(object : AdListener() {

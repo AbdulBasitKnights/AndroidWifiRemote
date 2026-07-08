@@ -1,100 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.tvremote.app.ui.remote.NeumorphicDpadWheelView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dpadWheel"
     android:layout_width="@dimen/remote_dpad_size"
     android:layout_height="@dimen/remote_dpad_size"
-    android:layout_gravity="center">
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:contentDescription="@null"
-        android:scaleType="fitCenter"
-        app:tint="@color/primary"
-        android:src="@drawable/img_dpad_cross" />
-
-    <ImageButton
-        android:id="@+id/upButton"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_gravity="top|center_horizontal"
-        android:layout_marginTop="5dp"
-        android:background="@drawable/bg_glass_circle_btn"
-        android:backgroundTint="@color/primary_dark2"
-        app:tint="@color/glass_white"
-        android:contentDescription="@string/up"
-        android:padding="18dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_dpad_arrow_up" />
-
-    <ImageButton
-        android:id="@+id/downButton"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_gravity="bottom|center_horizontal"
-        android:background="@drawable/bg_glass_circle_btn"
-        android:backgroundTint="@color/primary_dark2"
-        app:tint="@color/glass_white"
-        android:layout_marginBottom="12dp"
-        android:contentDescription="@string/down"
-        android:padding="18dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_dpad_arrow_down" />
-
-    <ImageButton
-        android:id="@+id/leftButton"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_gravity="center_vertical|start"
-        android:layout_marginStart="10dp"
-        android:background="@drawable/bg_glass_circle_btn"
-        android:backgroundTint="@color/primary_dark2"
-        app:tint="@color/glass_white"
-        android:layout_marginBottom="4dp"
-
-        android:contentDescription="@string/left"
-        android:padding="18dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_dpad_arrow_left" />
-
-    <ImageButton
-        android:id="@+id/rightButton"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_gravity="center_vertical|end"
-        android:layout_marginEnd="10dp"
-        android:background="@drawable/bg_glass_circle_btn"
-        android:backgroundTint="@color/primary_dark2"
-        app:tint="@color/glass_white"
-        android:layout_marginBottom="4dp"
-        android:contentDescription="@string/right"
-        android:padding="18dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_dpad_arrow_right" />
-
-    <FrameLayout
-        android:id="@+id/okButton"
-        android:layout_width="@dimen/remote_ok_size"
-        android:layout_height="@dimen/remote_ok_size"
-        android:layout_gravity="center"
-        android:clickable="true"
-        android:focusable="true">
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:contentDescription="@null"
-            android:scaleType="fitCenter"
-            app:tint="@color/primary_dark2"
-            android:src="@drawable/bg_glass_circle_btn" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="@string/ok"
-            android:textColor="@color/text_on_accent"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-    </FrameLayout>
-</FrameLayout>
+    android:layout_gravity="center"
+    app:arrowColor="@color/dpad_arrow_color"
+    app:centerColor="@color/dpad_center_color"
+    app:dividerColor="@color/dpad_divider"
+    app:outlineColor="@color/dpad_wheel_outline"
+    app:padBackgroundColor="@color/dpad_pad_background"
+    app:pressedColor="@color/dpad_pressed_color"
+    app:shadowColor="@color/dpad_wheel_shadow"
+    app:textColor="@color/text_on_accent"
+    app:textSize="18sp" />

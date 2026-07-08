@@ -3,173 +3,187 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="15dp"
+    android:layout_marginTop="12dp"
     android:gravity="center"
+    android:padding="@dimen/_5sdp"
     android:orientation="horizontal">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/bg_vol_pill"
+        android:elevation="2dp"
         android:gravity="center_horizontal"
-        android:background="@drawable/bg_remote_control_card"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingVertical="2dp">
 
         <ImageButton
             android:id="@+id/rewindButton"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_margin="4dp"
-            android:background="@drawable/bg_remote_btn"
-            android:contentDescription="@string/cast_videos_title"
+            android:background="@drawable/bg_vol_pill"
+            android:contentDescription="@string/rewind"
             android:padding="12dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_rewind" />
+            android:src="@drawable/ic_rewind"
+            app:tint="@color/text_primary" />
 
         <ImageButton
             android:id="@+id/playPauseButton"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_margin="4dp"
-            android:background="@drawable/bg_remote_btn"
-            android:contentDescription="@string/cast_videos_title"
+            android:background="@drawable/bg_vol_pill"
+            android:contentDescription="@string/play_pause"
             android:padding="12dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_pause" />
+            android:src="@drawable/ic_pause"
+            app:tint="@color/text_primary" />
 
         <ImageButton
             android:id="@+id/forwardButton"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_margin="4dp"
-            android:background="@drawable/bg_remote_btn"
-            android:contentDescription="@string/cast_videos_title"
+            android:background="@drawable/bg_vol_pill"
+            android:contentDescription="@string/forward"
             android:padding="12dp"
-            android:scaleType="centerInside"
-            android:src="@drawable/ic_forward" />
+            android:src="@drawable/ic_forward"
+            app:tint="@color/text_primary" />
     </LinearLayout>
 
     <GridLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"
-        android:background="@drawable/bg_remote_control_card"
+        android:background="@drawable/bg_vol_pill"
         android:columnCount="3"
-        android:gravity="top">
+        android:elevation="1dp"
+        android:padding="2dp">
 
         <ImageButton
             android:id="@+id/backButton"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_margin="4dp"
-            android:background="@drawable/bg_remote_btn"
+            android:background="@drawable/bg_vol_pill"
             android:contentDescription="@string/back"
             android:padding="12dp"
             android:src="@drawable/ic_back"
             app:tint="@color/text_primary" />
+
         <ImageView
             android:id="@+id/homeButton"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_margin="4dp"
+            android:background="@drawable/bg_vol_pill"
             android:contentDescription="@string/home"
             android:padding="12dp"
-            android:background="@drawable/bg_remote_btn"
             android:src="@drawable/ic_home"
             app:tint="@color/text_primary" />
+
         <ImageButton
             android:id="@+id/muteButton"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_margin="4dp"
-            android:background="@drawable/bg_remote_btn"
-            android:contentDescription="@string/cast_audio_title"
+            android:background="@drawable/bg_vol_pill"
+            android:contentDescription="@string/mute"
             android:padding="12dp"
-            android:src="@drawable/ic_mute" />
+            android:src="@drawable/ic_mute"
+            app:tint="@color/text_primary" />
+
         <ImageButton
             android:id="@+id/inputButton"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_margin="4dp"
-            android:background="@drawable/bg_remote_btn"
+            android:background="@drawable/bg_neumorphic_raised"
             android:contentDescription="@string/cast_photos_title"
             android:padding="12dp"
+            android:src="@drawable/ic_photos"
             android:visibility="gone"
-            android:src="@drawable/ic_photos" />
-
-
+            app:tint="@color/text_primary" />
 
         <ImageButton
             android:id="@+id/micButton"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_margin="4dp"
-            android:background="@drawable/bg_remote_btn"
+            android:background="@drawable/bg_neumorphic_raised"
             android:contentDescription="@string/cast_audio_title"
             android:padding="12dp"
             android:src="@drawable/ic_mic"
-            android:visibility="gone" />
-
+            android:visibility="gone"
+            app:tint="@color/text_primary" />
 
         <ImageButton
             android:id="@+id/appsButton"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_margin="4dp"
-            android:background="@drawable/bg_remote_btn"
+            android:background="@drawable/bg_neumorphic_raised"
             android:contentDescription="@string/nav_settings"
             android:padding="12dp"
             android:src="@drawable/ic_apps"
-            android:visibility="gone" />
-
+            android:visibility="gone"
+            app:tint="@color/text_primary" />
 
         <ImageButton
             android:id="@+id/headerSettingsShortcut"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_margin="4dp"
-            android:background="@drawable/bg_remote_btn"
+            android:background="@drawable/bg_neumorphic_raised"
             android:contentDescription="@string/ai_feature"
             android:padding="16dp"
             android:src="@drawable/ic_mute"
-            android:visibility="gone" />
+            android:visibility="gone"
+            app:tint="@color/text_primary" />
     </GridLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/bg_vol_pill"
+        android:elevation="1dp"
         android:gravity="center_horizontal"
-        android:background="@drawable/bg_remote_control_card"
-        android:orientation="vertical">
+        android:paddingHorizontal="@dimen/_1sdp"
+        android:orientation="vertical"
+        android:paddingVertical="8dp">
 
         <TextView
             android:id="@+id/volUpButton"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:layout_margin="4dp"
-            android:background="@drawable/bg_remote_btn"
+            android:layout_width="46dp"
+            android:layout_height="48dp"
+            android:layout_marginHorizontal="4dp"
+            android:layout_marginVertical="@dimen/_5sdp"
+            android:fontFamily="@font/inter_semibold"
             android:gravity="center"
             android:text="@string/vol_up"
             android:textColor="@color/text_primary"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textSize="20sp" />
+
         <TextView
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:layout_margin="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_medium"
             android:gravity="center"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:text="@string/vol_label"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/volDownButton"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:layout_margin="4dp"
-            android:background="@drawable/bg_remote_btn"
+            android:layout_width="46dp"
+            android:layout_height="48dp"
+
+            android:layout_marginHorizontal="4dp"
+            android:layout_marginVertical="@dimen/_5sdp"
+            android:fontFamily="@font/inter_semibold"
             android:gravity="center"
             android:text="@string/vol_down"
             android:textColor="@color/text_primary"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textSize="20sp" />
     </LinearLayout>
 </LinearLayout>

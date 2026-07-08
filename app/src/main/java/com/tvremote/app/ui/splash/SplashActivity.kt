@@ -49,6 +49,8 @@ import com.tvremote.app.ads.AdsHelper.langNative1Enabled
 import com.tvremote.app.ads.AdsHelper.langNativeHigh1Enabled
 import com.tvremote.app.ads.loadNativeLanguageHigh
 import com.tvremote.app.ads.loadNativeLanguageNormal
+import com.tvremote.app.consent.ConsentCallback
+import com.tvremote.app.consent.ConsentController
 import com.tvremote.app.util.OnboardSessionCounter
 import com.tvremote.app.util.applyLightSystemBars
 import com.tvremote.app.util.hideNavigationBar
@@ -105,11 +107,25 @@ class SplashActivity : BaseActivity() {
                 return@launch
             }
 
-            MobileAds.initialize(this@SplashActivity)
-            TvRemoteApp.isConfigFetched.observe(this@SplashActivity) { fetched ->
-                if (!fetched || binding == null) return@observe
-                handleRemoteConfigReady()
-            }
+            initConsent()
+        }
+    }
+
+    private fun initConsent() {
+        ConsentController(this).apply {
+            initConsent(CONSENT_TEST_DEVICE_ID, object : ConsentCallback {
+                override fun onAdsLoad(canRequestAd: Boolean) {
+                    MobileAds.initialize(this@SplashActivity)
+                    TvRemoteApp.isConfigFetched.observe(this@SplashActivity) { fetched ->
+                        if (!fetched || binding == null) return@observe
+                        handleRemoteConfigReady()
+                    }
+                }
+
+                override fun onConsentFormLoaded() {
+                    showConsentForm()
+                }
+            })
         }
     }
 
@@ -354,5 +370,7 @@ class SplashActivity : BaseActivity() {
         private enum class SplashInterState {
             DISABLED, LOADING, LOADED, SHOWING, FAILED, DONE,
         }
+
+        private const val CONSENT_TEST_DEVICE_ID = "3E0C66FC65F12F1C83DC8561646DF22B"
     }
 }

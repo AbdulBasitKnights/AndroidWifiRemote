@@ -6,12 +6,12 @@ import com.adjust.sdk.AdjustConfig
 import com.adjust.sdk.LogLevel
 import com.facebook.FacebookSdk
 import com.facebook.appevents.AppEventsLogger
-import com.google.android.gms.ads.MobileAds
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.tvremote.app.BuildConfig
 import com.tvremote.app.R
+import com.tvremote.app.analytics.AdjustConstant
+import com.tvremote.app.BuildConfig
 import com.tvremote.app.util.AppLogger
 import com.tvremote.app.util.SafeRun
 
@@ -23,7 +23,6 @@ object SdkInitializer {
             initFirebase(application)
             initFacebook(application)
             initAdjust(application)
-            initAdMob(application)
             AnalyticsEvents.init(application)
         }
     }
@@ -44,7 +43,9 @@ object SdkInitializer {
     }
 
     private fun initAdjust(application: Application) {
-        val token = application.getString(R.string.adjust_app_token)
+        val token = application.getString(R.string.adjust_app_token).ifBlank {
+            AdjustConstant.ADJUST_TOKEN
+        }
         if (token.isBlank() || token.startsWith("YOUR_")) {
             AppLogger.w(TAG, "Adjust app token missing — skipping Adjust init")
             return
@@ -61,11 +62,5 @@ object SdkInitializer {
         }
         Adjust.initSdk(config)
         AppLogger.d(TAG, "Adjust initialized ($environment)")
-    }
-
-    private fun initAdMob(application: Application) {
-        MobileAds.initialize(application) { status ->
-            AppLogger.d(TAG, "AdMob initialized: ${status.adapterStatusMap.size} adapters")
-        }
     }
 }

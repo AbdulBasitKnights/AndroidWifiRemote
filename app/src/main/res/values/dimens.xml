@@ -3,7 +3,7 @@
     <dimen name="glass_radius">20dp</dimen>
     <dimen name="glass_radius_sm">14dp</dimen>
     <dimen name="glass_stroke">1dp</dimen>
-    <dimen name="remote_dpad_size">260dp</dimen>
+    <dimen name="remote_dpad_size">280dp</dimen>
     <dimen name="remote_ok_size">70dp</dimen>
     <dimen name="volume_slider_width">52dp</dimen>
     <dimen name="volume_slider_height">160dp</dimen>
