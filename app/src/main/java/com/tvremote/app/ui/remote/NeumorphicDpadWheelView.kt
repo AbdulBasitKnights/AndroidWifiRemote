@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
+import android.graphics.drawable.Drawable
 import android.graphics.Typeface
 import android.util.AttributeSet
 import android.util.TypedValue
@@ -86,16 +87,10 @@ class NeumorphicDpadWheelView @JvmOverloads constructor(
     private val outlinePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE }
     private val centerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.FILL }
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val arrowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.STROKE
-        strokeCap = Paint.Cap.ROUND
-        strokeJoin = Paint.Join.ROUND
-    }
-
     private val outerBounds = RectF()
     private val innerBounds = RectF()
     private val wedgePath = Path()
-    private val arrowPath = Path()
+    private val arrowIconSizePx = dp(28f).toInt()
 
     private var centerX = 0f
     private var centerY = 0f
@@ -105,7 +100,6 @@ class NeumorphicDpadWheelView @JvmOverloads constructor(
     private var wedgeGapDegrees = 0f
     private var dividerStroke = 0f
     private var outlineStroke = 0f
-    private var arrowStroke = 0f
     private var shadowRadius = 0f
     private var shadowDx = 0f
     private var shadowDy = 0f
@@ -186,7 +180,6 @@ class NeumorphicDpadWheelView @JvmOverloads constructor(
         gapPx = dp(2f)
         dividerStroke = dp(2f)
         outlineStroke = dp(1f)
-        arrowStroke = dp(2.2f)
         shadowRadius = dp(6f)
         shadowDx = dp(0f)
         shadowDy = dp(2f)
@@ -202,9 +195,6 @@ class NeumorphicDpadWheelView @JvmOverloads constructor(
         dividerPaint.color = dividerColor
         outlinePaint.strokeWidth = outlineStroke
         outlinePaint.color = outlineColor
-        arrowPaint.strokeWidth = arrowStroke
-        arrowPaint.color = arrowColor
-
         outerBounds.set(centerX - outerRadius, centerY - outerRadius, centerX + outerRadius, centerY + outerRadius)
         innerBounds.set(centerX - centerRadius, centerY - centerRadius, centerX + centerRadius, centerY + centerRadius)
     }
@@ -268,39 +258,29 @@ class NeumorphicDpadWheelView @JvmOverloads constructor(
     }
 
     private fun drawArrow(canvas: Canvas, zone: Zone) {
+        val drawable = arrowDrawableFor(zone) ?: return
         val centerAngle = wedgeCenterAngle(zone)
         val radians = Math.toRadians(centerAngle.toDouble())
         val midRadius = (centerRadius + outerRadius) * 0.5f
         val ax = centerX + midRadius * cos(radians).toFloat()
         val ay = centerY + midRadius * sin(radians).toFloat()
-        val arm = dp(7f)
-        val wing = dp(5f)
+        val half = arrowIconSizePx / 2
+        val left = (ax - half).toInt()
+        val top = (ay - half).toInt()
+        drawable.mutate().setTint(arrowColor)
+        drawable.setBounds(left, top, left + arrowIconSizePx, top + arrowIconSizePx)
+        drawable.draw(canvas)
+    }
 
-        arrowPath.reset()
-        when (zone) {
-            Zone.UP -> {
-                arrowPath.moveTo(ax - wing, ay + arm * 0.4f)
-                arrowPath.lineTo(ax, ay - arm)
-                arrowPath.lineTo(ax + wing, ay + arm * 0.4f)
-            }
-            Zone.DOWN -> {
-                arrowPath.moveTo(ax - wing, ay - arm * 0.4f)
-                arrowPath.lineTo(ax, ay + arm)
-                arrowPath.lineTo(ax + wing, ay - arm * 0.4f)
-            }
-            Zone.LEFT -> {
-                arrowPath.moveTo(ax + arm * 0.4f, ay - wing)
-                arrowPath.lineTo(ax - arm, ay)
-                arrowPath.lineTo(ax + arm * 0.4f, ay + wing)
-            }
-            Zone.RIGHT -> {
-                arrowPath.moveTo(ax - arm * 0.4f, ay - wing)
-                arrowPath.lineTo(ax + arm, ay)
-                arrowPath.lineTo(ax - arm * 0.4f, ay + wing)
-            }
-            Zone.CENTER -> return
+    private fun arrowDrawableFor(zone: Zone): Drawable? {
+        val resId = when (zone) {
+            Zone.UP -> R.drawable.ic_arrow_up
+            Zone.DOWN -> R.drawable.ic_arrow_down
+            Zone.LEFT -> R.drawable.ic_arrow_left
+            Zone.RIGHT -> R.drawable.ic_arrow_right
+            Zone.CENTER -> return null
         }
-        canvas.drawPath(arrowPath, arrowPaint)
+        return ContextCompat.getDrawable(context, resId)
     }
 
     private fun drawCenterButton(canvas: Canvas) {
@@ -326,13 +306,13 @@ class NeumorphicDpadWheelView @JvmOverloads constructor(
         Zone.CENTER -> 0f
     }
 
-    /** Wedge arcs per spec with [wedgeGapDegrees] inset on each side. */
+    /** Canvas [drawArc] wedges — 0° = 3 o'clock, angles increase clockwise. */
     private fun wedgeArc(zone: Zone): Pair<Float, Float> {
         val (rawStart, rawSweep) = when (zone) {
-            Zone.UP -> 315f to 90f
-            Zone.RIGHT -> 45f to 90f
-            Zone.DOWN -> 135f to 90f
-            Zone.LEFT -> 225f to 90f
+            Zone.UP -> 225f to 90f
+            Zone.RIGHT -> 315f to 90f
+            Zone.DOWN -> 45f to 90f
+            Zone.LEFT -> 135f to 90f
             Zone.CENTER -> 0f to 0f
         }
         val inset = wedgeGapDegrees
@@ -364,17 +344,17 @@ class NeumorphicDpadWheelView @JvmOverloads constructor(
         if (distance <= centerRadius) return Zone.CENTER
 
         val angle = Math.toDegrees(atan2(dy.toDouble(), dx.toDouble())).toFloat()
-        // Touch uses full 90° quadrants (spec); visual gaps are draw-only.
-        return quadrantForAngle(angle)
+        return directionalZones.firstOrNull { isAngleInWedge(angle, it) }
+            ?: quadrantForAngle(angle)
     }
 
     private fun quadrantForAngle(angle: Float): Zone {
         val normalized = normalizeAngle(angle)
         return when {
-            normalized >= 315f || normalized < 45f -> Zone.UP
-            normalized < 135f -> Zone.RIGHT
-            normalized < 225f -> Zone.DOWN
-            else -> Zone.LEFT
+            normalized >= 315f || normalized < 45f -> Zone.RIGHT
+            normalized < 135f -> Zone.DOWN
+            normalized < 225f -> Zone.LEFT
+            else -> Zone.UP
         }
     }
 
@@ -494,19 +474,19 @@ class NeumorphicDpadWheelView @JvmOverloads constructor(
 
     private fun dispatchZoneClick(zone: Zone) {
         when (zone) {
-            Zone.LEFT -> {
+            Zone.UP -> {
                 directionListener?.onUp()
                 onUpClick?.invoke()
             }
-            Zone.RIGHT -> {
+            Zone.DOWN -> {
                 directionListener?.onDown()
                 onDownClick?.invoke()
             }
-            Zone.UP -> {
+            Zone.LEFT -> {
                 directionListener?.onLeft()
                 onLeftClick?.invoke()
             }
-            Zone.DOWN -> {
+            Zone.RIGHT -> {
                 directionListener?.onRight()
                 onRightClick?.invoke()
             }

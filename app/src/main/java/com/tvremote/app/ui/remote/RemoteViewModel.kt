@@ -83,32 +83,32 @@ class RemoteViewModel(
 
     fun power() = repository.power()
     fun sendKey(key: Key) {
-        if (!repository.isSessionReady()) return
         repository.sendKey(key)
     }
 
     fun sendText(text: String) {
-        if (!repository.isSessionReady()) return
         repository.sendText(text)
     }
     fun volUp() {
-        if (!repository.isSessionReady()) return
-        _volumeLevel.value = (_volumeLevel.value + 1).coerceAtMost(15)
+        if (repository.isSessionReady()) {
+            _volumeLevel.value = (_volumeLevel.value + 1).coerceAtMost(15)
+        }
         repository.volUp()
     }
     fun volDown() {
-        if (!repository.isSessionReady()) return
-        _volumeLevel.value = (_volumeLevel.value - 1).coerceAtLeast(0)
+        if (repository.isSessionReady()) {
+            _volumeLevel.value = (_volumeLevel.value - 1).coerceAtLeast(0)
+        }
         repository.volDown()
     }
-    fun channelUp() = guarded { repository.channelUp() }
-    fun channelDown() = guarded { repository.channelDown() }
-    fun mute() = guarded { repository.mute() }
-    fun playPause() = guarded { repository.playPause() }
-    fun rewind() = guarded { repository.rewind() }
-    fun forward() = guarded { repository.forward() }
-    fun tvInput() = guarded { repository.tvInput() }
-    fun apps() = guarded { repository.apps() }
+    fun channelUp() = repository.channelUp()
+    fun channelDown() = repository.channelDown()
+    fun mute() = repository.mute()
+    fun playPause() = repository.playPause()
+    fun rewind() = repository.rewind()
+    fun forward() = repository.forward()
+    fun tvInput() = repository.tvInput()
+    fun apps() = repository.apps()
     fun runNetflix() = launchChannel { repository.runNetflix() }
     fun runYouTube() = launchChannel { repository.runYouTube() }
     fun runPrime() = launchChannel { repository.runPrime() }
@@ -126,10 +126,6 @@ class RemoteViewModel(
     }
 
     fun stopVoiceInput() = voiceHelper.stopListening()
-
-    private inline fun guarded(block: () -> Unit) {
-        if (repository.isSessionReady()) block()
-    }
 
     private data class ConnectionCore(
         val paired: Boolean,

@@ -8,9 +8,9 @@
     android:background="@color/bgColor"
     tools:context="com.tvremote.app.ui.splash.SplashActivity">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/logo"
-        android:src="@drawable/bg_remote_control_card"
+        android:src="@mipmap/ic_launcher_round"
         android:layout_width="@dimen/_80sdp"
         android:layout_height="@dimen/_80sdp"
         app:layout_constraintBottom_toBottomOf="parent"
