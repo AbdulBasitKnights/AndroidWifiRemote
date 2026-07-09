@@ -70,7 +70,7 @@
     <string name="disconnect_remote">Disconnect from TV</string>
     <string name="disconnected_from_tv">Disconnected from TV</string>
     <string name="reconnect_remote">Reconnect Remote</string>
-    <string name="connection_stays_active">Connection stays active until you disconnect or close the app</string>
+    <string name="connection_stays_active">Connection stays active in background — use Disconnect to end session</string>
     <string name="reconnecting_remote">Reconnecting remote…</string>
     <string name="remote_paused_casting">Remote paused while casting</string>
     <string name="remote_paused_screen_mirror">Remote paused — screen mirroring active</string>
@@ -81,7 +81,21 @@
     <string name="hide_manual_ip">Hide manual IP</string>
     <string name="select_tv_first">Select a TV from the list or enter IP</string>
     <string name="pairing_started_toast">Pairing started — check code on TV</string>
+    <string name="repairing_remote_toast">TV may be in use — enter the new pairing code on your TV</string>
     <string name="connected_to">Connected to %1$s</string>
+    <string name="remote_notification_channel">TV remote connection</string>
+    <string name="remote_notification_channel_desc">Keeps your phone connected to the TV while the app is in the background</string>
+    <string name="remote_notification_title">TV remote active</string>
+    <string name="remote_notification_connected">Connected to %1$s</string>
+    <string name="remote_notification_reconnecting_to">Reconnecting to %1$s…</string>
+    <string name="remote_notification_pairing_with">Pair with %1$s</string>
+    <string name="remote_notification_disconnected_from">Disconnected from %1$s</string>
+    <string name="remote_notification_text">Remote stays connected in background — tap to open</string>
+    <string name="remote_notification_reconnecting_text">Trying to restore remote for 30 seconds…</string>
+    <string name="remote_notification_pairing_text">Enter the 6-digit code shown on your TV</string>
+    <string name="remote_notification_disconnected_text">Tap to open app and pair again</string>
+    <string name="remote_notification_disconnect">Disconnect</string>
+    <string name="remote_notification_permission_hint">Allow notifications to keep remote connected in background</string>
 
     <string name="cast_title">Cast</string>
     <string name="cast_screen_mirror_title">Screen Mirroring</string>
@@ -104,7 +118,16 @@
     <string name="cast_video_sent">Video sent to TV</string>
     <string name="cast_add_photos">Add photos</string>
     <string name="cast_add_videos">Add video</string>
-    <string name="cast_picker_hint">Pick media, tap to cast. Swipe down to close.</string>
+    <string name="cast_picker_hint">Tap any item to cast it to your TV</string>
+    <string name="cast_gallery_photo_subtitle">Tap a photo to cast it to your TV</string>
+    <string name="cast_gallery_video_subtitle">Tap a video to stream it on your TV</string>
+    <string name="cast_gallery_permission_title">Media access needed</string>
+    <string name="cast_gallery_allow_access">Allow access</string>
+    <string name="cast_gallery_empty_photos_title">No photos found</string>
+    <string name="cast_gallery_empty_videos_title">No videos found</string>
+    <string name="cast_gallery_empty_message">Your gallery looks empty, or access was limited.</string>
+    <string name="permission_photos">Allow photo access to browse and cast images</string>
+    <string name="permission_videos">Allow video access to browse and cast videos</string>
 
     <string name="mirror_title">Screen Mirroring</string>
     <string name="mirror_step1">1. Tap Select Cast Device and connect your TV or Chromecast</string>
@@ -131,7 +154,6 @@
     <string name="shortcut_prime">Prime Video</string>
     <string name="shortcut_hotstar">Hotstar</string>
     <string name="connect_tv_first">Connect and pair TV in Settings first</string>
-    <string name="permission_photos">Allow photo access to cast images</string>
     <string name="up">Up</string>
     <string name="down">Down</string>
     <string name="left">Left</string>

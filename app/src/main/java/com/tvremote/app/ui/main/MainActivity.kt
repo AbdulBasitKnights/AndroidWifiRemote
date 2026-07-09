@@ -98,10 +98,12 @@ class MainActivity : BaseActivity() {
         container?.tvRemoteRepository?.syncConnectionState()
     }
 
+    override fun onStop() {
+        container?.tvRemoteRepository?.onAppBackgrounded()
+        super.onStop()
+    }
+
     override fun onDestroy() {
-        if (isFinishing) {
-            container?.tvRemoteRepository?.disconnectForAppClose()
-        }
         binding = null
         super.onDestroy()
     }

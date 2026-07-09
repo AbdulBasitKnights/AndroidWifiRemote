@@ -90,14 +90,14 @@ class SplashActivity : BaseActivity() {
 
         FlowPreferences.readDataStoreValue(IS_ONBOARD, false) { isOnboard = !this }
         FlowPreferences.readDataStoreValue(IS_LANGUAGE_SPLASH, false) { isLanguage = !this }
-
-        lifecycleScope.launch {
+        performNavigation()
+      /*  lifecycleScope.launch {
             val isPro = ProSubscriptionChecker.check(applicationContext)
             AdsHelper.updateProVersion(isPro)
             initIapRestore()
             showProgressBar(5_000)
             if (isPro) binding?.containAds?.visibility = View.INVISIBLE
-            delay(5_000)
+            delay(2_000)
 
             if (!NetworkUtils.isOnline(this@SplashActivity)) {
                 binding?.shimmer?.visibility = View.GONE
@@ -108,7 +108,7 @@ class SplashActivity : BaseActivity() {
             }
 
             initConsent()
-        }
+        }*/
     }
 
     private fun initConsent() {
@@ -184,7 +184,7 @@ class SplashActivity : BaseActivity() {
         hasNavigated = true
         splashWaitTimer.cancel()
 
-        val next = when {
+        /*val next = when {
             TvRemoteApp.showProFromSplash && AdsHelper.isProVersion.value != true ->
                 Intent(this, IAPActivity::class.java)
             isOnboard && isLanguage ->
@@ -195,8 +195,9 @@ class SplashActivity : BaseActivity() {
                 Intent(this, FullOnboardActivity::class.java)
             else ->
                 Intent(this, MainActivity::class.java)
-        }
-        startActivity(next)
+        }*/
+        val intent=Intent(this, MainActivity::class.java)
+        startActivity(intent)
         finish()
     }
 

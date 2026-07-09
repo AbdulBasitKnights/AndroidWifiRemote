@@ -10,6 +10,10 @@ class PairingStore(context: Context) {
         prefs.getString(KEY_HOST, "").orEmpty()
     }
 
+    fun savedTvName(): String = SafeRun.runCatching(TAG, "") {
+        prefs.getString(KEY_TV_NAME, "").orEmpty()
+    }
+
     fun isPaired(): Boolean = SafeRun.runCatching(TAG, false) {
         prefs.getBoolean(KEY_PAIRED, false)
     }
@@ -17,10 +21,11 @@ class PairingStore(context: Context) {
     fun isPairedWith(host: String): Boolean =
         isPaired() && savedHost().equals(host.trim(), ignoreCase = false)
 
-    fun markPaired(host: String) {
+    fun markPaired(host: String, displayName: String = "") {
         SafeRun.run(TAG) {
             prefs.edit()
                 .putString(KEY_HOST, host.trim())
+                .putString(KEY_TV_NAME, displayName.trim())
                 .putBoolean(KEY_PAIRED, true)
                 .apply()
         }
@@ -36,6 +41,7 @@ class PairingStore(context: Context) {
         private const val TAG = "PairingStore"
         private const val PREFS_NAME = "tv_remote_session"
         private const val KEY_HOST = "paired_host"
+        private const val KEY_TV_NAME = "paired_tv_name"
         private const val KEY_PAIRED = "is_paired"
     }
 }

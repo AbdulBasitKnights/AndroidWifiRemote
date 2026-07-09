@@ -4,6 +4,7 @@ import android.content.Context
 import com.tvremote.app.data.discovery.CastRouteDiscovery
 import com.tvremote.app.data.discovery.TvDiscovery
 import com.tvremote.app.data.model.DiscoveredTv
+import com.tvremote.app.data.remote.RemoteConnectionService
 import com.tvremote.app.data.remote.RemoteTvManager
 import com.tvremote.app.data.session.AppSessionMode
 import com.tvremote.app.data.session.ConnectionCoordinator
@@ -65,21 +66,39 @@ class TvRemoteRepository(
     val savedTvHost: String
         get() = coordinator.savedHost().ifEmpty { remoteManager.currentHost() }
 
+    val savedTvName: String
+        get() = coordinator.savedTvName()
+            .ifEmpty { resolveDisplayName(savedTvHost) }
+            .ifEmpty { remoteManager.currentDisplayName() }
+
     init {
         coordinator.loadSavedSession()
         refreshConnectionSnapshot()
         ensureConnected()
 
-        remoteManager.onPaired = { host ->
+        remoteManager.onPairingCredentialsSaved = { host ->
             SafeRun.run("TvRemoteRepository") {
-                coordinator.onRemotePaired(host)
+                val name = resolveDisplayName(host)
+                coordinator.onRemotePaired(host, name)
                 _isPaired.value = true
                 _pairingHost.value = null
                 refreshConnectionSnapshot()
             }
         }
 
+        remoteManager.onPaired = {
+            SafeRun.run("TvRemoteRepository") {
+                refreshConnectionSnapshot()
+            }
+        }
+
         remoteManager.onConnectionUiChanged = { refreshConnectionSnapshot() }
+
+        remoteManager.onNotificationChanged = { payload ->
+            SafeRun.run("TvRemoteRepository") {
+                RemoteConnectionService.sync(appContext, payload)
+            }
+        }
 
         remoteManager.onAppLaunched = {
             scope.launch { _events.emit(RepositoryEvent.ChannelLaunched) }
@@ -99,7 +118,12 @@ class TvRemoteRepository(
         remoteManager.onWaitingForCodeChanged = { waiting ->
             SafeRun.run("TvRemoteRepository") {
                 _waitingForCode.value = waiting
-                if (!waiting) _pairingHost.value = null
+                if (waiting) {
+                    _pairingHost.value = remoteManager.currentHost()
+                    scope.launch { _events.emit(RepositoryEvent.PairingStarted) }
+                } else {
+                    _pairingHost.value = null
+                }
             }
         }
         tvDiscovery.onDeviceFound = { tv ->
@@ -135,27 +159,44 @@ class TvRemoteRepository(
         refreshConnectionSnapshot()
     }
 
+    fun maintainBackgroundConnection() {
+        remoteManager.maintainBackgroundConnection()
+        refreshConnectionSnapshot()
+    }
+
+    fun onAppBackgrounded() {
+        remoteManager.onAppBackgrounded()
+    }
+
     fun refreshConnectionUi() {
         remoteManager.refreshConnectionUi()
         refreshConnectionSnapshot()
     }
 
     private fun refreshConnectionSnapshot() {
-        _sessionReady.value = remoteManager.isSessionReady()
-        _connectionLoaderVisible.value = remoteManager.isConnectionLoaderVisible()
-        if (_sessionReady.value) {
+        val ready = remoteManager.isSessionReady()
+        _sessionReady.value = ready
+        _connectionLoaderVisible.value = if (ready) {
+            false
+        } else {
+            remoteManager.isConnectionLoaderVisible()
+        }
+        if (ready) {
             _isPaired.value = coordinator.isPaired() || remoteManager.isPaired()
         }
     }
 
     fun disconnectUser() {
         remoteManager.disconnectUser()
+        coordinator.onUserDisconnected()
         refreshConnectionSnapshot()
-        _isPaired.value = coordinator.isPaired()
+        _isPaired.value = false
         scope.launch { _events.emit(RepositoryEvent.Disconnected) }
     }
 
-    fun disconnectForAppClose() = remoteManager.disconnectForAppClose()
+    fun disconnectForAppClose() {
+        remoteManager.onAppBackgrounded()
+    }
 
     fun isSessionReady(): Boolean {
         val ready = remoteManager.isSessionReady()
@@ -183,7 +224,7 @@ class TvRemoteRepository(
         val saved = savedTvHost
         if (saved.isNotBlank() && coordinator.isPaired()) {
             discoveredMap[saved] = DiscoveredTv(
-                name = discoveredMap[saved]?.name ?: "Paired TV",
+                name = savedTvName.ifBlank { "Paired TV" },
                 host = saved,
                 port = 6466,
             )
@@ -201,6 +242,7 @@ class TvRemoteRepository(
             return
         }
         if (!validateHost(host)) return
+        remoteManager.setDisplayName(resolveDisplayName(host))
 
         if (coordinator.isPairedWith(host)) {
             if (!remoteManager.isSessionReady()) {
@@ -219,6 +261,7 @@ class TvRemoteRepository(
             return
         }
         if (!validateHost(host)) return
+        remoteManager.setDisplayName(resolveDisplayName(host))
         _pairingHost.value = host
         remoteManager.pairOnly(host)
         scope.launch { _events.emit(RepositoryEvent.PairingStarted) }
@@ -231,10 +274,22 @@ class TvRemoteRepository(
             return
         }
         if (!validateHost(target)) return
+        remoteManager.setDisplayName(resolveDisplayName(target))
+        if (!coordinator.isPaired()) {
+            pairWithTv(target)
+            return
+        }
         _pairingHost.value = null
         remoteManager.reconnectTo(target)
         refreshConnectionSnapshot()
         scope.launch { _events.emit(RepositoryEvent.Reconnecting) }
+    }
+
+    private fun resolveDisplayName(host: String): String {
+        if (host.isBlank()) return ""
+        return discoveredMap[host]?.name
+            ?.takeIf { it.isNotBlank() }
+            ?: coordinator.savedTvName().takeIf { coordinator.isPairedWith(host) }.orEmpty()
     }
 
     fun isConnectionBusy(): Boolean = _connectionLoaderVisible.value

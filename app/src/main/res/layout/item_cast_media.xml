@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="3dp"
+    app:strokeColor="@color/glass_border"
+    app:strokeWidth="1dp">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/mediaThumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="132dp"
+            android:scaleType="centerCrop" />
+
+        <View
+            android:id="@+id/videoOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="132dp"
+            android:background="#33000000"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/playIcon"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_glass_circle_btn"
+            android:backgroundTint="@color/glass_white_solid"
+            android:padding="8dp"
+            android:src="@drawable/ic_play"
+            android:visibility="gone"
+            app:tint="@color/primary" />
+
+        <TextView
+            android:id="@+id/durationLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="8dp"
+            android:background="@drawable/bg_glass_chip"
+            android:paddingStart="8dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="4dp"
+            android:textColor="@color/text_primary"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+    </FrameLayout>
+
+</com.google.android.material.card.MaterialCardView>

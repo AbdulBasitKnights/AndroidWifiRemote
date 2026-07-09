@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
@@ -51,6 +52,10 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
             Toast.makeText(requireContext(), R.string.mic_permission_required, Toast.LENGTH_SHORT).show()
         }
     }
+
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { _ -> }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -262,6 +267,7 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
 
     private fun showConnectPanel() {
         val binding = _binding ?: return
+        requestRemoteNotificationPermission()
         connectPanelOpen = true
         binding.connectPanel.isVisible = true
         binding.connectPanel.bringToFront()
@@ -272,6 +278,16 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
 
     private fun castRepositoryInitializeForDiscovery() {
         (requireActivity() as? MainActivity)?.appContainer()?.castRepository?.initialize()
+    }
+
+    private fun requestRemoteNotificationPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
     }
 
     private fun hideConnectPanel() {
@@ -322,7 +338,7 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
         }
 
         binding.pairingCodeCard.isVisible = state.waitingForCode
-        binding.completePairingButton.isEnabled = state.waitingForCode
+        binding.completePairingButton.isEnabled = state.waitingForCode && !state.showConnectionLoader
         binding.reconnectButton.isVisible = state.isPaired && !state.waitingForCode && !state.isSessionReady
         binding.disconnectButton.isVisible = state.isPaired && !state.isSessionReady
 
@@ -369,6 +385,7 @@ class RemoteFragment : Fragment(R.layout.fragment_remote) {
             .find { it.host == state.savedTvHost }
             ?.name
             ?.takeIf { it.isNotBlank() }
+            ?: state.savedTvName.takeIf { it.isNotBlank() }
             ?: state.savedTvHost.takeIf { it.isNotBlank() }
             ?: getString(R.string.connected_tv_default)
 

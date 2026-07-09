@@ -55,15 +55,23 @@ class ConnectionCoordinator(
         }
     }
 
-    fun onRemotePaired(host: String) = SafeRun.run(TAG) {
-        pairingStore.markPaired(host)
-        remoteManager.markPaired(host)
+    fun onRemotePaired(host: String, displayName: String = "") {
+        pairingStore.markPaired(host, displayName)
+        remoteManager.markPaired(host, displayName)
     }
+
+    fun onUserDisconnected() {
+        pairingStore.clear()
+        remoteManager.resetPairingState()
+    }
+
+    fun savedTvName(): String = pairingStore.savedTvName()
 
     fun loadSavedSession() = SafeRun.run(TAG) {
         val host = pairingStore.savedHost()
+        val name = pairingStore.savedTvName()
         if (host.isNotEmpty() && pairingStore.isPaired()) {
-            remoteManager.loadSavedSession(host, paired = true)
+            remoteManager.loadSavedSession(host, name, paired = true)
         }
     }
 

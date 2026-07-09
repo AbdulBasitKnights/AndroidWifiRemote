@@ -35,18 +35,20 @@ class CastFragment : Fragment(R.layout.fragment_cast) {
             binding.photosCard.setOnClickListener {
                 SafeRun.run(TAG) {
                     if (!ensureCastDevice()) return@run
-                    CastMediaPickerSheet.newInstance(CastMediaPickerSheet.MediaType.PHOTO)
-                        .show(parentFragmentManager, TAG_PHOTO_PICKER)
+                    openMediaGallery(MediaPermissionHelper.MediaKind.PHOTO)
                 }
             }
             binding.videosCard.setOnClickListener {
                 SafeRun.run(TAG) {
                     if (!ensureCastDevice()) return@run
-                    CastMediaPickerSheet.newInstance(CastMediaPickerSheet.MediaType.VIDEO)
-                        .show(parentFragmentManager, TAG_VIDEO_PICKER)
+                    openMediaGallery(MediaPermissionHelper.MediaKind.VIDEO)
                 }
             }
         }
+    }
+
+    private fun openMediaGallery(kind: MediaPermissionHelper.MediaKind) {
+        startActivity(CastMediaGalleryActivity.intent(requireContext(), kind))
     }
 
     private fun ensureCastDevice(): Boolean {
@@ -66,7 +68,5 @@ class CastFragment : Fragment(R.layout.fragment_cast) {
 
     companion object {
         private const val TAG = "CastFragment"
-        private const val TAG_PHOTO_PICKER = "cast_photo_picker"
-        private const val TAG_VIDEO_PICKER = "cast_video_picker"
     }
 }
