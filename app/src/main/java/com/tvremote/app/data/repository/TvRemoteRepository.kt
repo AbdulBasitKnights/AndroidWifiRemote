@@ -79,15 +79,17 @@ class TvRemoteRepository(
         remoteManager.onPairingCredentialsSaved = { host ->
             SafeRun.run("TvRemoteRepository") {
                 val name = resolveDisplayName(host)
-                coordinator.onRemotePaired(host, name)
+                coordinator.onPairingCredentialsSaved(host, name)
                 _isPaired.value = true
                 _pairingHost.value = null
                 refreshConnectionSnapshot()
             }
         }
 
-        remoteManager.onPaired = {
+        remoteManager.onPaired = { host ->
             SafeRun.run("TvRemoteRepository") {
+                val name = resolveDisplayName(host)
+                coordinator.onRemoteSessionReady(host, name)
                 refreshConnectionSnapshot()
             }
         }
@@ -189,8 +191,13 @@ class TvRemoteRepository(
     fun disconnectUser() {
         remoteManager.disconnectUser()
         coordinator.onUserDisconnected()
-        refreshConnectionSnapshot()
         _isPaired.value = false
+        _sessionReady.value = false
+        _connectionLoaderVisible.value = false
+        _waitingForCode.value = false
+        _pairingHost.value = null
+        _pairingState.value = "idle"
+        refreshConnectionSnapshot()
         scope.launch { _events.emit(RepositoryEvent.Disconnected) }
     }
 
@@ -261,6 +268,9 @@ class TvRemoteRepository(
             return
         }
         if (!validateHost(host)) return
+        coordinator.resetPairing()
+        _isPaired.value = false
+        _sessionReady.value = false
         remoteManager.setDisplayName(resolveDisplayName(host))
         _pairingHost.value = host
         remoteManager.pairOnly(host)

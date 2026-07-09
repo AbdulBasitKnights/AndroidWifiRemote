@@ -58,6 +58,7 @@ class RemoteTvManager(context: Context) {
     private val connectionBusy = AtomicBoolean(false)
     private val connectionLoaderVisible = AtomicBoolean(false)
     private val reconnectScheduled = AtomicBoolean(false)
+    private val postPairingConnectPending = AtomicBoolean(false)
 
     fun isConnectionBusy(): Boolean = connectionBusy.get()
 
@@ -74,6 +75,7 @@ class RemoteTvManager(context: Context) {
     private var recoveryRePairFuture: ScheduledFuture<*>? = null
     private var postPairingConnectFuture: ScheduledFuture<*>? = null
     private var reconnectAttempt = 0
+    private var postPairingConnectAttempts = 0
     private var consecutiveConnectFailures = 0
     @Volatile
     private var lastReconnectAtMs = 0L
@@ -88,7 +90,8 @@ class RemoteTvManager(context: Context) {
         private const val CONNECTION_MONITOR_INTERVAL_SEC = 45L
         private const val MIN_RECONNECT_COOLDOWN_MS = 5_000L
         private const val RECONNECT_WINDOW_MS = 30_000L
-        private const val POST_PAIRING_CONNECT_DELAY_MS = 800L
+        private const val POST_PAIRING_CONNECT_DELAY_MS = 1_200L
+        private const val MAX_POST_PAIRING_CONNECT_ATTEMPTS = 4
     }
 
     fun isWaitingForPairingCode(): Boolean = waitingForCode.get()
@@ -143,13 +146,19 @@ class RemoteTvManager(context: Context) {
         isPairedDevice = false
         connectionHeld = false
         pendingTvDisplayName = ""
-        cancelAutoReconnect()
-        stopConnectionMonitor()
+        postPairingConnectPending.set(false)
+        postPairingConnectAttempts = 0
+        cancelAllScheduledWork()
         endRecoverySession()
     }
 
     private fun shouldMaintainConnection(): Boolean =
-        connectionHeld && isPairedDevice && !userDisconnectRequested && pendingHost.isNotEmpty()
+        connectionHeld &&
+            isPairedDevice &&
+            !userDisconnectRequested &&
+            pendingHost.isNotEmpty() &&
+            !postPairingConnectPending.get() &&
+            !isPairingInProgress()
 
     private fun isPairingInProgress(): Boolean =
         waitingForCode.get() || pairingStarted.get() || explicitPairingRequested.get()
@@ -176,10 +185,12 @@ class RemoteTvManager(context: Context) {
         notifyWaitingForCode(false)
         reconnectAttempt = 0
         consecutiveConnectFailures = 0
+        postPairingConnectAttempts = 0
+        postPairingConnectPending.set(true)
         cancelAutoReconnect()
         cancelHandshakeWatchdog()
         endRecoverySession()
-        updateConnectionMonitor()
+        stopConnectionMonitor()
         publishNotification(RemoteConnectionStatus.RECONNECTING)
         notifyRemoteState("Pairing complete — connecting remote…")
         mainHandler.post { SafeRun.invoke(TAG) { onPairingCredentialsSaved?.invoke(host) } }
@@ -187,12 +198,17 @@ class RemoteTvManager(context: Context) {
     }
 
     private fun notifySessionReady(host: String) {
+        postPairingConnectPending.set(false)
+        postPairingConnectAttempts = 0
         reconnectAttempt = 0
         consecutiveConnectFailures = 0
         cancelAutoReconnect()
         cancelHandshakeWatchdog()
         endRecoverySession()
         clearConnectionBusy()
+        isPairedDevice = true
+        connectionHeld = true
+        userDisconnectRequested = false
         updateConnectionMonitor()
         publishNotification(RemoteConnectionStatus.CONNECTED)
         mainHandler.post { SafeRun.invoke(TAG) { onPaired?.invoke(host) } }
@@ -203,10 +219,71 @@ class RemoteTvManager(context: Context) {
         postPairingConnectFuture?.cancel(false)
         postPairingConnectFuture = scheduler.schedule({
             executeSafe {
-                if (userDisconnectRequested) return@executeSafe
+                if (userDisconnectRequested) {
+                    postPairingConnectPending.set(false)
+                    return@executeSafe
+                }
                 connectRemoteOnlyInternal(force = true, showLoader = true)
             }
         }, POST_PAIRING_CONNECT_DELAY_MS, TimeUnit.MILLISECONDS)
+    }
+
+    private fun handlePostPairingConnectFailure(reason: String) {
+        clearConnectionBusy()
+        cancelHandshakeWatchdog()
+        cancelConnectionWatchdog()
+        if (!remoteManager.isSessionReady()) {
+            remoteManager.disconnect()
+        }
+        postPairingConnectAttempts++
+        if (postPairingConnectAttempts < MAX_POST_PAIRING_CONNECT_ATTEMPTS) {
+            AppLogger.w(
+                TAG,
+                "Post-pair remote connect failed ($postPairingConnectAttempts/$MAX_POST_PAIRING_CONNECT_ATTEMPTS) — retrying",
+            )
+            notifyRemoteState("Connecting remote… (attempt ${postPairingConnectAttempts + 1})")
+            setConnectionBusy(true, showLoader = true)
+            scheduleRemoteConnectAfterPairing()
+            publishConnectionUiState()
+            return
+        }
+        AppLogger.e(TAG, "Post-pair remote connect failed after retries: $reason")
+        postPairingConnectPending.set(false)
+        postPairingConnectAttempts = 0
+        notifyRemoteState(reason)
+        publishConnectionUiState()
+    }
+
+    private fun prepareFreshPairing(host: String) {
+        cancelAllScheduledWork()
+        performDisconnect()
+        pendingHost = host.trim()
+        userDisconnectRequested = false
+        connectionHeld = true
+        isPairedDevice = false
+        pairingStarted.set(false)
+        explicitPairingRequested.set(true)
+        waitingForCode.set(false)
+        postPairingConnectPending.set(false)
+        postPairingConnectAttempts = 0
+        reconnectAttempt = 0
+        consecutiveConnectFailures = 0
+        reconnectScheduled.set(false)
+        notifyWaitingForCode(false)
+        endRecoverySession()
+        publishNotification(RemoteConnectionStatus.PAIRING)
+    }
+
+    private fun cancelAllScheduledWork() {
+        cancelAutoReconnect()
+        cancelPostPairingConnect()
+        cancelPairingFallback()
+        cancelHandshakeWatchdog()
+        cancelConnectionWatchdog()
+        cancelRecoveryRePairTimer()
+        busyTimeout?.cancel(false)
+        busyTimeout = null
+        stopConnectionMonitor()
     }
 
     private fun cancelPostPairingConnect() {
@@ -233,6 +310,7 @@ class RemoteTvManager(context: Context) {
     }
 
     private fun beginRecoverySession() {
+        if (postPairingConnectPending.get() || isPairingInProgress() || userDisconnectRequested) return
         if (recoveryRePairFuture != null && recoveryRePairFuture?.isCancelled == false) return
         publishNotification(RemoteConnectionStatus.RECONNECTING)
         cancelRecoveryRePairTimer()
@@ -339,6 +417,10 @@ class RemoteTvManager(context: Context) {
     }
 
     private fun handleConnectFailure(reason: String, suggestRePair: Boolean) {
+        if (postPairingConnectPending.get()) {
+            handlePostPairingConnectFailure(reason)
+            return
+        }
         clearConnectionBusy()
         cancelHandshakeWatchdog()
         cancelConnectionWatchdog()
@@ -459,6 +541,7 @@ class RemoteTvManager(context: Context) {
         }
         if (waitingForCode.get() ||
             isPairingInProgress() ||
+            postPairingConnectPending.get() ||
             remoteManager.isConnecting() ||
             remoteManager.isHandshakeInProgress() ||
             connectionBusy.get() ||
@@ -473,6 +556,7 @@ class RemoteTvManager(context: Context) {
 
     private fun scheduleAutoReconnect(immediate: Boolean = false) {
         if (!shouldMaintainConnection()) return
+        if (postPairingConnectPending.get()) return
         if (isPairingInProgress()) return
         if (remoteManager.isSessionReady() || waitingForCode.get()) return
         if (remoteManager.isConnecting() || remoteManager.isHandshakeInProgress()) return
@@ -525,6 +609,8 @@ class RemoteTvManager(context: Context) {
                 RemoteConnectionStatus.DISCONNECTED
             waitingForCode.get() || isPairingInProgress() ->
                 RemoteConnectionStatus.PAIRING
+            postPairingConnectPending.get() ->
+                RemoteConnectionStatus.RECONNECTING
             remoteManager.isSessionReady() ->
                 RemoteConnectionStatus.CONNECTED
             connectionHeld && isPairedDevice && pendingHost.isNotEmpty() ->
@@ -569,6 +655,7 @@ class RemoteTvManager(context: Context) {
                 }
             }
             if (shouldMaintainConnection() &&
+                !postPairingConnectPending.get() &&
                 !isPairingInProgress() &&
                 !remoteManager.isSessionReady() &&
                 !waitingForCode.get() &&
@@ -606,7 +693,7 @@ class RemoteTvManager(context: Context) {
             } catch (e: Exception) {
                 AppLogger.e(TAG, "Remote task failed", e)
                 notifyRemoteState("Error: ${e.message ?: "Unknown error"}")
-                if (!isPairingInProgress()) {
+                if (!isPairingInProgress() && !postPairingConnectPending.get() && !userDisconnectRequested) {
                     scheduleAutoReconnect()
                 }
             }
@@ -870,9 +957,9 @@ class RemoteTvManager(context: Context) {
 
     fun pairOnly(host: String? = null) {
         executeSafe {
-            host?.trim()?.takeIf { it.isNotEmpty() }?.let { pendingHost = it }
+            val target = host?.trim()?.takeIf { it.isNotEmpty() } ?: pendingHost
             when {
-                pendingHost.isEmpty() -> Unit
+                target.isEmpty() -> Unit
                 waitingForCode.get() -> notifyPairingState(
                     "Already waiting for code — enter it and tap Complete Pairing",
                 )
@@ -880,12 +967,7 @@ class RemoteTvManager(context: Context) {
                     remoteManager.currentRemoteState().toDisplayString(),
                 )
                 else -> {
-                    userDisconnectRequested = false
-                    connectionHeld = true
-                    isPairedDevice = false
-                    explicitPairingRequested.set(true)
-                    stopConnectionMonitor()
-                    cancelAutoReconnect()
+                    prepareFreshPairing(target)
                     startPairing(force = true)
                 }
             }
@@ -894,16 +976,9 @@ class RemoteTvManager(context: Context) {
 
     fun restartPairing(host: String? = null) {
         executeSafe {
-            host?.trim()?.takeIf { it.isNotEmpty() }?.let { pendingHost = it }
-            if (pendingHost.isNotEmpty()) {
-                waitingForCode.set(false)
-                notifyWaitingForCode(false)
-                explicitPairingRequested.set(true)
-                isPairedDevice = false
-                connectionHeld = true
-                userDisconnectRequested = false
-                stopConnectionMonitor()
-                cancelAutoReconnect()
+            val target = host?.trim()?.takeIf { it.isNotEmpty() } ?: pendingHost
+            if (target.isNotEmpty()) {
+                prepareFreshPairing(target)
                 startPairing(force = true)
             }
         }
@@ -914,6 +989,7 @@ class RemoteTvManager(context: Context) {
         if (!force && !pairingStarted.compareAndSet(false, true)) return
         if (force) pairingStarted.set(true)
 
+        endRecoverySession()
         stopConnectionMonitor()
         cancelAutoReconnect()
         reconnectScheduled.set(false)
@@ -1016,22 +1092,26 @@ class RemoteTvManager(context: Context) {
     fun runDeepLink(url: String): Boolean = launchTvApp(url)
 
     fun disconnectUser() {
+        cancelAllScheduledWork()
+        performDisconnect()
+        pendingHost = ""
+        pendingTvDisplayName = ""
+        pendingAppLink = null
         userDisconnectRequested = true
         connectionHeld = false
         isPairedDevice = false
+        postPairingConnectPending.set(false)
+        postPairingConnectAttempts = 0
         reconnectAttempt = 0
         reconnectScheduled.set(false)
-        pendingAppLink = null
-        cancelAutoReconnect()
-        cancelPostPairingConnect()
-        stopConnectionMonitor()
-        endRecoverySession()
-        publishNotification(RemoteConnectionStatus.DISCONNECTED)
         clearConnectionBusy()
-        executeSafe {
-            performDisconnect()
-            notifyRemoteState("Disconnected — pair again with TV code")
-            notifyPairingState("idle")
+        publishNotification(RemoteConnectionStatus.DISCONNECTED)
+        mainHandler.post {
+            SafeRun.invoke(TAG) {
+                notifyRemoteState("Disconnected — pair again with TV code")
+                notifyPairingState("idle")
+                onWaitingForCodeChanged?.invoke(false)
+            }
         }
     }
 
@@ -1052,6 +1132,7 @@ class RemoteTvManager(context: Context) {
     /** Heal session when foreground service starts or app returns. */
     fun maintainBackgroundConnection() {
         if (!shouldMaintainConnection()) return
+        if (postPairingConnectPending.get()) return
         updateConnectionMonitor()
         executeSafe {
             if (remoteManager.isSessionReady()) {

@@ -55,9 +55,18 @@ class ConnectionCoordinator(
         }
     }
 
-    fun onRemotePaired(host: String, displayName: String = "") {
+    fun onPairingCredentialsSaved(host: String, displayName: String = "") {
+        pairingStore.markPaired(host, displayName)
+    }
+
+    fun onRemoteSessionReady(host: String, displayName: String = "") {
         pairingStore.markPaired(host, displayName)
         remoteManager.markPaired(host, displayName)
+    }
+
+    fun onRemotePaired(host: String, displayName: String = "") {
+        onPairingCredentialsSaved(host, displayName)
+        onRemoteSessionReady(host, displayName)
     }
 
     fun onUserDisconnected() {
